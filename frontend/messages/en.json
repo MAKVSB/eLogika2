@@ -532,5 +532,6 @@
 	"courseitem_maxattempts": "Maximum attempts",
 	"courseitem_max_points": "Maximum points",
 	"courseitem_min_points": "Minimum points",
-	"courseitem_name": "Name"
+	"courseitem_name": "Name",
+	"result_selected": "Selected"
 }

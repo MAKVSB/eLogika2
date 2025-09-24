@@ -529,5 +529,6 @@
 	"points_total": "Celkem\n",
 	"courseitem_max_points": "Minimální počet bodů",
 	"courseitem_group_pick_max": "",
-	"courseitem_name": "Název"
+	"courseitem_name": "Název",
+	"result_selected": "Započítáno"
 }

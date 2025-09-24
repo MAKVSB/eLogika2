@@ -10,6 +10,7 @@ import (
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/modules/course_items/dtos"
+	services_course_item "elogika.vsb.cz/backend/services/courseItem"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -96,19 +97,12 @@ func ListForStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 		Joins("ActivityDetail").
 		Joins("GroupDetail").
 		Joins("TestDetail").
-		Preload("Result", func(db *gorm.DB) *gorm.DB {
-			return db.Where("student_id = ?", userData.ID).Where("selected = ?", true)
-		}).
 		Preload("Children", func(db *gorm.DB) *gorm.DB {
 			return db.
 				Joins("ActivityDetail").
 				Joins("GroupDetail").
-				Joins("TestDetail").
-				Preload("Result", func(db *gorm.DB) *gorm.DB {
-					return db.Where("student_id = ?", userData.ID).Where("selected = ?", true)
-				})
+				Joins("TestDetail")
 		}).
-		// TODO probably infinite loading will not be required
 		Find(&rootCourseItems).Error; err != nil {
 		return &common.ErrorResponse{
 			Code:    500,
@@ -122,7 +116,7 @@ func ListForStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 	totalPassed := true
 	dtoList := make([]dtos.StudentCourseItemDTO, len(rootCourseItems))
 	for i, ci := range rootCourseItems {
-		innerDto, innerPoints, innerPassed, innerMandatory := CalculateItemResult(&ci)
+		innerDto, innerPoints, innerPassed, innerMandatory, _ := CalculateItemResult(&ci, userData.ID, &results, false)
 		dtoList[i] = innerDto
 		totalPoints += innerPoints
 
@@ -149,20 +143,43 @@ func ListForStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 }
 
 // Returns dto, points to count to parent, passed, optional
-func CalculateItemResult(ci *models.CourseItem) (dtos.StudentCourseItemDTO, float64, bool, bool) {
+func CalculateItemResult(ci *models.CourseItem, studentId uint, allResults *[]*models.CourseItemResult, returnResults bool) (dtos.StudentCourseItemDTO, float64, bool, bool, []*dtos.CourseItemResultDTO) {
 	dto := dtos.StudentCourseItemDTO{}.From(ci)
 	passed := true
 	points := float64(0)
 	passedOptionalCount := 0
+	var resultDtos []*dtos.CourseItemResultDTO
 
 	switch ci.Type {
 	case enums.CourseItemTypeActivity, enums.CourseItemTypeTest:
-		if ci.Result == nil {
+
+		var selectedResult *models.CourseItemResult
+		if returnResults {
+			itemResults := services_course_item.FindInResults(allResults, ci.ID, studentId, nil, false)
+
+			dto.Results = make([]*dtos.CourseItemResultDTO, len(itemResults))
+			for _, itemResult := range itemResults {
+				irDto := dtos.CourseItemResultDTO{}.From(itemResult)
+				resultDtos = append(resultDtos, &irDto)
+			}
+
+			selectedResults := services_course_item.FindInResults(&itemResults, ci.ID, studentId, nil, true)
+			if len(selectedResults) != 0 {
+				selectedResult = selectedResults[0]
+			}
+		} else {
+			selectedResults := services_course_item.FindInResults(allResults, ci.ID, studentId, nil, true)
+			if len(selectedResults) != 0 {
+				selectedResult = selectedResults[0]
+			}
+		}
+
+		if selectedResult == nil {
 			if ci.Mandatory {
 				passed = false
 			}
 		} else {
-			points = ci.Result.Points
+			points = selectedResult.Points
 			if ci.Mandatory {
 				if points < float64(ci.PointsMin) {
 					passed = false
@@ -171,7 +188,11 @@ func CalculateItemResult(ci *models.CourseItem) (dtos.StudentCourseItemDTO, floa
 		}
 	case enums.CourseItemTypeGroup:
 		for _, ciChildren := range ci.Children {
-			innerDto, innerPoints, innerPassed, innerMandatory := CalculateItemResult(ciChildren)
+			innerDto, innerPoints, innerPassed, innerMandatory, innerResults := CalculateItemResult(ciChildren, studentId, allResults, returnResults)
+
+			if returnResults && innerResults != nil {
+				resultDtos = append(resultDtos, innerResults...)
+			}
 
 			if innerMandatory {
 				if !innerPassed {
@@ -184,7 +205,7 @@ func CalculateItemResult(ci *models.CourseItem) (dtos.StudentCourseItemDTO, floa
 			}
 
 			points += innerPoints
-			dto.Childs = append(dto.Childs, innerDto)
+			dto.Childs = append(dto.Childs, &innerDto)
 		}
 
 		if ci.GroupDetail.Choice {
@@ -204,9 +225,10 @@ func CalculateItemResult(ci *models.CourseItem) (dtos.StudentCourseItemDTO, floa
 
 	dto.Passed = passed
 	dto.Points = points
+	dto.Results = resultDtos
 
 	if !ci.AllowNegative {
 		points = max(points, 0)
 	}
-	return dto, points, passed, ci.Mandatory
+	return dto, points, passed, ci.Mandatory, resultDtos
 }

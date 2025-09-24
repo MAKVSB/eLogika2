@@ -5,6 +5,8 @@
 	import CourseItemDisplay from './CourseItemDisplay.svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import { page } from '$app/state';
 
 	let { data } = $props();
 </script>
@@ -29,6 +31,7 @@
 		<Table.Head>{m.testinstance_points()}</Table.Head>
 		<!-- <Table.Head>Attempt</Table.Head> -->
 		<Table.Head>{m.updatedby()}</Table.Head>
+		<Table.Head>{m.result_selected()}</Table.Head>
 		<Table.Head>{m.actions()}</Table.Head>
 	</Table.Row>
 {/snippet}
@@ -44,7 +47,7 @@
 					{@render TableHeader()}
 				</Table.Header>
 				<Table.Body>
-					{#each staticResourceData.items.filter((i) => i.parentId === null) as item}
+					{#each staticResourceData.items as item}
 						<CourseItemDisplay {item}></CourseItemDisplay>
 					{/each}
 				</Table.Body>
@@ -82,11 +85,18 @@
 								<Tooltip.Provider>
 									<Tooltip.Root>
 										<Tooltip.Trigger>{result.termName}</Tooltip.Trigger>
-										<Tooltip.Content>
+										<Tooltip.Content class="grid grid-cols-2">
+											<p>Active from:</p>
 											<p>
 												{new Date(result.termActiveFrom).toLocaleString(getLocale())}
-												-
+											</p>
+											<p>Active to:</p>
+											<p>
 												{new Date(result.termActiveTo).toLocaleString(getLocale())}
+											</p>
+											<p>Instance started at:</p>
+											<p>
+												{new Date(result.instanceStartTime).toLocaleString(getLocale())}
 											</p>
 										</Tooltip.Content>
 									</Tooltip.Root>
@@ -109,19 +119,27 @@
 									</Tooltip.Root>
 								</Tooltip.Provider>
 							</Table.Cell>
+							<Table.Cell>{m.yes_no({ value: String(result.selected) })}</Table.Cell>
 							<Table.Cell>
 								{#if result.activityInstanceId}
-									activity: {result.activityInstanceId}
+									<Button
+										variant="default"
+										href="/app/{page.params
+											.courseId}/student/activities/{result.activityInstanceId}"
+									>
+										{m.view()}
+									</Button>
 								{:else}
-									test: {result.testInstanceId}
+									<!-- TODO  test: {result.testInstanceId} -->
 								{/if}
-								<!--TODO-->
 							</Table.Cell>
 						</Table.TableRow>
 					{/each}
 				</Table.Body>
 				<Table.Footer>
-					{@render TableHeaderResults()}
+					{#if staticResourceData.results.length > 10}
+						{@render TableHeaderResults()}
+					{/if}
 				</Table.Footer>
 			</Table.Root>
 			<p>* : Result is not labeled as final. Waiting for teacher to assign points</p>

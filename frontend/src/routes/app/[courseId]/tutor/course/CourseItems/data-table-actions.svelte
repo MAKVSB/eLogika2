@@ -34,13 +34,13 @@
 		</Button>
 	{/if}
 
-	<!-- {#if editable}
-		<Button variant="ghost" class="relative" href="/app/{page.params.courseId}/tutor/course/{id}">
+	{#if editable}
+		<Button variant="ghost" class="relative" href="/app/{page.params.courseId}/tutor/course/{id}/results">
 			<span>Výsledky</span>
 		</Button>
 	{:else}
 		<div></div>
-	{/if} -->
+	{/if}
 
 	{#if type == CourseItemTypeEnum.TEST}
 		<Button

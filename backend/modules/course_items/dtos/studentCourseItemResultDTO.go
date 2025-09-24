@@ -15,11 +15,13 @@ type StudentCourseItemResultDTO struct {
 	CourseItemName      string `json:"courseItemName"`
 	CourseItemGroupName string `json:"courseItemGroupName"`
 
-	TestInstanceID     *uint `json:"testInstanceId"`
-	ActivityInstanceID *uint `json:"activityInstanceId"`
+	TestInstanceID     *uint     `json:"testInstanceId"`
+	ActivityInstanceID *uint     `json:"activityInstanceId"`
+	InstanceStartTime  time.Time `json:"instanceStartTime"`
 
-	Points float64 `json:"points"`
-	Final  bool    `json:"final"`
+	Points   float64 `json:"points"`
+	Final    bool    `json:"final"`
+	Selected bool    `json:"selected"`
 
 	TermName       string    `json:"termName"`
 	TermActiveFrom time.Time `json:"termActiveFrom"`
@@ -33,8 +35,10 @@ func (m StudentCourseItemResultDTO) From(d *models.CourseItemResult) StudentCour
 		UpdatedAt:          d.UpdatedAt,
 		TestInstanceID:     d.TestInstanceID,
 		ActivityInstanceID: d.ActivityInstanceID,
+		InstanceStartTime:  d.CreatedAt,
 		Points:             d.Points,
 		Final:              d.Final,
+		Selected:           d.Selected,
 		TermName:           d.Term.Name,
 		TermActiveFrom:     d.Term.ActiveFrom,
 		TermActiveTo:       d.Term.ActiveTo,

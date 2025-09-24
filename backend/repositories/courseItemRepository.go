@@ -37,8 +37,7 @@ func (r *CourseItemRepository) GetCourseItemByID(
 			Preload("GroupDetail").
 			Preload("Children").
 			Preload("Terms").
-			Preload("Parent").
-			Preload("Results")
+			Preload("Parent")
 	}
 
 	var courseItem *models.CourseItem

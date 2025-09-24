@@ -383,12 +383,16 @@ func UpdateCourseItemSelectedResult(dbRef *gorm.DB, courseItem *models.CourseIte
 	return nil
 }
 
-func FindInResults(results *[]*models.CourseItemResult, courseItemID uint, studentId uint, termId *uint) []*models.CourseItemResult {
+func FindInResults(results *[]*models.CourseItemResult, courseItemID uint, studentId uint, termId *uint, findSelected bool) []*models.CourseItemResult {
 	var result []*models.CourseItemResult
 	for _, v := range *results {
 		if v.CourseItemID == courseItemID && v.StudentID == studentId {
 			if termId == nil || v.TermID == *termId {
-				result = append(result, v)
+				if !findSelected {
+					result = append(result, v)
+				} else if findSelected && v.Selected {
+					return []*models.CourseItemResult{v}
+				}
 			}
 		}
 	}
@@ -399,7 +403,7 @@ func EvaluateByAttemptBest(results *[]*models.CourseItemResult, courseItemID uin
 	var bestResID uint
 	var bestResPoints float64
 
-	item_results := FindInResults(results, courseItemID, studentId, termId)
+	item_results := FindInResults(results, courseItemID, studentId, termId, false)
 	for _, v := range item_results {
 		if v.Points > bestResPoints {
 			bestResPoints = v.Points
@@ -422,7 +426,7 @@ func EvaluateByAttempt(results *[]*models.CourseItemResult, courseItem *models.C
 			}
 		}
 	case enums.EvaluateByAttemptLast:
-		item_results := FindInResults(results, courseItem.ID, studentId, termId)
+		item_results := FindInResults(results, courseItem.ID, studentId, termId, false)
 		if len(item_results) != 0 {
 			return &TempTermResult{
 				ResultID: item_results[0].ID,

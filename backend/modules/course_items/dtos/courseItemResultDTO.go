@@ -5,11 +5,13 @@ import (
 )
 
 type CourseItemResultDTO struct {
-	ID           uint   `json:"id"`
-	StudentID    uint   `json:"studentId"`
-	CourseItemID uint   `json:"courseItemId"`
-	TermID       uint   `json:"termId"`
-	UpdatedBy    string `json:"updatedBy"`
+	ID             uint   `json:"id"`
+	StudentID      uint   `json:"studentId"`
+	CourseItemID   uint   `json:"courseItemId"`
+	CourseItemName string `json:"courseItemName"`
+	TermID         uint   `json:"termId"`
+	TermName       string `json:"termName"`
+	UpdatedBy      string `json:"updatedBy"`
 
 	TestInstanceID     *uint `json:"testInstanceId"`
 	ActivityInstanceID *uint `json:"activityInstanceId"`
@@ -21,10 +23,12 @@ type CourseItemResultDTO struct {
 
 func (m CourseItemResultDTO) From(d *models.CourseItemResult) CourseItemResultDTO {
 	dto := CourseItemResultDTO{
-		ID:           d.ID,
-		StudentID:    d.StudentID,
-		CourseItemID: d.CourseItemID,
-		TermID:       d.TermID,
+		ID:             d.ID,
+		StudentID:      d.StudentID,
+		CourseItemID:   d.CourseItemID,
+		CourseItemName: d.CourseItem.Name,
+		TermID:         d.TermID,
+		TermName:       d.Term.Name,
 
 		TestInstanceID:     d.TestInstanceID,
 		ActivityInstanceID: d.ActivityInstanceID,

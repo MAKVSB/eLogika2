@@ -45,8 +45,6 @@ type CourseItem struct {
 	Parent         *CourseItem         ``
 
 	// Temp values for querying
-	Results []CourseItemResult ``
-	Result  *CourseItemResult  ``
 
 	Editable bool `gorm:"-"`
 }

@@ -11,10 +11,9 @@ type CourseItemResultsDTO struct {
 	FamilyName string  `json:"familyName"`
 	Email      string  `json:"email"`
 	Points     float64 `json:"points"` // External
-	Final      bool    `json:"final"`  // External
 	Passed     bool    `json:"passed"` // External
 
-	Courses []CourseItemResultDTO `json:"courses"`
+	Results []*CourseItemResultDTO `json:"results"`
 }
 
 func (m CourseItemResultsDTO) From(d *models.User) CourseItemResultsDTO {
@@ -25,11 +24,12 @@ func (m CourseItemResultsDTO) From(d *models.User) CourseItemResultsDTO {
 		Username:   d.Username,
 		Email:      d.Email,
 
-		Courses: make([]CourseItemResultDTO, len(d.Results)),
+		Results: make([]*CourseItemResultDTO, len(d.Results)),
 	}
 
 	for i, res := range d.Results {
-		dto.Courses[i] = CourseItemResultDTO{}.From(res)
+		resDto := CourseItemResultDTO{}.From(res)
+		dto.Results[i] = &resDto
 	}
 
 	return dto

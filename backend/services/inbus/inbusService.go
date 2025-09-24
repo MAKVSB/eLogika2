@@ -207,3 +207,20 @@ func (api *InbusClient) GetConcreteActivityStudents(concreteActivityId uint) (*[
 
 	return students, nil
 }
+
+func (api *InbusClient) GetSubjectVersionStudents(subjectVersionId uint, semesterId uint) (*[]*StudyRelation, *common.ErrorResponse) {
+	students := new([]*StudyRelation)
+
+	err := api.DoRequest("service/edison/v1/admin/psp/subjectVersion/"+strconv.Itoa(int(subjectVersionId))+"/studyRelations", url.Values{
+		"semesterId": {strconv.Itoa(int(semesterId))},
+	}, students)
+	if err != nil {
+		return nil, &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to import data",
+			Details: "Request to inbus has failed",
+		}
+	}
+
+	return students, nil
+}
