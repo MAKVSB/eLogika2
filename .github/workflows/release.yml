@@ -1,0 +1,12 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  call-build:
+    uses: ./.github/workflows/build.yml
+    with:
+      release: true

@@ -1,9 +1,12 @@
 name: Build elogika2
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      release:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -81,3 +84,24 @@ jobs:
             backend/elogika2.exe
             backend/docs
             frontend/build
+
+      # If release is set, push also to release page
+
+      - name: Package artifacts
+        run: |
+          zip -r elogika2-server-${{ github.ref_name }}.zip backend/elogika2.exe
+          zip -r elogika2-front-${{ github.ref_name }}.zip frontend/build
+          zip -r elogika2-docs-${{ github.ref_name }}.zip backend/docs
+
+      - name: Create GitHub Release
+        if: ${{ inputs.release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "elogika2 ${{ github.ref_name }}"
+          files: |
+            elogika2-server-${{ github.ref_name }}.zip
+            elogika2-front-${{ github.ref_name }}.zip
+            elogika2-docs-${{ github.ref_name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
