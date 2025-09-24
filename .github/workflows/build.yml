@@ -1,5 +1,8 @@
 name: Build elogika2
 
+permissions:
+  contents: write   # needed to create releases
+
 on:
   workflow_call:
     inputs:
