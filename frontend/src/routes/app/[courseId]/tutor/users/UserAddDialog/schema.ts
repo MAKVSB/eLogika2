@@ -1,0 +1,78 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
+import DataTableActions from './data-table-actions.svelte';
+import { CourseUserRoleEnum, type CourseUserDTO } from '$lib/api_types';
+import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
+import { m } from '$lib/paraglide/messages';
+import { enumToOptions } from '$lib/utils';
+
+export const filters: Filter[] = [
+	{
+		type: FilterTypeEnum.STRING,
+		accessorKey: 'username',
+		placeholder: m.filter_username()
+	},
+	{
+		type: FilterTypeEnum.STRING,
+		accessorKey: 'firstName',
+		placeholder: m.filter_firstname()
+	},
+	{
+		type: FilterTypeEnum.STRING,
+		accessorKey: 'familyName',
+		placeholder: m.filter_lastname()
+	}
+];
+
+export const columns: (ColumnDef<CourseUserDTO> & { uniqueId?: string })[] = [
+	// {
+	// 	id: 'select',
+	// 	header: ({ table }) =>
+	// 		renderComponent(Checkbox, {
+	// 			checked: table.getIsAllPageRowsSelected(),
+	// 			indeterminate: table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected(),
+	// 			onCheckedChange: (value: boolean) => table.toggleAllPageRowsSelected(!!value),
+	// 			'aria-label': m.select_all()
+	// 		}),
+	// 	cell: ({ row }) =>
+	// 		renderComponent(Checkbox, {
+	// 			checked: row.getIsSelected(),
+	// 			onCheckedChange: (value: boolean) => row.toggleSelected(!!value),
+	// 			'aria-label': m.select_row()
+	// 		}),
+	// 	enableSorting: false,
+	// 	enableHiding: false
+	// },
+
+	{
+		accessorKey: 'username',
+		header: ({ column }) =>
+			renderComponent(SortButton, {
+				name: m.user_username(),
+				sorted: column.getIsSorted(),
+				onclick: column.getToggleSortingHandler()
+			})
+	},
+	{
+		accessorKey: 'firstName',
+		header: m.user_first_name()
+	},
+	{
+		accessorKey: 'familyName',
+		header: m.user_family_name()
+	},
+	{
+		accessorKey: 'email',
+		header: m.user_email()
+	},
+	{
+		header: m.actions(),
+		cell: ({ row, column }) => {
+			return renderComponent(DataTableActions, {
+				id: row.original.id,
+				meta: column.columnDef.meta
+			});
+		},
+		uniqueId: 'actions'
+	}
+];

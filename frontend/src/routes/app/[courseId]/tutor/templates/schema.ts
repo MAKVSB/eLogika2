@@ -1,0 +1,68 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
+import DataTableActions from './data-table-actions.svelte';
+import DataTableCreatedBy from './data-table-created-by.svelte';
+import { Checkbox } from '$lib/components/ui/checkbox/index.js';
+import { type Filter } from '$lib/components/ui/data-table/filter';
+import type { TemplateListItemDTO } from '$lib/api_types';
+import { m } from '$lib/paraglide/messages';
+
+export const filters: Filter[] = [];
+
+export const columns: (ColumnDef<TemplateListItemDTO> & { uniqueId?: string })[] = [
+	// {
+	// 	id: 'select',
+	// 	header: ({ table }) =>
+	// 		renderComponent(Checkbox, {
+	// 			checked: table.getIsAllPageRowsSelected(),
+	// 			indeterminate: table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected(),
+	// 			onCheckedChange: (value: boolean) => table.toggleAllPageRowsSelected(!!value),
+	// 			'aria-label': m.select_all()
+	// 		}),
+	// 	cell: ({ row }) =>
+	// 		renderComponent(Checkbox, {
+	// 			checked: row.getIsSelected(),
+	// 			onCheckedChange: (value: boolean) => row.toggleSelected(!!value),
+	// 			'aria-label': m.select_row()
+	// 		}),
+	// 	enableSorting: false,
+	// 	enableHiding: false
+	// },
+	{
+		accessorKey: 'title',
+		header: ({ column }) =>
+			renderComponent(SortButton, {
+				name: 'Title',
+				sorted: column.getIsSorted(),
+				onclick: column.getToggleSortingHandler()
+			})
+	},
+	{
+		accessorKey: 'description',
+		header: m.template_description()
+	},
+	{
+		accessorKey: 'blocks',
+		header: m.template_block_count()
+	},
+	{
+		accessorKey: 'createdBy',
+		header: m.template_created_by(),
+		cell: ({ row }) => {
+			return renderComponent(DataTableCreatedBy, {
+				createdBy: row.original.createdBy,
+				createdAt: row.original.createdAt
+			});
+		}
+	},
+	{
+		header: m.actions(),
+		cell: ({ row, column }) => {
+			return renderComponent(DataTableActions, {
+				id: row.original.id,
+				meta: column.columnDef.meta
+			});
+		},
+		uniqueId: 'actions'
+	}
+];

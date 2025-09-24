@@ -1,0 +1,83 @@
+name: Build elogika2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: go-modules-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            go-modules-
+
+      # Set up Go
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.1" # adjust if needed
+
+      # Set up Node.js + pnpm
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # or the version you use
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9 # match your local version
+          run_install: false
+
+      - name: Install swag
+        run: go install github.com/swaggo/swag/cmd/swag@latest
+
+      # Backend build
+      - name: Build backend
+        working-directory: backend
+        run: |
+          make typescript
+          swag init --parseInternal --parseDependency
+          GOOS=windows GOARCH=amd64 go build -o elogika2.exe
+
+      - name: Create .env file
+        run: |
+          echo "VITE_API_URL=http://elogika.vsb.cz:9001" > frontend/.env
+
+      - name: Cache pnpm store
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-
+
+      # Frontend build
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      # Upload artifacts
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: elogika2-build
+          path: |
+            backend/elogika2.exe
+            backend/docs
+            frontend/build

@@ -1,0 +1,47 @@
+<script lang="ts">
+	import { page } from '$app/state';
+	import type { QuestionCheckedByDTO } from '$lib/api_types';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import GlobalState from '$lib/shared.svelte';
+	import { m } from '$lib/paraglide/messages';
+
+	let {
+		id,
+		checkedBy,
+		meta
+	}: {
+		id: number | string;
+		checkedBy: QuestionCheckedByDTO[];
+		meta: any;
+	} = $props();
+
+	function handleActionClick(event: string, params?: any) {
+		if ('clickEventHandler' in meta) {
+			meta.clickEventHandler(event, id, params);
+		}
+	}
+</script>
+
+<div class="flex justify-between">
+	<Button variant="ghost" class="relative" href="/app/{page.params.courseId}/tutor/questions/{id}">
+		<span>{m.edit()}</span>
+	</Button>
+
+	{#if checkedBy.find((usr) => usr.id == GlobalState.loggedUser?.id)}
+		<Button variant="ghost" onclick={() => handleActionClick('uncheck')}
+			>{m.question_check_action_uncheck_list()}</Button
+		>
+	{:else}
+		<Button variant="ghost" onclick={() => handleActionClick('check')}>
+			{m.question_check_action_check_list()}
+		</Button>
+	{/if}
+
+	<Button variant="ghost" class="relative" onclick={() => handleActionClick('print')}>
+		<span>{m.print()}</span>
+	</Button>
+
+	<Button variant="destructive" class="relative" onclick={() => handleActionClick('delete')}>
+		<span>{m.delete()}</span>
+	</Button>
+</div>
