@@ -75,24 +75,23 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm build
 
-      # Upload artifacts
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: elogika2-build
-          path: |
-            backend/elogika2.exe
-            backend/docs
-            frontend/build
-
-      # If release is set, push also to release page
-
       - name: Package artifacts
         run: |
           zip -r elogika2-server-${{ github.ref_name }}.zip backend/elogika2.exe
           zip -r elogika2-front-${{ github.ref_name }}.zip frontend/build
           zip -r elogika2-docs-${{ github.ref_name }}.zip backend/docs
 
+      # Upload artifacts
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: elogika2-build
+          path: |
+            elogika2-server-${{ github.ref_name }}.zip
+            elogika2-front-${{ github.ref_name }}.zip
+            elogika2-docs-${{ github.ref_name }}.zip
+
+      # If release is set, push also to release page
       - name: Create GitHub Release
         if: ${{ inputs.release }}
         uses: softprops/action-gh-release@v2
