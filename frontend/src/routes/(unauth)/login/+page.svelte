@@ -11,12 +11,11 @@
 	import { LoginRequestSchema } from '$lib/schemas';
 	import type { LoginRequest } from '$lib/api_types';
 
-
 	const defaultFormData: LoginRequest = {
-		email: "",
-		password: "",
-	}
-	let form = Form.createForm(LoginRequestSchema, defaultFormData)
+		email: '',
+		password: ''
+	};
+	let form = $state(Form.createForm(LoginRequestSchema, defaultFormData));
 
 	async function handleSubmit(): Promise<any> {
 		return API.login(form.fields)
@@ -34,35 +33,28 @@
 
 	async function handleSubmitSSO(provider: string) {
 		await API.request(`/api/v2/auth/login/sso`, {
-			method: "POST",
+			method: 'POST',
 			body: {
 				provider
 			}
 		})
 			.then((res) => {
 				if (res.redirectUrl) {
-					window.location = res.redirectUrl
+					window.location = res.redirectUrl;
 				}
 			})
 			.catch(() => {
 				toast.error('Fatal error during login');
 			});
 	}
+
+	let emailLoginOpen = $state(false);
 </script>
 
-{#snippet loginButtons()}
-	<div class="flex flex-col w-full gap-4">
-		<Form.Button text="Login" textSubmiting="Logging in" isSubmitting={form.isSubmitting}
-		></Form.Button>
+{#snippet loginButtons()}{/snippet}
 
-		<Button variant="outline" class="w-full" onclick={() => {
-			handleSubmitSSO("VSB-CAS")
-		}}>{m.login_button_sso()}</Button>
-	</div>
-{/snippet}
-
-<div class="flex items-center justify-center w-full h-screen px-4">
-	<Card.Root class="w-full max-w-sm mx-auto">
+<div class="flex items-center justify-center w-full px-4 mt-10 md:mt-0 md:h-screen">
+	<Card.Root class="w-full max-w-md mx-auto">
 		<Card.Header>
 			<Card.Title class="flex text-2xl">
 				<img src={Logo} alt="eLogika logo" class="h-8 me-3" />
@@ -81,28 +73,47 @@
 				additionalButtons={loginButtons}
 				hideDefaultbutton={true}
 			>
+				<Button
+					class="w-full"
+					onclick={() => {
+						handleSubmitSSO('VSB-CAS');
+					}}>{m.login_button_sso()}</Button
+				>
+				<hr class="my-2" />
 				<div class="grid gap-4">
-					<Form.TextInput
-						title={m.user_email()}
-						name="email"
-						id="email"
-						type="email"
-						placeholder="login@vsb.cz"
-						required={!form.schema.shape.email.isOptional() &&
-							!form.schema.shape.email.isNullable()}
-						bind:value={form.fields.email}
-						error={form.errors.email}
-					></Form.TextInput>
-					<Form.TextInput
-						title={m.user_password()}
-						name="password"
-						id="password"
-						type="password"
-						required={!form.schema.shape.password.isOptional() &&
-							!form.schema.shape.password.isNullable()}
-						bind:value={form.fields.password}
-						error={form.errors.password}
-					></Form.TextInput>
+					{#if !emailLoginOpen}
+						<Button variant="outline" onclick={() => (emailLoginOpen = !emailLoginOpen)}
+							>Přihlásit emailem a heslem</Button
+						>
+					{:else}
+						<Form.TextInput
+							title={m.user_email()}
+							name="email"
+							id="email"
+							type="email"
+							placeholder="login@vsb.cz"
+							required={!form.schema.shape.email.isOptional() &&
+								!form.schema.shape.email.isNullable()}
+							bind:value={form.fields.email}
+							error={form.errors.email}
+						></Form.TextInput>
+						<Form.TextInput
+							title={m.user_password()}
+							name="password"
+							id="password"
+							type="password"
+							required={!form.schema.shape.password.isOptional() &&
+								!form.schema.shape.password.isNullable()}
+							bind:value={form.fields.password}
+							error={form.errors.password}
+						></Form.TextInput>
+						<Form.Button
+							variant="outline"
+							text="Login"
+							textSubmiting="Logging in"
+							isSubmitting={form.isSubmitting}
+						></Form.Button>
+					{/if}
 				</div>
 			</Form.Root>
 		</Card.Content>
