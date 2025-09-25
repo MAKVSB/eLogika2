@@ -13,6 +13,7 @@
 	import GlobalState from '$lib/shared.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import Pageloader from '$lib/components/ui/loader/pageloader.svelte';
+	import { base } from '$app/paths';
 
 	let loading: boolean = $state(true);
 	let rowItems: ClassListItemDTO[] = $state([]);
@@ -74,7 +75,7 @@
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Class management</h1>
 		{#if GlobalState.activeRole && [CourseUserRoleEnum.ADMIN, CourseUserRoleEnum.GARANT].includes(GlobalState.activeRole)}
-			<Button href="/app/{page.params.courseId}/tutor/classes/0">{m.class_add()}</Button>
+			<Button href="{base}/app/{page.params.courseId}/tutor/classes/0">{m.class_add()}</Button>
 		{/if}
 	</div>
 	{#if loading}

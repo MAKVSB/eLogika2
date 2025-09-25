@@ -8,6 +8,7 @@
 	import GalleryVerticalEndIcon from '@lucide/svelte/icons/gallery-vertical-end';
 	import AudioWaveformIcon from '@lucide/svelte/icons/audio-waveform';
 	import GlobalState from '$lib/shared.svelte';
+	import { base } from '$app/paths';
 
 	let menuTree: (SidebarCategory | SidebarFlex)[] = $derived.by(() => {
 		return [
@@ -17,12 +18,12 @@
 				items: [
 					{
 						title: m.menu_administrator_courses(),
-						url: `/app/admin/courses`,
+						url: base+`/app/admin/courses`,
 						icon: GalleryVerticalEndIcon
 					},
 					{
 						title: m.menu_administrator_users(),
-						url: `/app/admin/users`,
+						url: base+`/app/admin/users`,
 						icon: UsersIcon
 					}
 				],
@@ -34,42 +35,42 @@
 				items: [
 					{
 						title: m.menu_tutor_course(),
-						url: `/app/${GlobalState.activeCourse?.id}/tutor/course`,
+						url: base+`/app/${GlobalState.activeCourse?.id}/tutor/course`,
 						icon: GalleryVerticalEndIcon
 					},
 					{
 						title: m.menu_tutor_classes(),
-						url: `/app/${GlobalState.activeCourse?.id}/tutor/classes`,
+						url: base+`/app/${GlobalState.activeCourse?.id}/tutor/classes`,
 						icon: UsersIcon
 					},
 					{
 						title: m.menu_tutor_users(),
-						url: `/app/${GlobalState.activeCourse?.id}/tutor/users`,
+						url: base+`/app/${GlobalState.activeCourse?.id}/tutor/users`,
 						icon: UsersIcon
 					},
 					{
 						title: m.menu_tutor_questions(),
-						url: `/app/${GlobalState.activeCourse?.id}/tutor/questions/`,
+						url: base+`/app/${GlobalState.activeCourse?.id}/tutor/questions/`,
 						icon: QuestionIcon
 					},
 					{
 						title: m.menu_tutor_categories(),
-						url: `/app/${GlobalState.activeCourse?.id}/tutor/categories/`,
+						url: base+`/app/${GlobalState.activeCourse?.id}/tutor/categories/`,
 						icon: QuestionIcon
 					},
 					{
 						title: m.menu_tutor_chapters(),
-						url: `/app/${GlobalState.activeCourse?.id}/tutor/chapters/${GlobalState.activeCourse?.chapterId}`,
+						url: base+`/app/${GlobalState.activeCourse?.id}/tutor/chapters/${GlobalState.activeCourse?.chapterId}`,
 						icon: AudioWaveformIcon //TODO
 					},
 					{
 						title: m.menu_tutor_templates(),
-						url: `/app/${GlobalState.activeCourse?.id}/tutor/templates`,
+						url: base+`/app/${GlobalState.activeCourse?.id}/tutor/templates`,
 						icon: AudioWaveformIcon //TODO
 					},
 					// {
 					// 	title: m.menu_tutor_consultation(),
-					// 	url: `/app/${GlobalState.activeCourse?.id}/tutor/consultation`,
+					// 	url: base+`/app/${GlobalState.activeCourse?.id}/tutor/consultation`,
 					// 	icon: CalendarIcon
 					// }
 				],
@@ -85,32 +86,32 @@
 				items: [
 					{
 						title: m.menu_student_results(),
-						url: `/app/${GlobalState.activeCourse?.id}/student/results`,
+						url: base+`/app/${GlobalState.activeCourse?.id}/student/results`,
 						icon: NotebookPenIcon //TODO
 					},
 					{
 						title: m.menu_student_materials(),
-						url: `/app/${GlobalState.activeCourse?.id}/student/materials/${GlobalState.activeCourse?.chapterId}`,
+						url: base+`/app/${GlobalState.activeCourse?.id}/student/materials/${GlobalState.activeCourse?.chapterId}`,
 						icon: AudioWaveformIcon //TODO
 					},
 					{
 						title: m.menu_student_terms(),
-						url: `/app/${GlobalState.activeCourse?.id}/student/terms`,
+						url: base+`/app/${GlobalState.activeCourse?.id}/student/terms`,
 						icon: CalendarIcon //TODO
 					},
 					{
 						title: m.menu_student_tests(),
-						url: `/app/${GlobalState.activeCourse?.id}/student/tests`,
+						url: base+`/app/${GlobalState.activeCourse?.id}/student/tests`,
 						icon: PenLineIcon //TODO
 					},
 					{
 						title: m.menu_student_homeworks(),
-						url: `/app/${GlobalState.activeCourse?.id}/student/activities`,
+						url: base+`/app/${GlobalState.activeCourse?.id}/student/activities`,
 						icon: PenLineIcon //TODO
 					},
 					// {
 					// 	title: m.menu_student_consultation(),
-					// 	url: `/app/${GlobalState.activeCourse?.id}/student/consultations`,
+					// 	url: base+`/app/${GlobalState.activeCourse?.id}/student/consultations`,
 					// 	icon: CalendarIcon
 					// }
 				],
@@ -125,7 +126,7 @@
 				items: [
 					{
 						title: m.menu_support(),
-						url: `/app/support`,
+						url: base+`/app/support`,
 						icon: LifeBuoyIcon
 					}
 				],

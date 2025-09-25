@@ -6,13 +6,14 @@
 	import { Toaster } from '$lib/components/ui/sonner';
 	import { ModeWatcher } from 'mode-watcher';
 	import { page } from '$app/state';
+	import { base } from '$app/paths';
 
 	let { children } = $props();
 
 	$effect(() => {
 		if (GlobalState.loggedUser === null && !page.url.pathname.startsWith("/login")) {
 			console.log("Transfering 12")
-			goto('/login');
+			goto(base+'/login');
 		}
 	});
 	// TODO: Opravdu tu nemůže být loading image ?

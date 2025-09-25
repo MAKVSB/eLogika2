@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { m } from '$lib/paraglide/messages.js';
+	import { base } from '$app/paths';
 
 	let {
 		id,
@@ -19,7 +20,7 @@
 </script>
 
 <div class="flex justify-between">
-	<Button variant="ghost" class="relative" href="/app/{page.params.courseId}/tutor/templates/{id}">
+	<Button variant="ghost" class="relative" href="{base}/app/{page.params.courseId}/tutor/templates/{id}">
 		<span>{m.edit()}</span>
 	</Button>
 

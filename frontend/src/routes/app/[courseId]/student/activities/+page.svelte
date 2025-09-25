@@ -15,6 +15,7 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { m } from '$lib/paraglide/messages';
 	import { goto, invalidate } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	let courseId = $derived<string>(page.params.courseId);
 	let isLoading = $state(true);
@@ -105,7 +106,7 @@
 									})}
 								</Table.Cell>
 								<Table.Cell>
-									<Button href="/app/{page.params.courseId}/student/activities/{item.id}"
+									<Button href="{base}/app/{page.params.courseId}/student/activities/{item.id}"
 										>Modify submission</Button
 									>
 								</Table.Cell>

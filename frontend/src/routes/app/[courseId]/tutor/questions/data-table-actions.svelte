@@ -4,6 +4,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import GlobalState from '$lib/shared.svelte';
 	import { m } from '$lib/paraglide/messages';
+	import { base } from '$app/paths';
 
 	let {
 		id,
@@ -23,7 +24,7 @@
 </script>
 
 <div class="flex justify-between">
-	<Button variant="ghost" class="relative" href="/app/{page.params.courseId}/tutor/questions/{id}">
+	<Button variant="ghost" class="relative" href="{base}/app/{page.params.courseId}/tutor/questions/{id}">
 		<span>{m.edit()}</span>
 	</Button>
 

@@ -3,6 +3,7 @@
 	import { CourseItemTypeEnum } from '$lib/api_types';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { m } from '$lib/paraglide/messages.js';
+	import { base } from '$app/paths';
 
 	let {
 		id,
@@ -25,17 +26,17 @@
 
 <div class="flex justify-between">
 	{#if editable}
-		<Button variant="ghost" class="relative" href="/app/{page.params.courseId}/tutor/course/{id}">
+		<Button variant="ghost" class="relative" href="{base}/app/{page.params.courseId}/tutor/course/{id}">
 			<span>{m.edit()}</span>
 		</Button>
 	{:else}
-		<Button variant="ghost" class="relative" href="/app/{page.params.courseId}/tutor/course/{id}">
+		<Button variant="ghost" class="relative" href="{base}/app/{page.params.courseId}/tutor/course/{id}">
 			<span>{m.view()}</span>
 		</Button>
 	{/if}
 
 	{#if editable}
-		<Button variant="ghost" class="relative" href="/app/{page.params.courseId}/tutor/course/{id}/results">
+		<Button variant="ghost" class="relative" href="{base}/app/{page.params.courseId}/tutor/course/{id}/results">
 			<span>Výsledky</span>
 		</Button>
 	{:else}
@@ -46,7 +47,7 @@
 		<Button
 			variant="ghost"
 			class="relative"
-			href="/app/{page.params.courseId}/tutor/course/{id}/tests"
+			href="{base}/app/{page.params.courseId}/tutor/course/{id}/tests"
 		>
 			<span>{m.courseitem_test_generated()}</span>
 		</Button>
@@ -54,7 +55,7 @@
 		<Button
 			variant="ghost"
 			class="relative"
-			href="/app/{page.params.courseId}/tutor/course/{id}/activities"
+			href="{base}/app/{page.params.courseId}/tutor/course/{id}/activities"
 		>
 			<span>{m.courseitem_activity_submissions()}</span>
 		</Button>

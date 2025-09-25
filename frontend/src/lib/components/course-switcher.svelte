@@ -11,6 +11,7 @@
 	import {} from '$app/stores';
 	import { goto } from '$app/navigation';
 	import GlobalState from '$lib/shared.svelte';
+	import { base } from '$app/paths';
 
 	let {
 		courses
@@ -49,19 +50,19 @@
 		match = currentPath.match(/^\/app\/(\d+)\/tutor\/questions(\/(\d+))?$/);
 		if (match) {
 			// Add logic to verify if questionId is valid for newCourseId
-			return `/app/${newCourse.id}/tutor/questions/`;
+			return base+`/app/${newCourse.id}/tutor/questions/`;
 		}
 		// Chapter management
 		match = currentPath.match(/^\/app\/(\d+)\/tutor\/chapters\/(\d+)$/);
 		if (match) {
 			// TODO Add logic to verify if questionId is valid for newCourseId
-			return `/app/${newCourse.id}/tutor/chapters/${newCourse.chapterId}`;
+			return base+`/app/${newCourse.id}/tutor/chapters/${newCourse.chapterId}`;
 		}
 
 		// TODO add whole menu here (or figure out a way to append it to menu item structure)
 
 		// Add more route matching logic here
-		return `/app/${newCourse.id}`;
+		return base+`/app/${newCourse.id}`;
 	}
 
 	function yearChange(year: number) {
@@ -73,7 +74,7 @@
 		let redirectTo = getRedirectPathOnCourseChange(page.url.pathname, coursesInYear[0]);
 		if (redirectTo) {
 			console.log('Transfering 8');
-			goto(redirectTo);
+			goto(base + redirectTo);
 		}
 	}
 
@@ -82,7 +83,7 @@
 		let redirectTo = getRedirectPathOnCourseChange(page.url.pathname, course);
 		if (redirectTo) {
 			console.log('Transfering 9');
-			goto(redirectTo);
+			goto(base + redirectTo);
 		}
 	}
 

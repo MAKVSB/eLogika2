@@ -9,6 +9,7 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { CategoryListItemDTO } from '$lib/api_types';
 	import { m } from '$lib/paraglide/messages';
+	import { base } from '$app/paths';
 
 	let loading: boolean = $state(true);
 	let rowItems: CategoryListItemDTO[] = $state([]);
@@ -38,7 +39,7 @@
 <div class="m-8">
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Categories management</h1>
-		<Button href="/app/{page.params.courseId}/tutor/categories/0">{m.category_add()}</Button>
+		<Button href="{base}/app/{page.params.courseId}/tutor/categories/0">{m.category_add()}</Button>
 	</div>
 	{#if !loading}
 		<DataTable data={rowItems} {columns} {filters} {initialState} {rowCount} queryParam='search'/>

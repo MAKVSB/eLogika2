@@ -13,6 +13,7 @@
 	import { m } from '$lib/paraglide/messages';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	let {
 		user = $bindable(undefined)
@@ -35,7 +36,7 @@
 			.then(() => {
 				GlobalState.loggedUser = null;
 				console.log("Transfering 10")
-				goto("/")
+				goto(base +"/")
 			})
 			.catch(() => {
 				toast.error(m.logout_error());

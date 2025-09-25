@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import GlobalState from '$lib/shared.svelte';
 	import { toast } from 'svelte-sonner';
+	import { base } from '$app/paths';
 
 	let { children } = $props();
 
@@ -16,7 +17,7 @@
 		}
 		toast.error('Missing permissions to access course');
 		console.log("Transfering 16")
-		goto('/app/');
+		goto(base+'/app/');
 		return false;
 	});
 </script>

@@ -2,13 +2,14 @@
 	import { goto } from '$app/navigation';
 	import Pageloader from '$lib/components/ui/loader/pageloader.svelte';
 	import GlobalState from '$lib/shared.svelte';
+	import { base } from '$app/paths';
 
 	let loaded = $state(false);
 
 	$effect(() => {
 		if (GlobalState.loggedUser?.courses[0]) {
 			console.log("Transfering 15")
-			goto("/app/" + GlobalState.loggedUser?.courses[0].id)
+			goto(base+"/app/" + GlobalState.loggedUser?.courses[0].id)
 		} else {
 			loaded = true;
 		}

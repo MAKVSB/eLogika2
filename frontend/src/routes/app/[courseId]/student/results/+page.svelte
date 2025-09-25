@@ -7,6 +7,7 @@
 	import { getLocale } from '$lib/paraglide/runtime';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { page } from '$app/state';
+	import { base } from '$app/paths';
 
 	let { data } = $props();
 </script>
@@ -124,7 +125,7 @@
 								{#if result.activityInstanceId}
 									<Button
 										variant="default"
-										href="/app/{page.params
+										href="{base}/app/{page.params
 											.courseId}/student/activities/{result.activityInstanceId}"
 									>
 										{m.view()}

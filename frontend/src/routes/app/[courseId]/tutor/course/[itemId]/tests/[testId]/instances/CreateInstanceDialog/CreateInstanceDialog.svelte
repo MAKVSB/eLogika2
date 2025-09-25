@@ -25,6 +25,7 @@
 	import { toast } from 'svelte-sonner';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { enumToOptions } from '$lib/utils';
+	import { base } from '$app/paths';
 
 	let {
 		openState = $bindable()
@@ -86,7 +87,7 @@
 						invalidateAll();
 						console.log("Transfering 28")
 						goto(
-							`/app/${page.params.courseId}/tutor/course/${page.params.itemId}/tests/${page.params.testId}/instances/${res.instanceId}`
+							base+`/app/${page.params.courseId}/tutor/course/${page.params.itemId}/tests/${page.params.testId}/instances/${res.instanceId}`
 						);
 					})
 					.catch(() => {});

@@ -15,6 +15,7 @@
 	import { page } from '$app/state';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { TermDTO, TermsListRequest, TermsListResponse } from '$lib/api_types';
+	import { base } from '$app/paths';
 
 	let loading: boolean = $state(true);
 	let data: TermDTO[] = $state([]);
@@ -112,7 +113,7 @@
 <div>
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Terms</h1>
-		<Button href="/app/{courseId}/tutor/course/{itemId}/0">Add term</Button>
+		<Button href="{base}/app/{courseId}/tutor/course/{itemId}/0">Add term</Button>
 	</div>
 	{#if !loading}
 		<DataTable {data} {columns} {filters} {refetch} {initialState} {rowCount} queryParam='search'/>

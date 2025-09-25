@@ -13,6 +13,7 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import { API, decodeBase64UrlToJson, encodeJsonToBase64Url } from '$lib/services/api.svelte';
 	import GlobalState from '$lib/shared.svelte';
+	import { base } from '$app/paths';
 	import type {
 		ColumnFiltersState,
 		InitialTableState,
@@ -156,18 +157,18 @@
 	<div class="flex-1"></div>
 	{#if canGroup}
 		<Button
-			href={`/app/${courseId}/tutor/course/0?studyForm=${mode}&type=${CourseItemTypeEnum.GROUP}${parentId ? `&parentId=${parentId}` : ''}`}
+			href={`${base}/app/${courseId}/tutor/course/0?studyForm=${mode}&type=${CourseItemTypeEnum.GROUP}${parentId ? `&parentId=${parentId}` : ''}`}
 		>
 			{m.course_add_group()}
 		</Button>
 	{/if}
 	<Button
-		href={`/app/${courseId}/tutor/course/0?studyForm=${mode}&type=${CourseItemTypeEnum.ACTIVITY}${parentId ? `&parentId=${parentId}` : ''}`}
+		href={`${base}/app/${courseId}/tutor/course/0?studyForm=${mode}&type=${CourseItemTypeEnum.ACTIVITY}${parentId ? `&parentId=${parentId}` : ''}`}
 	>
 		{m.course_add_activity()}
 	</Button>
 	<Button
-		href={`/app/${courseId}/tutor/course/0?studyForm=${mode}&type=${CourseItemTypeEnum.TEST}${parentId ? `&parentId=${parentId}` : ''}`}
+		href={`${base}/app/${courseId}/tutor/course/0?studyForm=${mode}&type=${CourseItemTypeEnum.TEST}${parentId ? `&parentId=${parentId}` : ''}`}
 	>
 		{m.course_add_test()}
 	</Button>

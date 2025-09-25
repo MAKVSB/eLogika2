@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { m } from '$lib/paraglide/messages.js';
+	import { base } from '$app/paths';
 
 	let {
 		id,
@@ -22,7 +23,7 @@
 	<Button
 		variant="ghost"
 		class="relative"
-		href="/app/{page.params.courseId}/tutor/course/{page.params.itemId}/tests/{id}/instances"
+		href="{base}/app/{page.params.courseId}/tutor/course/{page.params.itemId}/tests/{id}/instances"
 	>
 		<span>{m.test_participants()}</span>
 	</Button>

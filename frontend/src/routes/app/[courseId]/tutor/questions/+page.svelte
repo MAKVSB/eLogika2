@@ -15,6 +15,7 @@
 	import { toast } from 'svelte-sonner';
 	import { m } from '$lib/paraglide/messages';
 	import { invalidate, invalidateAll } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	let loading: boolean = $state(true);
 	let rowItems: QuestionListItemDTO[] = $state([]);
@@ -141,7 +142,7 @@
 <div class="flex flex-col gap-8 m-8">
 	<div class="flex flex-row justify-between">
 		<h1 class="text-2xl">Question management</h1>
-		<Button href="/app/{page.params.courseId}/tutor/questions/0">{m.quesstions_add()}</Button>
+		<Button href="{base}/app/{page.params.courseId}/tutor/questions/0">{m.quesstions_add()}</Button>
 	</div>
 	<div>
 		{#if !loading}

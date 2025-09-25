@@ -15,6 +15,7 @@
 	import { page } from '$app/state';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { CourseListItemDTO, CourseListRequest, CourseListResponse } from '$lib/api_types';
+	import { base } from '$app/paths';
 
 	let loading: boolean = $state(true);
 	let data: CourseListItemDTO[] = $state([]);
@@ -72,7 +73,7 @@
 <div class="m-8">
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Courses management</h1>
-		<Button href="/app/admin/courses/0">Add course</Button>
+		<Button href="{base}/app/admin/courses/0">Add course</Button>
 	</div>
 	{#if !loading}
 		<DataTable {data} {columns} {filters} {refetch} {initialState} {rowCount} queryParam='search'/>

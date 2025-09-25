@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { m } from '$lib/paraglide/messages.js';
+	import { base } from '$app/paths';
 
 	let {
 		id,
@@ -22,7 +23,7 @@
 	<Button
 		variant="ghost"
 		class="relative"
-		href="/app/{page.params.courseId}/tutor/course/{page.params.itemId}/{id}"
+		href="{base}/app/{page.params.courseId}/tutor/course/{page.params.itemId}/{id}"
 	>
 		<span>{m.edit()}</span>
 	</Button>
@@ -30,7 +31,7 @@
 	<Button
 		variant="ghost"
 		class="relative"
-		href="/app/{page.params.courseId}/tutor/course/{page.params.itemId}/{id}/students"
+		href="{base}/app/{page.params.courseId}/tutor/course/{page.params.itemId}/{id}/students"
 	>
 		<span>{m.term_signed_students()}</span>
 	</Button>

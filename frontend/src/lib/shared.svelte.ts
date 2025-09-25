@@ -3,6 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import { API } from '$lib/services/api.svelte';
 import { localStore } from './localstore.svelte';
 import { goto } from '$app/navigation';
+import { base } from '$app/paths';
 
 class GlobalState {
 	public reloadCounter = $state(0);
@@ -28,7 +29,7 @@ class GlobalState {
 		} else {
 			this.loggedUser = null;
 			console.log('Transfering 1');
-			goto('/login');
+			goto(base + '/login');
 		}
 	}
 
@@ -43,7 +44,7 @@ class GlobalState {
 			this.setCourse(val);
 		} else {
 			console.log('Transfering 2');
-			goto('/login');
+			goto(base + '/login');
 		}
 	}
 
@@ -60,7 +61,7 @@ class GlobalState {
 					this.activeRole = this.activeCourse?.roles[0] as CourseUserRoleEnum;
 				} else {
 					console.log('Transfering 3');
-					goto('/login');
+					goto(base + '/login');
 				}
 			} else {
 				if (!this.activeCourse?.roles.includes(this.activeRole)) {
@@ -68,13 +69,13 @@ class GlobalState {
 						this.activeRole = this.activeCourse?.roles[0] as CourseUserRoleEnum;
 					} else {
 						console.log('Transfering 4');
-						goto('/login');
+						goto(base + '/login');
 					}
 				}
 			}
 		} else {
 			console.log('Transfering 5');
-			goto('/login');
+			goto(base + '/login');
 		}
 	}
 
@@ -89,7 +90,7 @@ class GlobalState {
 			this.setCourse(this.loggedUser);
 		} else {
 			console.log('Transfering 6');
-			goto('/login');
+			goto(base + '/login');
 		}
 	}
 
@@ -102,9 +103,9 @@ class GlobalState {
 
 		console.log('Transfering 7');
 		if (this.activeCourse) {
-			goto('/app/' + this.activeCourse.id);
+			goto(base + '/app/' + this.activeCourse.id);
 		} else {
-			goto('/app/');
+			goto(base + '/app/');
 		}
 	}
 

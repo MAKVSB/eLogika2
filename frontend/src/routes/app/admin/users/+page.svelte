@@ -15,6 +15,7 @@
 	import { page } from '$app/state';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { UserListItemDTO, UserListRequest, UserListResponse } from '$lib/api_types';
+	import { base } from '$app/paths';
 
 	let loading: boolean = $state(true);
 	let data: UserListItemDTO[] = $state([]);
@@ -73,7 +74,7 @@
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Admin user management</h1>
 		<!-- TODO import users from edison-->
-		<Button href="/app/admin/users/0">Add user</Button>
+		<Button href="{base}/app/admin/users/0">Add user</Button>
 	</div>
 	{#if !loading}
 		<DataTable {data} {columns} {filters} {refetch} {initialState} {rowCount} queryParam='search'/>

@@ -23,6 +23,7 @@
 	import { toast } from 'svelte-sonner';
 	import type { CategoryListItemDTO, CategoryListResponse } from '$lib/api_types';
 	import { m } from '$lib/paraglide/messages';
+	import { base } from '$app/paths';
 
 	let loading: boolean = $state(true);
 	let data: CategoryListItemDTO[] = $state([]);
@@ -83,7 +84,7 @@
 
 <div class="flex flex-row justify-between">
 	<h1 class="mb-8 text-2xl">Categories</h1>
-	<Button href="/app/{page.params.courseId}/tutor/categories/0">{m.category_add()}</Button>
+	<Button href="{base}/app/{page.params.courseId}/tutor/categories/0">{m.category_add()}</Button>
 </div>
 {#if !loading}
 	<DataTable {data} {columns} {filters} {refetch} {initialState} {rowCount} queryParam='search'/>

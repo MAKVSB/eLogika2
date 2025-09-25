@@ -22,6 +22,7 @@
 	} from '$lib/api_types';
 	import CategoryList from './CategoryList/CategoryList.svelte';
 	import { ChapterInsertRequestSchema } from '$lib/schemas';
+	import { base } from '$app/paths';
 
 	let courseId = $derived<string | null>(page.params.courseId);
 	let { data } = $props();
@@ -138,7 +139,7 @@
 				>
 					{m.chapter_parent()}
 				</Button>
-				<Button href="/app/{courseId}/tutor/chapters/0?parentId={form.fields.id}"
+				<Button href="{base}/app/{courseId}/tutor/chapters/0?parentId={form.fields.id}"
 					>{m.chapter_subchapter_add()}</Button
 				>
 			</div>
