@@ -11,7 +11,7 @@
 	let { children } = $props();
 
 	$effect(() => {
-		if (GlobalState.loggedUser === null && !page.url.pathname.startsWith("/login")) {
+		if (GlobalState.loggedUser === null && !page.url.pathname.startsWith(base+"/login")) {
 			console.log("Transfering 12")
 			goto(base+'/login');
 		}
