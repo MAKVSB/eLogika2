@@ -89,7 +89,7 @@ func main() {
 	r.Use(gin.Logger())
 	r.Use(CustomRecovery())
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8000", "http://192.168.188.191:5173"},
+		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8000", "https://elogika.vsb.cz", "http://elogika.vsb.cz"},
 		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "x-AS-ROLE"},
 		ExposeHeaders:    []string{"Content-Length"},
