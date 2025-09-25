@@ -49,7 +49,6 @@ class Api {
 
 			return true;
 		} catch (err) {
-			console.error(err);
 			GlobalState.accessToken = null;
 			GlobalState.loggedUser = null;
 			return false;
@@ -113,8 +112,6 @@ class Api {
 			keepalive: options.keepalive
 		};
 
-		console.log(config);
-
 		let res = await f(fetchUrl, config);
 
 		if (res.status === 401 && options.retry !== false) {
@@ -140,7 +137,7 @@ class Api {
 		if (contentType && contentType.includes('application/json')) {
 			return res.json() as unknown as U;
 		}
-		console.log(contentType);
+
 		if (contentType.startsWith('image/') || contentType.includes('application/')) {
 			return (await res.blob()) as unknown as U;
 		}
