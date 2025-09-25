@@ -58,7 +58,7 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "VITE_API_URL=http://elogika.vsb.cz:9001" > frontend/.env
+          echo "VITE_API_URL=https://elogika.vsb.cz:9001" > frontend/.env
 
       - name: Cache pnpm store
         uses: actions/cache@v3
