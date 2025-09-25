@@ -20,7 +20,6 @@
 		<Table.Head>{m.course_item_mandatory()}</Table.Head>
 		<Table.Head>{m.course_item_passed()}</Table.Head>
 		<Table.Head>{m.course_item_tries()}</Table.Head>
-		<!-- TODO tohle musím přejmenovat/předělat-->
 	</Table.Row>
 {/snippet}
 

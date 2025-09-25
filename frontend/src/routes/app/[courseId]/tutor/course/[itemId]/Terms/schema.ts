@@ -5,7 +5,7 @@ import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 import { type TermDTO } from '$lib/api_types';
 import { type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
-import DataTableDateRange from './data-table-date-range.svelte';
+import DateRange from '$lib/components/date-range.svelte';
 
 export const filters: Filter[] = [];
 
@@ -43,7 +43,7 @@ export const columns: (ColumnDef<TermDTO> & { uniqueId?: string })[] = [
 		accessorKey: 'activeFrom',
 		header: m.term_active(),
 		cell: ({ row }) => {
-			return renderComponent(DataTableDateRange, {
+			return renderComponent(DateRange, {
 				start: row.original.activeFrom,
 				end: row.original.activeTo
 			});
@@ -53,7 +53,7 @@ export const columns: (ColumnDef<TermDTO> & { uniqueId?: string })[] = [
 		accessorKey: 'signInFrom',
 		header: m.term_signin(),
 		cell: ({ row }) => {
-			return renderComponent(DataTableDateRange, {
+			return renderComponent(DateRange, {
 				start: row.original.signInFrom,
 				end: row.original.signInTo
 			});
@@ -63,7 +63,7 @@ export const columns: (ColumnDef<TermDTO> & { uniqueId?: string })[] = [
 		accessorKey: 'signOutFrom',
 		header: m.term_signout(),
 		cell: ({ row }) => {
-			return renderComponent(DataTableDateRange, {
+			return renderComponent(DateRange, {
 				start: row.original.signOutFrom,
 				end: row.original.signOutTo
 			});

@@ -20,8 +20,6 @@
 			{#if chapter.data.childs}
 				<h1 class="text-2xl">Sub-chapters</h1>
 				<ul>
-					<!-- TODO do not send categories from backend -->
-					<!-- TODO on backend hide items where visible = false -->
 					{#each chapter.data.childs as subchapter}
 						<li>
 							<a href={String(subchapter.id)}>{subchapter.name}</a>

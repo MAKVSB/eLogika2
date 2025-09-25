@@ -92,9 +92,6 @@ class Api {
 			f = fetchFunc;
 		}
 
-		console.log(options);
-		console.log(JSON.stringify(options.body));
-
 		const fetchUrl = new URL(url, this.baseUrl);
 		fetchUrl.search = new URLSearchParams(options.searchParams).toString();
 

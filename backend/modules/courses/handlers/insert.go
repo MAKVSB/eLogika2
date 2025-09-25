@@ -96,7 +96,7 @@ func CourseInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enum
 	chapter := &models.Chapter{
 		ID:       0,
 		Version:  1,
-		CourseID: 0,
+		CourseID: course.ID,
 		Name:     reqData.Name,
 		Content:  reqData.Content,
 		Visible:  false,
@@ -108,6 +108,16 @@ func CourseInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enum
 		return &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to insert chapter",
+		}
+	}
+
+	// Link back the chapter ID
+	course.ChapterID = &chapter.ID
+	if err := transaction.Save(&course).Error; err != nil {
+		transaction.Rollback()
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to insert course",
 		}
 	}
 

@@ -6,7 +6,7 @@
 	import Pageloader from '$lib/components/ui/loader/pageloader.svelte';
 
 	import * as Table from '$lib/components/ui/table/index.js';
-	import DataTableDateRange from '../../../admin/courses/[courseId]/[itemId]/Terms/data-table-date-range.svelte';
+	import DateRange from '$lib/components/date-range.svelte';
 	import type { StudentTermDTO, StudentTermsListResponse, TermsJoinResponse } from '$lib/api_types';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { m } from '$lib/paraglide/messages';
@@ -141,28 +141,26 @@
 					{@render TableHeader()}
 				</Table.Header>
 				<Table.Body>
-					<!-- TODO show inactive switch -->
-					{@const filtered = lastData.items.filter((i) => true)}
-					{#if filtered.length === 0}
+					{#if lastData.items.length === 0}
 						<Table.Row>
 							<Table.Cell colspan={7}>No items found</Table.Cell>
 						</Table.Row>
 					{:else}
-						{#each filtered as item}
+						{#each lastData.items as item}
 							<Table.Row class={getItemClass(item)}>
 								<Table.Cell>{item.name}</Table.Cell>
 								<Table.Cell>{item.courseItemName}</Table.Cell>
 								<Table.Cell>
-									<DataTableDateRange start={item.activeFrom} end={item.activeTo} showTime={true}
-									></DataTableDateRange>
+									<DateRange start={item.activeFrom} end={item.activeTo} showTime={true}
+									></DateRange>
 								</Table.Cell>
 								<Table.Cell>
-									<DataTableDateRange start={item.signInFrom} end={item.signInTo} showTime={true}
-									></DataTableDateRange>
+									<DateRange start={item.signInFrom} end={item.signInTo} showTime={true}
+									></DateRange>
 								</Table.Cell>
 								<Table.Cell>
-									<DataTableDateRange start={item.signOutFrom} end={item.signOutTo} showTime={true}
-									></DataTableDateRange>
+									<DateRange start={item.signOutFrom} end={item.signOutTo} showTime={true}
+									></DateRange>
 								</Table.Cell>
 								<Table.Cell>{item.classroom}</Table.Cell>
 								<Table.Cell>

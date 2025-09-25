@@ -8,6 +8,7 @@ import (
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/modules/print/helpers"
+	services_course_item "elogika.vsb.cz/backend/services/courseItem"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -54,39 +55,12 @@ func PrintTest(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.C
 	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
 		return err
 	}
-	var courseItem *models.CourseItem
+
 	// Check if tutor/garant can view/modify courseItem
-	if userRole == enums.CourseUserRoleAdmin {
-		if err := initializers.DB.
-			Find(&courseItem, reqData.CourseItemID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    403,
-				Message: "Not enough permission for this item",
-			}
-		}
-	} else if userRole == enums.CourseUserRoleGarant {
-		if err := initializers.DB.
-			Where("managed_by = ?", enums.CourseUserRoleGarant).
-			Find(&courseItem, reqData.CourseItemID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    403,
-				Message: "Not enough permission for this item",
-			}
-		}
-	} else if userRole == enums.CourseUserRoleTutor {
-		if err := initializers.DB.
-			Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userData.ID).
-			Find(&courseItem, reqData.CourseItemID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    403,
-				Message: "Not enough permission for this item",
-			}
-		}
-	} else {
-		return &common.ErrorResponse{
-			Code:    403,
-			Message: "Not enough permissions",
-		}
+	courseItemService := services_course_item.CourseItemService{}
+	courseItem, err := courseItemService.GetCourseItemByID(initializers.DB, params.CourseID, reqData.CourseItemID, userData.ID, userRole, nil, true, nil)
+	if err != nil {
+		return err
 	}
 
 	var printData []*models.Test

@@ -3,6 +3,7 @@ package repositories
 import (
 	"strconv"
 
+	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
@@ -25,9 +26,7 @@ func (r *QuestionRepository) GetQuestionByID(
 	version *uint,
 ) (*models.Question, *common.ErrorResponse) {
 	query := dbRef.
-		InnerJoins("CourseLink", func(db *gorm.DB) *gorm.DB {
-			return db.Where("course_id = ?", courseID)
-		})
+		InnerJoins("CourseLink", initializers.DB.Where("CourseLink.course_id = ?", courseID))
 
 	if filters != nil {
 		query = (*filters)(query)
@@ -188,9 +187,7 @@ func (r *QuestionRepository) ListQuestions(
 ) ([]*models.Question, int64, *common.ErrorResponse) {
 	query := dbRef.
 		Model(&models.Question{}).
-		InnerJoins("CourseLink", func(db *gorm.DB) *gorm.DB {
-			return db.Where("course_id = ?", courseID)
-		}).
+		InnerJoins("CourseLink", initializers.DB.Where("CourseLink.course_id = ?", courseID)).
 		InnerJoins("CreatedBy").
 		Preload("CheckedBy").
 		Preload("CheckedBy.User")

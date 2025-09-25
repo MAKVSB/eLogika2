@@ -21,6 +21,7 @@
 		name: string;
 		items: SidebarCategoryItem[];
 		requiredRoles?: string[];
+		noCourse?: boolean;
 	}
 </script>
 
@@ -29,15 +30,29 @@
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import GlobalState from '$lib/shared.svelte';
 
-	let { name, items, requiredRoles }: SidebarCategory = $props();
+	let { name, items, requiredRoles, noCourse }: SidebarCategory = $props();
+
+	const canShow = (requiredRoles?: string[]): boolean => {
+		if (!requiredRoles || requiredRoles?.length == 0) {
+			return true;
+		}
+
+		if (!GlobalState.activeRole) {
+			return false;
+		}
+		if (GlobalState.activeCourse || noCourse) {
+			return requiredRoles?.includes(GlobalState.activeRole) ? true : false;
+		}
+		return false;
+	};
 </script>
 
-{#if !requiredRoles || requiredRoles?.length == 0 || (GlobalState.activeCourse && requiredRoles?.includes(GlobalState.activeRole ?? "ERR"))}
+{#if canShow(requiredRoles)}
 	<Sidebar.Group>
 		<Sidebar.GroupLabel>{name}</Sidebar.GroupLabel>
 		<Sidebar.Menu>
 			{#each items as item (item.title)}
-				{#if !item.requiredRoles || item.requiredRoles?.length == 0 || (GlobalState.activeCourse && item.requiredRoles?.includes(GlobalState.activeRole ?? "ERR"))}
+				{#if canShow(item.requiredRoles)}
 					<Sidebar.MenuItem>
 						<Sidebar.MenuButton>
 							{#snippet child({ props })}

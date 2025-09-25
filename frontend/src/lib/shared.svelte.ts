@@ -1,4 +1,9 @@
-import { CourseUserRoleEnum, type LoggedUserCourseDTO2, type LoggedUserDTO } from './api_types';
+import {
+	CourseUserRoleEnum,
+	UserTypeEnum,
+	type LoggedUserCourseDTO2,
+	type LoggedUserDTO
+} from './api_types';
 import { jwtDecode } from 'jwt-decode';
 import { API } from '$lib/services/api.svelte';
 import { localStore } from './localstore.svelte';
@@ -61,7 +66,7 @@ class GlobalState {
 					this.activeRole = this.activeCourse?.roles[0] as CourseUserRoleEnum;
 				} else {
 					console.log('Transfering 3');
-					goto(base + '/login');
+					goto(base + '/app/');
 				}
 			} else {
 				if (!this.activeCourse?.roles.includes(this.activeRole)) {
@@ -69,13 +74,13 @@ class GlobalState {
 						this.activeRole = this.activeCourse?.roles[0] as CourseUserRoleEnum;
 					} else {
 						console.log('Transfering 4');
-						goto(base + '/login');
+						goto(base + '/app/');
 					}
 				}
 			}
 		} else {
 			console.log('Transfering 5');
-			goto(base + '/login');
+			goto(base + '/app/');
 		}
 	}
 
@@ -96,6 +101,13 @@ class GlobalState {
 
 	private _activeRole = localStore<CourseUserRoleEnum | undefined>('active_role', undefined);
 	get activeRole() {
+		if (this._activeRole.value) {
+			return this._activeRole.value;
+		} else {
+			if (this.loggedUser?.type == UserTypeEnum.ADMIN) {
+				return CourseUserRoleEnum.ADMIN;
+			}
+		}
 		return this._activeRole.value;
 	}
 	set activeRole(val) {

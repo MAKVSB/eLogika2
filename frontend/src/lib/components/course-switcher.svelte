@@ -83,7 +83,7 @@
 		let redirectTo = getRedirectPathOnCourseChange(page.url.pathname, course);
 		if (redirectTo) {
 			console.log('Transfering 9');
-			goto(base + redirectTo);
+			goto(redirectTo);
 		}
 	}
 

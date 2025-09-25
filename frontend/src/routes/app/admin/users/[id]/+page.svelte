@@ -283,8 +283,6 @@
 						</div>
 					</div>
 				</div>
-
-				<!-- TODO add course selection (adding/removing)-->
 			</div>
 		</Form.Root>
 	{/await}

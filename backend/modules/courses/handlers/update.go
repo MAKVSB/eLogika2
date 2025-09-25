@@ -21,7 +21,7 @@ type CourseUpdateRequest struct {
 	Name          string                     `json:"name" binding:"required"`                          // Name of the course
 	Content       json.RawMessage            `json:"content" binding:"required" ts_type:"JSONContent"` // Course text in json (Using TipTap editor format)
 	Shortname     string                     `json:"shortname" binding:"required"`                     // Short name fort course
-	Public        bool                       `json:"public" binding:"required"`                        // Can any user join ?
+	Public        bool                       `json:"public"`                                           // Can any user join ?
 	Year          uint                       `json:"year" binding:"required"`                          // Start year of academic year
 	Semester      enums.SemesterEnum         `json:"semester" binding:"required"`                      // Semester of the above year
 	ImportOptions models.CourseImportOptions `json:"importOptions" binding:"required"`

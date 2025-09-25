@@ -27,7 +27,8 @@
 						icon: UsersIcon
 					}
 				],
-				requiredRoles: [CourseUserRoleEnum.ADMIN]
+				requiredRoles: [CourseUserRoleEnum.ADMIN],
+				noCourse: true
 			},
 			{
 				name: m.menu_tutor(),

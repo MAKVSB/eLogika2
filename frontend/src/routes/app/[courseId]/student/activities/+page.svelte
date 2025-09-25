@@ -5,7 +5,7 @@
 	import Pageloader from '$lib/components/ui/loader/pageloader.svelte';
 
 	import * as Table from '$lib/components/ui/table/index.js';
-	import DataTableDateRange from '../../../admin/courses/[courseId]/[itemId]/Terms/data-table-date-range.svelte';
+	import DateRange from '$lib/components/date-range.svelte';
 	import {
 		type ListAvailableActivitiesResponse,
 		type StudentTestDTO,
@@ -141,8 +141,8 @@
 								<Table.Cell>{item.courseItemName}</Table.Cell>
 								<Table.Cell>{item.triesLeft}</Table.Cell>
 								<Table.Cell>
-									<DataTableDateRange start={item.activeFrom} end={item.activeTo} showTime={true}
-									></DataTableDateRange>
+									<DateRange start={item.activeFrom} end={item.activeTo} showTime={true}
+									></DateRange>
 								</Table.Cell>
 								<Table.Cell>
 									<Button disabled={!item.canStart} onclick={() => startInstance(item)}>
