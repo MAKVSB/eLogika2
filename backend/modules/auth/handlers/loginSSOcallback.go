@@ -49,8 +49,8 @@ func SSOLoginCallback(c *gin.Context) {
 		return
 	}
 
-	if reqData.SSOProvider == "VSB-CAS" {
-		// request from VSB-CAS
+	if reqData.SSOProvider == "VSBCAS" {
+		// request from VSBCAS
 		casUrl, err := url.Parse("https://www.sso.vsb.cz/")
 		if err != nil {
 			panic("Failed to parse VSB-SSO url")
@@ -134,7 +134,7 @@ func SSOLoginCallback(c *gin.Context) {
 	} else {
 		errr := &common.ErrorResponse{
 			Code:    500,
-			Message: "Implemented providers are: \"VSB-CAS\"",
+			Message: "Implemented providers are: \"VSBCAS\"",
 		}
 		c.AbortWithStatusJSON(errr.Code, errr)
 		return

@@ -74,10 +74,11 @@ func (r *ClassRepository) GetClassByIDAdmin(
 	courseID uint,
 	classID uint,
 	userID uint,
+	filters *(func(*gorm.DB) *gorm.DB),
 	full bool,
 	version *uint,
 ) (*models.Class, *common.ErrorResponse) {
-	return r.GetClassByID(dbRef, courseID, classID, userID, nil, full, version)
+	return r.GetClassByID(dbRef, courseID, classID, userID, filters, full, version)
 }
 
 func (r *ClassRepository) GetClassByIDGarant(
@@ -85,10 +86,11 @@ func (r *ClassRepository) GetClassByIDGarant(
 	courseID uint,
 	classID uint,
 	userID uint,
+	filters *(func(*gorm.DB) *gorm.DB),
 	full bool,
 	version *uint,
 ) (*models.Class, *common.ErrorResponse) {
-	return r.GetClassByID(dbRef, courseID, classID, userID, nil, full, version)
+	return r.GetClassByID(dbRef, courseID, classID, userID, filters, full, version)
 }
 
 func (r *ClassRepository) GetClassByIDTutor(
@@ -96,6 +98,7 @@ func (r *ClassRepository) GetClassByIDTutor(
 	courseID uint,
 	classID uint,
 	userID uint,
+	filters *(func(*gorm.DB) *gorm.DB),
 	full bool,
 	version *uint,
 ) (*models.Class, *common.ErrorResponse) {
@@ -110,6 +113,10 @@ func (r *ClassRepository) GetClassByIDTutor(
 			Preload("Students.User").
 			Preload("Tutors").
 			Preload("Tutors.User")
+	}
+
+	if filters != nil {
+		query = (*filters)(query)
 	}
 
 	var class *models.Class

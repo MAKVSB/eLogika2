@@ -113,7 +113,9 @@
 <div>
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Terms</h1>
-		<Button href="{base}/app/{courseId}/tutor/course/{itemId}/0">Add term</Button>
+		<div class="flex gap-2">
+			<Button href="{base}/app/{courseId}/tutor/course/{itemId}/0">Add term</Button>
+		</div>
 	</div>
 	{#if !loading}
 		<DataTable {data} {columns} {filters} {refetch} {initialState} {rowCount} queryParam='search'/>

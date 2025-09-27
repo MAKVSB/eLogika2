@@ -1,18 +1,15 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
 	import DataTable from '$lib/components/ui/data-table/data-table-component.svelte';
 	import { columns, filters } from './schema';
-	import { API, ApiError, decodeBase64UrlToJson } from '$lib/services/api.svelte';
+	import { API } from '$lib/services/api.svelte';
 	import type { ClassImportStudentsResponse, ClassUserDTO, RemoveStudentRequest, RemoveStudentResponse } from '$lib/api_types';
 	import { type InitialTableState } from '@tanstack/table-core';
 	import { page } from '$app/state';
 	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
-	import { toast } from 'svelte-sonner';
-	import { number } from 'zod/v4';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import UserAddDialog from '../UserAddDialog/UserAddDialog.svelte';
 	import { m } from '$lib/paraglide/messages';
+	import { invalidate } from '$app/navigation';
 
 	let loading: boolean = $state(true);
 	let rowItems: ClassUserDTO[] = $state([]);
@@ -66,8 +63,9 @@
 			}
 		)
 			.then((res) => {
-				rowItems = res.students;
-				rowCount = res.students.length;
+				invalidate((url) => {
+					return url.href.endsWith(`/api/v2/courses/${page.params.courseId}/classes/${page.params.classId}/students`);
+				});
 			})
 			.catch(() => {});
 
@@ -78,7 +76,7 @@
 <div class="m-8">
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Class students</h1>
-		<div>
+		<div class="flex gap-2">
 			<Button variant="outline" onclick={() => importStudents()}>Import students</Button>
 			<Dialog.Root bind:open={dialogOpen}>
 				<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>{m.class_student_add()}</Dialog.Trigger>

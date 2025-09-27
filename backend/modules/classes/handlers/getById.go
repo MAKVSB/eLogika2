@@ -3,12 +3,12 @@ package handlers
 import (
 	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
-	"elogika.vsb.cz/backend/models"
 	authdtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	"elogika.vsb.cz/backend/modules/classes/dtos"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/repositories"
+	"elogika.vsb.cz/backend/services"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -48,21 +48,8 @@ func ClassGetByID(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enum
 		return err
 	}
 
-	classRepo := repositories.NewClassRepository()
-	var class *models.Class
-	// If not admin, garant or tutor
-	if userRole == enums.CourseUserRoleAdmin {
-		class, err = classRepo.GetClassByIDAdmin(initializers.DB, params.CourseID, params.ClassID, userData.ID, true, nil)
-	} else if userRole == enums.CourseUserRoleGarant {
-		class, err = classRepo.GetClassByIDGarant(initializers.DB, params.CourseID, params.ClassID, userData.ID, true, nil)
-	} else if userRole == enums.CourseUserRoleTutor {
-		class, err = classRepo.GetClassByIDTutor(initializers.DB, params.CourseID, params.ClassID, userData.ID, true, nil)
-	} else {
-		return &common.ErrorResponse{
-			Code:    403,
-			Message: "Not enough permissions",
-		}
-	}
+	classService := services.NewClassService(repositories.NewClassRepository())
+	class, err := classService.GetClassByID(initializers.DB, params.CourseID, params.ClassID, userData.ID, userRole, nil, false, nil)
 	if err != nil {
 		return err
 	}

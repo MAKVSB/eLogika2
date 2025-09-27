@@ -39,7 +39,9 @@
 <div class="m-8">
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Categories management</h1>
-		<Button href="{base}/app/{page.params.courseId}/tutor/categories/0">{m.category_add()}</Button>
+		<div class="flex gap-2">
+			<Button href="{base}/app/{page.params.courseId}/tutor/categories/0">{m.category_add()}</Button>
+		</div>
 	</div>
 	{#if !loading}
 		<DataTable data={rowItems} {columns} {filters} {initialState} {rowCount} queryParam='search'/>

@@ -83,9 +83,9 @@ func CustomRecovery() gin.HandlerFunc {
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
-	// if initializers.GlobalAppConfig.GIN_RELEASE_MODE {
-	// 	gin.SetMode(gin.ReleaseMode)
-	// }
+	if initializers.GlobalAppConfig.GIN_RELEASE_MODE {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	r := gin.Default()
 	r.Use(gin.Logger())
 	r.Use(CustomRecovery())
@@ -161,7 +161,7 @@ func main() {
 		c.JSON(err.Code, err)
 	})
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	if initializers.GlobalAppConfig.GIN_RELEASE_MODE {
+	if initializers.GlobalAppConfig.MODE == "prod" {
 		r.RunTLS(":"+strconv.Itoa(int(initializers.GlobalAppConfig.PORT)), "elogika.crt", "elogika.key")
 	} else {
 		r.Run()

@@ -9,6 +9,7 @@ import (
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/repositories"
+	"elogika.vsb.cz/backend/services"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -50,22 +51,10 @@ func ClassDelete(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 
 	transaction := initializers.DB.Begin()
 
-	classRepo := repositories.NewClassRepository()
-	var class *models.Class
-	// If not admin, garant or tutor
-	if userRole == enums.CourseUserRoleAdmin {
-		class, err = classRepo.GetClassByIDAdmin(transaction, params.CourseID, params.ClassID, userData.ID, true, nil)
-	} else if userRole == enums.CourseUserRoleGarant {
-		class, err = classRepo.GetClassByIDGarant(transaction, params.CourseID, params.ClassID, userData.ID, true, nil)
-	} else if userRole == enums.CourseUserRoleTutor {
-		class, err = classRepo.GetClassByIDTutor(transaction, params.CourseID, params.ClassID, userData.ID, true, nil)
-	} else {
-		return &common.ErrorResponse{
-			Code:    403,
-			Message: "Not enough permissions",
-		}
-	}
+	classService := services.NewClassService(repositories.NewClassRepository())
+	class, err := classService.GetClassByID(transaction, params.CourseID, params.ClassID, userData.ID, userRole, nil, false, nil)
 	if err != nil {
+		transaction.Rollback()
 		return err
 	}
 

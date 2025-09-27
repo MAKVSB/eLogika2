@@ -1,17 +1,14 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
 	import DataTable from '$lib/components/ui/data-table/data-table-component.svelte';
 	import { columns, filters } from './schema';
-	import { API, ApiError, decodeBase64UrlToJson } from '$lib/services/api.svelte';
-	import { CourseUserRoleEnum, type ClassListItemDTO } from '$lib/api_types';
+	import { API } from '$lib/services/api.svelte';
+	import { CourseUserRoleEnum, type ClassImportClassesResponse, type ClassListItemDTO } from '$lib/api_types';
 	import { type InitialTableState } from '@tanstack/table-core';
 	import { page } from '$app/state';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { toast } from 'svelte-sonner';
 	import { m } from '$lib/paraglide/messages';
 	import GlobalState from '$lib/shared.svelte';
-	import { invalidateAll } from '$app/navigation';
+	import { invalidate, invalidateAll } from '$app/navigation';
 	import Pageloader from '$lib/components/ui/loader/pageloader.svelte';
 	import { base } from '$app/paths';
 
@@ -63,20 +60,33 @@
 			});
 	});
 
-	onMount(() => {
-		const encodedParams = page.url.searchParams.get('search');
-		if (encodedParams) {
-			initialState = decodeBase64UrlToJson(encodedParams);
-		}
-	});
+	const importClasses = async () => {
+		await API.request<null, ClassImportClassesResponse>(
+			`api/v2/courses/${page.params.courseId}/classes/import`,
+			{
+				method: 'POST',
+			}
+		)
+			.then((res) => {
+				invalidate((url) => {
+					return url.href.endsWith(`/api/v2/courses/${page.params.courseId}/classes`);
+				});
+			})
+			.catch(() => {});
+
+		return true;
+	}
 </script>
 
 <div class="m-8">
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Class management</h1>
-		{#if GlobalState.activeRole && [CourseUserRoleEnum.ADMIN, CourseUserRoleEnum.GARANT].includes(GlobalState.activeRole)}
-			<Button href="{base}/app/{page.params.courseId}/tutor/classes/0">{m.class_add()}</Button>
-		{/if}
+		<div class="flex gap-2">
+			{#if GlobalState.activeRole && [CourseUserRoleEnum.ADMIN, CourseUserRoleEnum.GARANT].includes(GlobalState.activeRole)}
+				<!-- <Button onclick={() => importClasses()}>Import classes</Button> -->
+				<Button href="{base}/app/{page.params.courseId}/tutor/classes/0">{m.class_add()}</Button>
+			{/if}
+		</div>
 	</div>
 	{#if loading}
 		<Pageloader></Pageloader>

@@ -179,17 +179,19 @@
 			<div>
 				<div class="flex flex-row justify-between">
 					<h1 class="mb-8 text-2xl">Tutors</h1>
-					<Dialog.Root bind:open={dialogOpen}>
-						<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}
-							>{m.classes_addtutor()}</Dialog.Trigger
-						>
-						{#if dialogOpen}
-							<UserAddDialog
-								defaultRole="TUTOR"
-								endpoint={`api/v2/courses/${page.params.courseId}/classes/${page.params.classId}/tutors`}
-							></UserAddDialog>
-						{/if}
-					</Dialog.Root>
+					<div class="flex gap-2">
+						<Dialog.Root bind:open={dialogOpen}>
+							<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}
+								>{m.classes_addtutor()}</Dialog.Trigger
+							>
+							{#if dialogOpen}
+								<UserAddDialog
+									defaultRole="TUTOR"
+									endpoint={`api/v2/courses/${page.params.courseId}/classes/${page.params.classId}/tutors`}
+								></UserAddDialog>
+							{/if}
+						</Dialog.Root>
+					</div>
 				</div>
 				<TutorView bind:tutors={form.fields.tutors}></TutorView>
 			</div>

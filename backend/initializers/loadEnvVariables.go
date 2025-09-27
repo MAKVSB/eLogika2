@@ -15,6 +15,7 @@ var GlobalAppConfig *AppConfig
 
 type AppConfig struct {
 	PORT                     int64
+	MODE                     string
 	GIN_RELEASE_MODE         bool
 	DB_URL                   string
 	ACCESS_SECRET            []byte
@@ -51,6 +52,7 @@ func LoadEnvVariables() {
 
 	GlobalAppConfig = &AppConfig{
 		PORT:                     getEnvInt("PORT", 8080),
+		MODE:                     getEnv("MODE", "prod"),
 		GIN_RELEASE_MODE:         getEnvBool("GIN_RELEASE_MODE", false),
 		DB_URL:                   getEnv("DB_URL", ""),
 		ACCESS_SECRET:            []byte(getEnv("ACCESS_SECRET", "")),

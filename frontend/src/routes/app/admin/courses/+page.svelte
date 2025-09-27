@@ -30,7 +30,9 @@
 <div class="m-8">
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Courses management</h1>
-		<Button href="{base}/app/admin/courses/0">Add course</Button>
+		<div class="flex gap-2">
+			<Button href="{base}/app/admin/courses/0">Add course</Button>
+		</div>
 	</div>
 	{#if !isLoading}
 		<DataTable data={rowItems} {columns} {filters} {initialState} {rowCount} queryParam='search'/>

@@ -39,7 +39,9 @@
 <div class="m-8">
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Signed students</h1>
+		<div class="flex gap-2">
 		<!-- <Button href="{base}/app/{page.params.courseId}/tutor/questions/0">{m.quesstions_add()}</Button> -->
+		</div>
 	</div>
 	{#if !loading}
 		<DataTable

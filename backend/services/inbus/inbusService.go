@@ -69,7 +69,7 @@ func (api *InbusClient) updateToken() error {
 	data.Set("grant_type", "client_credentials")
 	data.Set("client_id", initializers.GlobalAppConfig.INBUS_CLIENT_ID)
 	data.Set("client_secret", initializers.GlobalAppConfig.INBUS_CLIENT_SECRET)
-	data.Set("scope", "edison edison/schedule")
+	data.Set("scope", "edison edison/schedule edison/admin/psp")
 
 	req, err := http.NewRequest("POST", api.BaseURL+"/oauth/token", bytes.NewBufferString(data.Encode()))
 	if err != nil {
@@ -147,13 +147,13 @@ func (api *InbusClient) GetSemesterFromDate(date string) (*InbusSemester, *commo
 		return nil, &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to import data",
-			Details: "Request to inbus has failed",
+			Details: "Faild to load Semester data",
 		}
 	}
 	return semester, nil
 }
 
-func (api *InbusClient) GetSubjectVersionFromcode(code string) (*[]*SubjectVersion, *common.ErrorResponse) {
+func (api *InbusClient) GetSubjectVersionFromcode(code string) (*SubjectVersion, *common.ErrorResponse) {
 	versions := new([]*SubjectVersion)
 
 	err := api.DoRequest("service/edison/v1/edu/subjectVersions/byCodes", url.Values{
@@ -163,11 +163,19 @@ func (api *InbusClient) GetSubjectVersionFromcode(code string) (*[]*SubjectVersi
 		return nil, &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to import data",
-			Details: "Request to inbus has failed",
+			Details: "Failed to load subject version data",
 		}
 	}
 
-	return versions, nil
+	if len(*versions) == 0 {
+		return nil, &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to import data",
+			Details: "Subject version not found",
+		}
+	}
+
+	return (*versions)[0], nil
 }
 
 func (api *InbusClient) GetConcreteActivities(subjectVersionId uint, semesterId *uint) (*[]*ConcreteActivity, *common.ErrorResponse) {
@@ -186,7 +194,7 @@ func (api *InbusClient) GetConcreteActivities(subjectVersionId uint, semesterId 
 		return nil, &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to import data",
-			Details: "Request to inbus has failed",
+			Details: "Failed to load schedule events",
 		}
 	}
 
@@ -201,7 +209,7 @@ func (api *InbusClient) GetConcreteActivityStudents(concreteActivityId uint) (*[
 		return nil, &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to import data",
-			Details: "Request to inbus has failed",
+			Details: "Failed to load schedule students",
 		}
 	}
 
@@ -215,10 +223,11 @@ func (api *InbusClient) GetSubjectVersionStudents(subjectVersionId uint, semeste
 		"semesterId": {strconv.Itoa(int(semesterId))},
 	}, students)
 	if err != nil {
+		panic(err)
 		return nil, &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to import data",
-			Details: "Request to inbus has failed",
+			Details: "Failed to load subject version students",
 		}
 	}
 

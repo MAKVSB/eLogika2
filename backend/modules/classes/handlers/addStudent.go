@@ -9,6 +9,7 @@ import (
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/repositories"
+	"elogika.vsb.cz/backend/services"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -55,19 +56,8 @@ func AddStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.
 		return err
 	}
 
-	classRepo := repositories.NewClassRepository()
-	// If not admin, garant or tutor
-	if userRole == enums.CourseUserRoleAdmin || userRole == enums.CourseUserRoleGarant {
-		// Permission to update every class
-	} else if userRole == enums.CourseUserRoleTutor {
-		// Can only update his own class
-		_, err = classRepo.GetClassByIDTutor(initializers.DB, params.CourseID, params.ClassID, userData.ID, false, nil)
-	} else {
-		return &common.ErrorResponse{
-			Code:    403,
-			Message: "Not enough permissions",
-		}
-	}
+	classService := services.NewClassService(repositories.NewClassRepository())
+	_, err = classService.GetClassByID(initializers.DB, params.CourseID, params.ClassID, userData.ID, userRole, nil, false, nil)
 	if err != nil {
 		return err
 	}

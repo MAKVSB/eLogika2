@@ -90,7 +90,7 @@ func ClassUpdate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 	transaction := initializers.DB.Begin()
 
 	classRepo := repositories.NewClassRepository()
-	class, err := classRepo.GetClassByIDGarant(transaction, params.CourseID, params.ClassID, userData.ID, true, &reqData.Version)
+	class, err := classRepo.GetClassByIDGarant(transaction, params.CourseID, params.ClassID, userData.ID, nil, true, &reqData.Version)
 	if err != nil {
 		transaction.Rollback()
 		return err
@@ -124,7 +124,7 @@ func ClassUpdate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 		}
 	}
 
-	class, err = classRepo.GetClassByIDGarant(initializers.DB, params.CourseID, params.ClassID, userData.ID, true, nil)
+	class, err = classRepo.GetClassByIDGarant(initializers.DB, params.CourseID, params.ClassID, userData.ID, nil, true, nil)
 	if err != nil {
 		return err
 	}

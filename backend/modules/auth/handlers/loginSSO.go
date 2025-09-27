@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"net/url"
+
+	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
@@ -37,14 +40,21 @@ func SSOLogin(c *gin.Context) {
 		return
 	}
 
-	if reqData.SSOProvider == "VSB-CAS" {
+	if reqData.SSOProvider == "VSBCAS" {
+		params := url.Values{}
+		if initializers.GlobalAppConfig.MODE == "prod" {
+			params.Add("service", "https://elogika.vsb.cz/new/login/callback?provider=VSBCAS")
+		} else {
+			params.Add("service", "http://localhost:5173/new/login/callback?provider=VSBCAS")
+		}
+
 		c.JSON(200, SSOLoginResponse{
-			RedirectUrl: "https://www.sso.vsb.cz/login?service=https%3A%2F%2Felogika.vsb.cz%2Fapi%2Fv2%2Fauth%2Flogin%2Fsso",
+			RedirectUrl: "https://www.sso.vsb.cz/login?" + params.Encode(),
 		})
 	} else {
 		errr := &common.ErrorResponse{
 			Code:    500,
-			Message: "Implemented providers are: \"VSB-CAS\"",
+			Message: "Implemented providers are: \"VSBCAS\"",
 		}
 		c.AbortWithStatusJSON(errr.Code, errr)
 		return

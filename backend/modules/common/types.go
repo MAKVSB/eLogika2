@@ -5,6 +5,7 @@ type ErrorObject map[string]any
 type ErrorResources struct {
 	ResourceType string `json:"resourceType"`
 	ResourceID   uint   `json:"resourceId"`
+	ResourceData string `json:"resourceData,omitempty"`
 }
 
 // @Description Generic error message

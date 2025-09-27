@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { z } from 'zod';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import Logo from '$lib/images/logo.svg';
 	import * as Form from '$lib/components/ui/form';
 	import { API } from '$lib/services/api.svelte';
 	import { toast } from 'svelte-sonner';
-	import type { ErrorObject } from '$lib/components/ui/form/types';
 	import { m } from '$lib/paraglide/messages';
 	import { LoginRequestSchema } from '$lib/schemas';
 	import type { LoginRequest } from '$lib/api_types';
@@ -53,7 +51,7 @@
 
 {#snippet loginButtons()}{/snippet}
 
-<div class="flex items-center justify-center w-full px-4 mt-10 md:mt-0 md:h-screen">
+<div class="flex items-center w-full h-screen px-4">
 	<Card.Root class="w-full max-w-md mx-auto">
 		<Card.Header>
 			<Card.Title class="flex text-2xl">
@@ -76,7 +74,7 @@
 				<Button
 					class="w-full"
 					onclick={() => {
-						handleSubmitSSO('VSB-CAS');
+						handleSubmitSSO('VSBCAS');
 					}}>{m.login_button_sso()}</Button
 				>
 				<hr class="my-2" />
@@ -91,7 +89,7 @@
 							name="email"
 							id="email"
 							type="email"
-							placeholder="login@vsb.cz"
+							placeholder="email@domain.cz"
 							required={!form.schema.shape.email.isOptional() &&
 								!form.schema.shape.email.isNullable()}
 							bind:value={form.fields.email}
