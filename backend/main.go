@@ -105,7 +105,7 @@ func main() {
 	testCrons.FinishActiveTests()
 
 	c := cron.New()
-	c.AddFunc("0 0 * * *", func() {
+	c.AddFunc("0 0 * * 5", func() {
 		fmt.Println("Running job: DeleteExpiredExpirations", time.Now())
 		go authCrons.DeleteExpiredExpirations()
 	})
