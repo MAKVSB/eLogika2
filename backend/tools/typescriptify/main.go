@@ -99,6 +99,7 @@ func main() {
 		Add(userHandlers.UserUpdateRequest{}).
 		Add(userHandlers.UserUpdateResponse{}).
 		Add(userHandlers.UserGetByIdResponse{}).
+		Add(userHandlers.UserChangePassRequest{}).
 		Add(categoryHandlers.CategoryListRequest{}).
 		Add(categoryHandlers.CategoryListResponse{}).
 		Add(categoryHandlers.CategoryInsertRequest{}).

@@ -53,6 +53,7 @@ func main() {
 		&models.ClassTutor{},
 		&models.TestInstanceEvent{},
 		&models.ActivityInstance{},
+		&models.Email{},
 	)
 	fmt.Println(err)
 }

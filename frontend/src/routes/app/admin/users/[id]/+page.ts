@@ -12,6 +12,6 @@ export async function load({ fetch, params }) {
 
 	return {
 		creating: false,
-		question: data
+		user: data
 	};
 }
