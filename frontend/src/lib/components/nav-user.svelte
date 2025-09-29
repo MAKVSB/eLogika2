@@ -32,15 +32,10 @@
 		await API.request<null, LogoutResponse>(url, {
 			method: 'POST',
 			credentials: 'include'
-		})
-			.then(() => {
-				GlobalState.loggedUser = null;
-				console.log("Transfering 10")
-				goto(base +"/")
-			})
-			.catch(() => {
-				toast.error(m.logout_error());
-			});
+		});
+		GlobalState.loggedUser = null;
+		console.log('Transfering 10');
+		goto(base + '/');
 	}
 </script>
 
@@ -88,12 +83,10 @@
 						</div>
 					</DropdownMenu.Label>
 					<DropdownMenu.Separator />
-					<!-- TODO 
-					<DropdownMenu.Item>
+					<DropdownMenu.Item onclick={() => goto(base+"/app/user")}>
 						<SettingsIcon />
 						Profile
 					</DropdownMenu.Item>
-					-->
 					<DropdownMenu.Item onclick={() => logout(false)}>
 						<LogOutIcon />
 						{m.logout()}

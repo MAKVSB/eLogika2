@@ -260,6 +260,6 @@
 			className
 		)}
 	>
-		<EditorContent editor={$editor} />
+		<EditorContent editor={$editor} class="overflow-auto"/>
 	</div>
 </div>

@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/url"
 
-	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
@@ -42,11 +41,7 @@ func SSOLogin(c *gin.Context) {
 
 	if reqData.SSOProvider == "VSBCAS" {
 		params := url.Values{}
-		if initializers.GlobalAppConfig.MODE == "prod" {
-			params.Add("service", "https://elogika.vsb.cz/new/login/callback?provider=VSBCAS")
-		} else {
-			params.Add("service", "http://localhost:5173/new/login/callback?provider=VSBCAS")
-		}
+		params.Add("service", "https://elogika.vsb.cz/new/login/callback?provider=VSBCAS")
 
 		c.JSON(200, SSOLoginResponse{
 			RedirectUrl: "https://www.sso.vsb.cz/login?" + params.Encode(),

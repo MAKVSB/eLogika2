@@ -524,7 +524,7 @@
 	]);
 </script>
 
-<div class={cn('flex overflow-x-scroll rounded-md rounded-b-none border p-3')}>
+<div class={cn('flex overflow-x-scroll rounded-md rounded-b-none border p-3 overflow-auto')}>
 	<div
 		class={cn('flex rounded-md rounded-b-none', disabled ? 'cursor-not-allowed opacity-50' : '')}
 	>

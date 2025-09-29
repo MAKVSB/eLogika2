@@ -25,7 +25,7 @@
 						GlobalState.accessToken = res.accessToken;
 					})
 					.catch(() => {
-						const errMsg = 'Failed to validate toke, please try again';
+						const errMsg = 'Failed to validate token, please try again';
 						toast.error(errMsg);
 						console.error(errMsg);
 						setTimeout(() => {

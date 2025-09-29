@@ -50,13 +50,13 @@ func SSOLoginCallback(c *gin.Context) {
 	}
 
 	if reqData.SSOProvider == "VSBCAS" {
-		// request from VSBCAS
 		casUrl, err := url.Parse("https://www.sso.vsb.cz/")
 		if err != nil {
 			panic("Failed to parse VSB-SSO url")
 		}
 
-		serviceUrl, err := url.Parse("https://elogika.vsb.cz/api/v2/auth/login/sso")
+		var serviceUrl *url.URL
+		serviceUrl, err = url.Parse("https://elogika.vsb.cz/new/login/callback?provider=VSBCAS")
 		if err != nil {
 			panic("Failed to parse VSB-SSO url")
 		}
@@ -88,9 +88,6 @@ func SSOLoginCallback(c *gin.Context) {
 			c.AbortWithStatusJSON(errr.Code, errr)
 			return
 		}
-
-		utils.DebugPrintJSON(username)
-		utils.DebugPrintJSON(personId)
 
 		var user models.User
 		if err := initializers.DB.
