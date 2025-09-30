@@ -19,18 +19,18 @@
 	}
 </script>
 
-<div class="flex justify-between">
-	<Button variant="ghost" class="relative" href="{base}/app/{page.params.courseId}/tutor/classes/{id}">
+<div class="flex justify-between gap-2">
+	<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/classes/{id}">
 		<span>{m.edit()}</span>
 	</Button>
 	<Button
-		variant="ghost"
+		variant="outline"
 		class="relative"
 		href="{base}/app/{page.params.courseId}/tutor/classes/{id}/students"
 	>
 		<span>{m.class_btn_students()}</span>
 	</Button>
-	<!-- TODO <Button variant="ghost" class="relative" href="{base}/app/{page.params.courseId}/tutor/classes/{id}">
+	<!-- TODO <Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/classes/{id}">
 	<span>Import</span>
 </Button> -->
 	<Button variant="destructive" class="relative" onclick={() => handleActionClick('delete')}>

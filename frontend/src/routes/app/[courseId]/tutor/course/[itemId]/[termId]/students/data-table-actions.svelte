@@ -29,8 +29,8 @@
 	}
 </script>
 
-<div class="flex justify-between">
-	<Button variant="ghost" class="relative" onclick={() => termSignOut()}>
+<div class="flex justify-between gap-2">
+	<Button variant="outline" class="relative" onclick={() => termSignOut()}>
 		<span>{m.term_signout_student()}</span>
 	</Button>
 </div>

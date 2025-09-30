@@ -458,6 +458,10 @@ func GetMatchingActivity(concreteActivities []*inbus.ConcreteActivity, class *mo
 			continue
 		}
 
+		if !strings.HasPrefix(class.Room, "POR") {
+			class.Room = "POR" + class.Room
+		}
+
 		// Room number
 		if !strings.Contains(concreteActivity.RoomFullcodes, class.Room) {
 			continue

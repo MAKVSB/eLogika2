@@ -19,9 +19,9 @@
 	}
 </script>
 
-<div class="flex justify-between">
+<div class="flex justify-between gap-2">
 	<Button
-		variant="ghost"
+		variant="outline"
 		class="relative"
 		href="{base}/app/{page.params.courseId}/tutor/course/{page.params.itemId}/activities/{id}"
 	>

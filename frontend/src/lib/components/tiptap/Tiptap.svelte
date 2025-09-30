@@ -19,6 +19,7 @@
 	import TextAlign from '@tiptap/extension-text-align';
 
 	import MathReplacer from './plugins/MathReplacer';
+	import CharsReplacer from './plugins/CharsReplacer';
 
 	interface TipTapAttributes extends HTMLAttributes<HTMLTextAreaElement> {
 		autocomplete?: FullAutoFill | undefined | null;
@@ -216,6 +217,7 @@
 
 				Typography,
 				MathReplacer,
+				CharsReplacer,
 				TextAlign.configure({
 					types: ['heading', 'paragraph']
 				}),

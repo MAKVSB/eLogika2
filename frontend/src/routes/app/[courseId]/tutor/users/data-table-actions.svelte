@@ -19,8 +19,8 @@
 	}
 </script>
 
-<div class="flex justify-between">
+<div class="flex justify-between gap-2">
 	{#if GlobalState.activeRole == CourseUserRoleEnum.ADMIN}
-		<Button variant="ghost" onclick={() => remove()}>{m.remove()}</Button>
+		<Button variant="outline" onclick={() => remove()}>{m.remove()}</Button>
 	{/if}
 </div>

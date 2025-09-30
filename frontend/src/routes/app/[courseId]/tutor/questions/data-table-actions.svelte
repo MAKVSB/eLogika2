@@ -23,22 +23,22 @@
 	}
 </script>
 
-<div class="flex justify-between">
-	<Button variant="ghost" class="relative" href="{base}/app/{page.params.courseId}/tutor/questions/{id}">
+<div class="flex justify-between gap-2">
+	<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/questions/{id}">
 		<span>{m.edit()}</span>
 	</Button>
 
 	{#if checkedBy.find((usr) => usr.id == GlobalState.loggedUser?.id)}
-		<Button variant="ghost" onclick={() => handleActionClick('uncheck')}
+		<Button variant="outline" onclick={() => handleActionClick('uncheck')}
 			>{m.question_check_action_uncheck_list()}</Button
 		>
 	{:else}
-		<Button variant="ghost" onclick={() => handleActionClick('check')}>
+		<Button variant="outline" onclick={() => handleActionClick('check')}>
 			{m.question_check_action_check_list()}
 		</Button>
 	{/if}
 
-	<Button variant="ghost" class="relative" onclick={() => handleActionClick('print')}>
+	<Button variant="outline" class="relative" onclick={() => handleActionClick('print')}>
 		<span>{m.print()}</span>
 	</Button>
 

@@ -251,6 +251,10 @@
 	.tableWrapper {
 		@apply w-full table-auto;
 	}
+
+	[data-sonner-toaster][data-y-position='top'] {
+		top: 50% !important;
+	}
 }
 
 .resize-cursor {

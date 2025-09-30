@@ -19,16 +19,16 @@
 	}
 </script>
 
-<div class="flex justify-between">
+<div class="flex justify-between gap-2">
 	<Button
-		variant="ghost"
+		variant="outline"
 		class="relative"
 		href="{base}/app/{page.params.courseId}/tutor/course/{page.params.itemId}/tests/{page.params
 			.testId}/instances/{id}"
 	>
 		<span>{m.edit()}</span>
 	</Button>
-	<Button variant="ghost" class="relative" onclick={() => handleActionClick('print')}>
+	<Button variant="outline" class="relative" onclick={() => handleActionClick('print')}>
 		<span>{m.print()}</span>
 	</Button>
 	<Button variant="destructive" class="relative" onclick={() => handleActionClick('delete')}>

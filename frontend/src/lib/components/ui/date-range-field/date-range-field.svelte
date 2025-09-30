@@ -1,14 +1,10 @@
 <script lang="ts">
 	import * as Popover from '$lib/components/ui/popover';
-	import { DateRangeField, type DateRange } from 'bits-ui';
+	import { DateRangeField } from 'bits-ui';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import { RangeCalendar } from '$lib/components/ui/range-calendar';
-	import { cn } from '$lib/utils';
+	import { cn, type WithoutChildrenOrChild } from '$lib/utils';
 	import CalendarIcon from '@lucide/svelte/icons/calendar-days';
-	import type { OnChangeFn } from '@tanstack/table-core';
-	import type { ZonedDateTime, CalendarDateTime, CalendarDate } from '@internationalized/date';
-
-	export type Granularity = 'day' | 'hour' | 'minute' | 'second';
 
 	let {
 		value = $bindable(),
@@ -16,21 +12,16 @@
 		granularity = 'day',
 		class: className,
 		hideTimeZone = true,
-		onValueChange,
-		onStartValueChange,
-		onEndValueChange,
+		onValueChange: onValueChange2,
 		disabled
-	}: {
-		value: any;
-		locale?: string;
-		granularity?: Granularity;
-		class?: string;
-		hideTimeZone?: boolean;
-		disabled?: boolean;
-		onValueChange?: OnChangeFn<DateRange | undefined>;
-		onStartValueChange?: OnChangeFn<(CalendarDate | CalendarDateTime | ZonedDateTime) | undefined>;
-		onEndValueChange?: OnChangeFn<(CalendarDate | CalendarDateTime | ZonedDateTime) | undefined>;
-	} = $props();
+	}: WithoutChildrenOrChild<DateRangeField.RootProps> = $props();
+
+	const onValueChange = (e: any) => {
+		console.log("onValueChange")
+		if (onValueChange2) {
+			onValueChange2(e)
+		}
+	}
 </script>
 
 <DateRangeField.Root
@@ -40,9 +31,8 @@
 	{locale}
 	{hideTimeZone}
 	{onValueChange}
-	{onStartValueChange}
-	{onEndValueChange}
 	{disabled}
+	hourCycle={24}
 >
 	<div
 		class={cn(
@@ -93,8 +83,6 @@
 					captionLayout="dropdown"
 					{disabled}
 					{onValueChange}
-					{onStartValueChange}
-					{onEndValueChange}
 				/>
 			</Popover.Content>
 		</Popover.Root>

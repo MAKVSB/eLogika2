@@ -10,8 +10,8 @@
 	} = $props();
 </script>
 
-<div class="flex justify-between">
-	<Button variant="ghost" class="relative" href="{base}/app/{page.params.courseId}/tutor/categories/{id}">
+<div class="flex justify-between gap-2">
+	<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/categories/{id}">
 		<span>{m.edit()}</span>
 	</Button>
 </div>

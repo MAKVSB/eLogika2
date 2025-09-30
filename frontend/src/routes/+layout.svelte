@@ -26,5 +26,5 @@
 <div class="[--header-height:calc(--spacing(14))]">
 	{@render children()}
 </div>
-<Toaster richColors />
+<Toaster></Toaster>
 <!-- {/if} -->

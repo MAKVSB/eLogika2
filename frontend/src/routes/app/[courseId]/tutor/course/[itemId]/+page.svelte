@@ -244,7 +244,7 @@
 						id="evaluateByAttempt"
 						bind:value={form.fields.evaluateByAttempt}
 						error={form.errors.evaluateByAttempt}
-						options={enumToOptions(EvaluateByAttemptEnum)}
+						options={enumToOptions(EvaluateByAttemptEnum, m.evaluate_by_attempt_enum)}
 						disabled={!form.fields.editable}
 					></Form.SingleSelect>
 				</div>

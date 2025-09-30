@@ -22,22 +22,22 @@
         error={errors.choice}
         {disabled}
     ></Form.Checkbox>
-    <Form.TextInput
-        title={m.courseitem_group_pick_min()}
-        name="chooseMin"
-        id="chooseMin"
-        type="number"
-        bind:value={fields.chooseMin}
-        error={errors.chooseMin ?? ''}
-        disabled={!fields.choice || disabled}
-    ></Form.TextInput>
-    <Form.TextInput
-        title={m.courseitem_group_pick_max()}
-        name="chooseMax"
-        id="chooseMax"
-        type="number"
-        bind:value={fields.chooseMax}
-        error={errors.chooseMax ?? ''}
-        disabled={!fields.choice || disabled}
-    ></Form.TextInput>
+    {#if fields.choice}
+        <Form.TextInput
+            title={m.courseitem_group_pick_min()}
+            name="chooseMin"
+            id="chooseMin"
+            type="number"
+            bind:value={fields.chooseMin}
+            error={errors.chooseMin ?? ''}
+        ></Form.TextInput>
+        <Form.TextInput
+            title={m.courseitem_group_pick_max()}
+            name="chooseMax"
+            id="chooseMax"
+            type="number"
+            bind:value={fields.chooseMax}
+            error={errors.chooseMax ?? ''}
+        ></Form.TextInput>
+    {/if}
 </div>

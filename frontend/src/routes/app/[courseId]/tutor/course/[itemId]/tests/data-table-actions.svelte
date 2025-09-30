@@ -19,16 +19,16 @@
 	}
 </script>
 
-<div class="flex justify-between">
+<div class="flex justify-between gap-2">
 	<Button
-		variant="ghost"
+		variant="outline"
 		class="relative"
 		href="{base}/app/{page.params.courseId}/tutor/course/{page.params.itemId}/tests/{id}/instances"
 	>
 		<span>{m.test_participants()}</span>
 	</Button>
 	<Button
-		variant="ghost"
+		variant="outline"
 		class="relative"
 		onclick={() =>
 			handleActionClick('print', {
@@ -38,7 +38,7 @@
 		<span>Print test</span>
 	</Button>
 	<!-- <Button
-		variant="ghost"
+		variant="outline"
 		class="relative"
 		onclick={() => handleActionClick('print', { instances: true })}
 	>

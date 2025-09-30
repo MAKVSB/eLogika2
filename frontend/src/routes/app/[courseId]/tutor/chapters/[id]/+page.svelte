@@ -132,7 +132,7 @@
 			</h1>
 		</div>
 		{#if !data.creating}
-			<div class="flex justify-between">
+			<div class="flex justify-between gap-2">
 				<Button
 					disabled={!staticResourceData?.data?.parentId}
 					href={String(staticResourceData?.data?.parentId)}

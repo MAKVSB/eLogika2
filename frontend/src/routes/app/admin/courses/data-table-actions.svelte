@@ -6,12 +6,12 @@
 	let { id }: { id: number | string } = $props();
 </script>
 
-<div class="flex justify-between">
-	<Button variant="ghost" class="relative" href="{base}/app/{id}/tutor/course">
+<div class="flex justify-between gap-2">
+	<Button variant="outline" class="relative" href="{base}/app/{id}/tutor/course">
 		<span>{m.edit()}</span>
 	</Button>
 
-	<Button variant="ghost" class="relative" href="{base}/app/{id}/tutor/course/clone">
+	<Button variant="outline" class="relative" href="{base}/app/{id}/tutor/course/clone">
 		<span>{m.clone()}</span>
 	</Button>
 </div>

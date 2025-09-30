@@ -32,3 +32,18 @@ export const UserChangePassRequestSchemaStatic = z
 		return true;
 	});
 export type UserChangePassRequest = z.infer<typeof UserChangePassRequestSchemaStatic>;
+
+export const TermsInsertRequestSchema = z.object({
+	name: z.string(),
+	activeFrom: z.iso.datetime(),
+	activeTo: z.iso.datetime(),
+	requiresSign: z.boolean(),
+	signInFrom: z.iso.datetime(),
+	signInTo: z.iso.datetime(),
+	signOutFrom: z.iso.datetime(),
+	signOutTo: z.iso.datetime(),
+	classroom: z.string(),
+	studentsMax: z.number(),
+	tries: z.number()
+});
+export type TermsInsertRequest = z.infer<typeof TermsInsertRequestSchema>;

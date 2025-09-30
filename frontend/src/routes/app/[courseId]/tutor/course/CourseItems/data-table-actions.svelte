@@ -24,19 +24,19 @@
 	}
 </script>
 
-<div class="flex justify-between">
+<div class="flex justify-between gap-2">
 	{#if editable}
-		<Button variant="ghost" class="relative" href="{base}/app/{page.params.courseId}/tutor/course/{id}">
+		<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/course/{id}">
 			<span>{m.edit()}</span>
 		</Button>
 	{:else}
-		<Button variant="ghost" class="relative" href="{base}/app/{page.params.courseId}/tutor/course/{id}">
+		<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/course/{id}">
 			<span>{m.view()}</span>
 		</Button>
 	{/if}
 
 	{#if editable}
-		<Button variant="ghost" class="relative" href="{base}/app/{page.params.courseId}/tutor/course/{id}/results">
+		<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/course/{id}/results">
 			<span>Výsledky</span>
 		</Button>
 	{:else}
@@ -45,7 +45,7 @@
 
 	{#if type == CourseItemTypeEnum.TEST}
 		<Button
-			variant="ghost"
+			variant="outline"
 			class="relative"
 			href="{base}/app/{page.params.courseId}/tutor/course/{id}/tests"
 		>
@@ -53,7 +53,7 @@
 		</Button>
 	{:else if type == CourseItemTypeEnum.ACTIVITY}
 		<Button
-			variant="ghost"
+			variant="outline"
 			class="relative"
 			href="{base}/app/{page.params.courseId}/tutor/course/{id}/activities"
 		>

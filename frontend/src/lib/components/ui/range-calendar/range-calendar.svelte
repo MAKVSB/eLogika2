@@ -27,6 +27,7 @@
 		granularity = "day",
 		hideTimeZone = false,
 		disabled,
+		onValueChange,
 		...restProps
 	}: WithoutChildrenOrChild<RangeCalendarPrimitive.RootProps> & {
 		value: {
@@ -65,6 +66,7 @@
 	{monthFormat}
 	{yearFormat}
 	{disabled}
+	{onValueChange}
 	{...restProps}
 >
 	{#snippet children({ months, weekdays })}
@@ -122,7 +124,7 @@
 			{/each}
 		</RangeCalendar.Months>
 		{#if granularity != "day"}
-			<RangeCalendarTime {disabled} bind:value {locale} {hideTimeZone}></RangeCalendarTime>
+			<RangeCalendarTime {disabled} bind:value {locale} {hideTimeZone} {onValueChange}></RangeCalendarTime>
 		{/if}
 	{/snippet}
 </RangeCalendarPrimitive.Root>

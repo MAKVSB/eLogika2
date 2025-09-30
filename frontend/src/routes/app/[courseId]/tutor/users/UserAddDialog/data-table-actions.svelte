@@ -17,6 +17,6 @@
 	}
 </script>
 
-<div class="flex justify-between">
-	<Button variant="ghost" onclick={() => add()}>{m.course_users_add()}</Button>
+<div class="flex justify-between gap-2">
+	<Button variant="outline" onclick={() => add()}>{m.course_users_add()}</Button>
 </div>

@@ -6,7 +6,7 @@
 </script>
 
 <script lang="ts">
-	import { API, ApiError } from '$lib/services/api.svelte';
+	import { API } from '$lib/services/api.svelte';
 	import { page } from '$app/state';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import * as Form from '$lib/components/ui/form';
@@ -19,7 +19,6 @@
 		now,
 		parseAbsoluteToLocal
 	} from '@internationalized/date';
-	import { TermsInsertRequestSchema } from '$lib/schemas';
 	import type {
 		TermDTO,
 		TermsGetByIdResponse,
@@ -30,6 +29,9 @@
 	} from '$lib/api_types';
 	import DateRangeField from '$lib/components/ui/date-range-field/date-range-field.svelte';
 	import { Label } from '$lib/components/ui/label';
+	import { TermsInsertRequestSchema } from '$lib/schemas_static.js';
+	import { m } from '$lib/paraglide/messages.js';
+	import type { DateRange } from 'bits-ui';
 
 	let locale = getLocale();
 
@@ -64,15 +66,41 @@
 			end: now(getLocalTimeZone()).add({ days: 7 })
 		}
 	});
+
 	function helperFieldChanged() {
-		form.fields.activeFrom = helperFields.active.start?.toDate() ?? null!;
-		form.fields.activeTo = helperFields.active.end?.toDate() ?? null!;
+		console.log(helperFields.active.start?.toAbsoluteString())
+		if (helperFields.active.start) {
+			form.fields.activeFrom = helperFields.active.start?.toAbsoluteString()
+		} else {
+			form.fields.activeFrom = ""
+		}
+		if (helperFields.active.end) {
+			form.fields.activeTo = helperFields.active.end?.toAbsoluteString()
+		} else {
+			form.fields.activeTo = ""
+		}
 
-		form.fields.signInFrom = helperFields.signIn.start?.toDate() ?? null!;
-		form.fields.signInTo = helperFields.signIn.end?.toDate() ?? null!;
+		if (helperFields.signIn.start) {
+			form.fields.signInFrom = helperFields.signIn.start?.toAbsoluteString()
+		} else {
+			form.fields.signInFrom = ""
+		}
+		if (helperFields.signIn.end) {
+			form.fields.signInTo = helperFields.signIn.end?.toAbsoluteString()
+		} else {
+			form.fields.signInTo = ""
+		}
 
-		form.fields.signOutFrom = helperFields.signOut.start?.toDate() ?? null!;
-		form.fields.signOutTo = helperFields.signOut.end?.toDate() ?? null!;
+		if (helperFields.signOut.start) {
+			form.fields.signOutFrom = helperFields.signOut.start?.toAbsoluteString()
+		} else {
+			form.fields.signOutFrom = ""
+		}
+		if (helperFields.signOut.end) {
+			form.fields.signOutTo = helperFields.signOut.end?.toAbsoluteString()
+		} else {
+			form.fields.signOutTo = ""
+		}
 	}
 
 	function defaultFormData(): TermDTO {
@@ -122,8 +150,6 @@
 	function setResult(res: TermsGetByIdResponse | TermsInsertResponse | TermsUpdateResponse) {
 		form.fields = res.data;
 
-		form.fields.activeFrom = new Date(res.data.activeFrom);
-		form.fields.activeTo = new Date(res.data.activeTo);
 		helperFields.active = {
 			start: parseAbsoluteToLocal(res.data.activeFrom),
 			end: parseAbsoluteToLocal(res.data.activeTo)
@@ -133,15 +159,11 @@
 			start: parseAbsoluteToLocal(res.data.signInFrom),
 			end: parseAbsoluteToLocal(res.data.signInTo)
 		};
-		form.fields.signInFrom = new Date(res.data.signInFrom);
-		form.fields.signInTo = new Date(res.data.signInTo);
 
 		helperFields.signOut = {
 			start: parseAbsoluteToLocal(res.data.signOutFrom),
 			end: parseAbsoluteToLocal(res.data.signOutTo)
 		};
-		form.fields.signOutFrom = new Date(res.data.signOutFrom);
-		form.fields.signOutTo = new Date(res.data.signOutTo);
 
 		console.log("Transfering 25")
 		goto(String(res.data.id), {
@@ -187,7 +209,7 @@
 		<Form.Root bind:form onsubmit={handleSubmit} isCreating={data.creating} {addedValidation}>
 			<div class="flex flex-col gap-4 p-2">
 				<Form.TextInput
-					title="Name"
+					title={m.term_name()}
 					name="name"
 					id="name"
 					type="text"
@@ -195,9 +217,9 @@
 					error={form.errors.name ?? ''}
 				></Form.TextInput>
 				<div class="flex flex-col gap-2">
-					<Label for="active">Active range</Label>
+					<Label for="active">{m.term_active_range()}</Label>
 					<DateRangeField
-						bind:value={helperFields.active}
+						bind:value={helperFields.active as DateRange}
 						{locale}
 						granularity="minute"
 						onValueChange={helperFieldChanged}
@@ -210,9 +232,9 @@
 					{/if}
 				</div>
 				<div class="flex flex-col gap-2">
-					<Label for="signIn">Sign in range</Label>
+					<Label for="signIn">{m.term_signin_range()}</Label>
 					<DateRangeField
-						bind:value={helperFields.signIn}
+						bind:value={helperFields.signIn as DateRange}
 						{locale}
 						granularity="minute"
 						onValueChange={helperFieldChanged}
@@ -232,9 +254,9 @@
 					error={form.errors.requiresSign}
 				></Form.Checkbox>
 				<div class="flex flex-col gap-2">
-					<Label for="signOut">Sign out range</Label>
+					<Label for="signOut">{m.term_signout_range()}</Label>
 					<DateRangeField
-						bind:value={helperFields.signOut}
+						bind:value={helperFields.signOut as DateRange}
 						{locale}
 						granularity="minute"
 						onValueChange={helperFieldChanged}
@@ -247,7 +269,7 @@
 					{/if}
 				</div>
 				<Form.TextInput
-					title="Classroom"
+					title={m.term_classroom()}
 					name="classroom"
 					id="classroom"
 					type="text"
@@ -255,7 +277,7 @@
 					error={form.errors.classroom ?? ''}
 				></Form.TextInput>
 				<Form.TextInput
-					title="Maximum number of students"
+					title={m.term_maximumstudents()}
 					name="studentsMax"
 					id="studentsMax"
 					type="number"
@@ -263,7 +285,7 @@
 					error={form.errors.studentsMax ?? ''}
 				></Form.TextInput>
 				<Form.TextInput
-					title="Number of allowed tries"
+					title={m.term_allowed_tries()}
 					name="tries"
 					id="tries"
 					type="number"
