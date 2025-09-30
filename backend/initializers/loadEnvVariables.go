@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -16,6 +17,10 @@ var GlobalAppConfig *AppConfig
 type AppConfig struct {
 	PORT                     int64
 	MODE                     string
+	PROTOCOL                 string
+	CERTPATH                 *string
+	CERTNAME                 *string
+	PLATFORM                 string
 	GIN_RELEASE_MODE         bool
 	DB_URL                   string
 	ACCESS_SECRET            []byte
@@ -53,6 +58,10 @@ func LoadEnvVariables() {
 	GlobalAppConfig = &AppConfig{
 		PORT:                     getEnvInt("PORT", 8080),
 		MODE:                     getEnv("MODE", "prod"),
+		PROTOCOL:                 getEnv("PROTOCOL", "https"),
+		CERTPATH:                 getEnvNilable("CERTPATH"),
+		CERTNAME:                 getEnvNilable("CERTNAME"),
+		PLATFORM:                 getEnvPlatform("PLATFORM"),
 		GIN_RELEASE_MODE:         getEnvBool("GIN_RELEASE_MODE", false),
 		DB_URL:                   getEnv("DB_URL", ""),
 		ACCESS_SECRET:            []byte(getEnv("ACCESS_SECRET", "")),
@@ -77,6 +86,14 @@ func getEnv(key string, fallback string) string {
 	return val
 }
 
+func getEnvNilable(key string) *string {
+	val := os.Getenv(key)
+	if val == "" {
+		return nil
+	}
+	return &val
+}
+
 func getEnvInt(key string, fallback int64) int64 {
 	val := os.Getenv(key)
 	if i, err := strconv.ParseInt(val, 10, 64); err == nil {
@@ -94,6 +111,14 @@ func getEnvBool(key string, fallback bool) bool {
 		return false
 	}
 	return fallback
+}
+
+func getEnvPlatform(key string) string {
+	val := os.Getenv(key)
+	if val == "" || val == "AUTO" {
+		return runtime.GOOS
+	}
+	return val
 }
 
 func parseAdvancedDuration(input string) (time.Duration, error) {

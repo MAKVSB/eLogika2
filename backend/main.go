@@ -1,7 +1,10 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
+	"log"
+	"net/http"
 	"runtime/debug"
 	"strconv"
 	"time"
@@ -27,6 +30,7 @@ import (
 	"elogika.vsb.cz/backend/modules/tests"
 	testCrons "elogika.vsb.cz/backend/modules/tests/crons"
 	"elogika.vsb.cz/backend/modules/users"
+	"elogika.vsb.cz/backend/utils/certstore"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
@@ -161,8 +165,27 @@ func main() {
 		c.JSON(err.Code, err)
 	})
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	if initializers.GlobalAppConfig.MODE == "prod" {
-		r.RunTLS(":"+strconv.Itoa(int(initializers.GlobalAppConfig.PORT)), "elogika.crt", "elogika.key")
+	if initializers.GlobalAppConfig.PROTOCOL == "https" {
+		addr := ":" + strconv.Itoa(int(initializers.GlobalAppConfig.PORT))
+		cert, err := certstore.LoadCertCommon(initializers.GlobalAppConfig.CERTPATH, initializers.GlobalAppConfig.CERTNAME)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		tlsConfig := &tls.Config{
+			Certificates: []tls.Certificate{*cert},
+		}
+
+		server := &http.Server{
+			Addr:      addr,
+			Handler:   r,
+			TLSConfig: tlsConfig,
+		}
+
+		log.Println("Listening and serving HTTPS on " + addr + "\n")
+		if err := server.ListenAndServeTLS("", ""); err != nil {
+			log.Fatalf("server failed: %v", err)
+		}
 	} else {
 		r.Run()
 	}
