@@ -167,7 +167,7 @@ func main() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	if initializers.GlobalAppConfig.PROTOCOL == "https" {
 		addr := ":" + strconv.Itoa(int(initializers.GlobalAppConfig.PORT))
-		cert, err := certstore.LoadCertCommon(initializers.GlobalAppConfig.CERTPATH, initializers.GlobalAppConfig.CERTNAME)
+		cert, err := certstore.LoadCertCommon(initializers.GlobalAppConfig.CERTPATH, initializers.GlobalAppConfig.CERTPASS)
 		if err != nil {
 			panic(err.Error())
 		}

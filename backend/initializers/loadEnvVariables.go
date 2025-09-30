@@ -19,7 +19,7 @@ type AppConfig struct {
 	MODE                     string
 	PROTOCOL                 string
 	CERTPATH                 *string
-	CERTNAME                 *string
+	CERTPASS                 *string
 	PLATFORM                 string
 	GIN_RELEASE_MODE         bool
 	DB_URL                   string
@@ -60,7 +60,7 @@ func LoadEnvVariables() {
 		MODE:                     getEnv("MODE", "prod"),
 		PROTOCOL:                 getEnv("PROTOCOL", "https"),
 		CERTPATH:                 getEnvNilable("CERTPATH"),
-		CERTNAME:                 getEnvNilable("CERTNAME"),
+		CERTPASS:                 getEnvNilable("CERTPASS"),
 		PLATFORM:                 getEnvPlatform("PLATFORM"),
 		GIN_RELEASE_MODE:         getEnvBool("GIN_RELEASE_MODE", false),
 		DB_URL:                   getEnv("DB_URL", ""),

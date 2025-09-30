@@ -1,6 +1,6 @@
 module elogika.vsb.cz/backend
 
-go 1.24.3
+go 1.25
 
 require (
 	codeberg.org/go-pdf/fpdf v0.11.1
@@ -8,7 +8,6 @@ require (
 	github.com/gin-gonic/gin v1.10.1
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/google/certtostore v1.0.6
 	github.com/google/uuid v1.6.0
 	github.com/hypersequent/zen v0.0.0-20250317110808-f521ea1d4fc3
 	github.com/joho/godotenv v1.5.1
@@ -23,17 +22,16 @@ require (
 	gopkg.in/cas.v2 v2.2.1
 	gorm.io/driver/sqlserver v1.6.0
 	gorm.io/gorm v1.30.0
+	software.sslmate.com/src/go-pkcs12 v0.6.0
 )
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/bytedance/sonic v1.13.3 // indirect
 	github.com/bytedance/sonic/loader v0.2.4 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.9 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
-	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-openapi/jsonpointer v0.21.1 // indirect
 	github.com/go-openapi/jsonreference v0.21.0 // indirect
 	github.com/go-openapi/spec v0.21.0 // indirect
@@ -45,7 +43,6 @@ require (
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
-	github.com/google/deck v0.0.0-20230104221208-105ad94aa8ae // indirect
 	github.com/hhrutter/lzw v1.0.0 // indirect
 	github.com/hhrutter/pkcs7 v0.2.0 // indirect
 	github.com/hhrutter/tiff v1.0.2 // indirect
@@ -70,7 +67,7 @@ require (
 	golang.org/x/arch v0.18.0 // indirect
 	golang.org/x/image v0.27.0 // indirect
 	golang.org/x/net v0.41.0 // indirect
-	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/text v0.26.0 // indirect
 	golang.org/x/tools v0.34.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
