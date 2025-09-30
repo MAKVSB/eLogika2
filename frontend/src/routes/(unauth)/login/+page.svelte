@@ -52,7 +52,7 @@
 {#snippet loginButtons()}{/snippet}
 
 <div class="flex flex-col justify-center w-full h-screen gap-8 px-4">
-	<Card.Root class="w-full max-w-md mx-auto bg-red-900">
+	<Card.Root class="w-full max-w-md mx-auto bg-red-500 dark:bg-red-900">
 		<Card.Content>
 			<Card.Title class="flex text-2xl">Warning</Card.Title>
 			To use eLogika 2.0, you must be connected to university eduroam, or VPN.
