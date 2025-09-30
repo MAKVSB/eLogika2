@@ -75,7 +75,7 @@ func (r *QuestionRepository) GetQuestionByIDAdmin(
 	full bool,
 	version *uint,
 ) (*models.Question, *common.ErrorResponse) {
-	return r.GetQuestionByID(dbRef, courseID, questionID, userID, nil, full, version)
+	return r.GetQuestionByID(dbRef, courseID, questionID, userID, filters, full, version)
 }
 
 func (r *QuestionRepository) GetQuestionByIDGarant(

@@ -208,7 +208,7 @@ func (qp QuestionPrinter) ConvertNodeToLaTeX(node map[string]interface{}) string
 		mode := node["attrs"].(map[string]interface{})["mode"].(string)
 		if mode == "storage" {
 			linkFile(qp.WorkDir+"/uploads/"+src, qp.AssetDir+"/"+src)
-			src = qp.AssetDir + "/" + src
+			src = strings.ReplaceAll(qp.AssetDir+"/"+src, "\\", "/")
 		} else {
 			src2, err := downloadImage(src, qp.AssetDir)
 			if err != nil {

@@ -112,20 +112,18 @@ func main() {
 
 	c := cron.New()
 	c.AddFunc("0 0 0 0 0", func() {
-		fmt.Println("Running job: DeleteExpiredExpirations", time.Now())
+		log.Println("Running job: DeleteExpiredExpirations", time.Now())
 		go authCrons.DeleteExpiredExpirations()
+		log.Println("Running job: ClearTempDir", time.Now())
+		go printCrons.ClearTempDir()
 	})
 	c.AddFunc("* * * * 5", func() {
-		fmt.Println("Running job: ExpireReadyTestsStart", time.Now())
+		log.Println("Running job: ExpireReadyTests", time.Now())
 		go testCrons.ExpireReadyTests()
 	})
 	c.AddFunc("* * * * 5", func() {
-		fmt.Println("Running job: ExpireReadyTestsStart", time.Now())
+		log.Println("Running job: FinishActiveTests", time.Now())
 		go testCrons.FinishActiveTests()
-	})
-	c.AddFunc("* * * * *", func() {
-		fmt.Println("Running job: ClearTempDir", time.Now())
-		go printCrons.ClearTempDir()
 	})
 	c.Start()
 
@@ -161,6 +159,7 @@ func main() {
 			Message: "Requested endpoint not found",
 		}
 		c.JSON(err.Code, err)
+
 	})
 
 	r.NoMethod(func(c *gin.Context) {
@@ -170,6 +169,7 @@ func main() {
 		}
 		c.JSON(err.Code, err)
 	})
+
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	if initializers.GlobalAppConfig.PROTOCOL == "https" {
 		addr := ":" + strconv.Itoa(int(initializers.GlobalAppConfig.PORT))

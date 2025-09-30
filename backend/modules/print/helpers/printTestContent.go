@@ -207,7 +207,7 @@ func (tp TestPrinter) ConvertNodeToLaTeX(node map[string]interface{}) string {
 		mode := node["attrs"].(map[string]interface{})["mode"].(string)
 		if mode == "storage" {
 			linkFile(tp.WorkDir+"/uploads/"+src, tp.AssetDir+"/"+src)
-			src = tp.AssetDir + "/" + src
+			src = strings.ReplaceAll(tp.AssetDir+"/"+src, "\\", "/")
 		} else {
 			src2, err := downloadImage(src, tp.AssetDir)
 			if err != nil {

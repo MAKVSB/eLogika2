@@ -19,7 +19,8 @@
 					body: {
 						provider,
 						ticket
-					}
+					},
+					credentials: 'include'
 				})
 					.then((res) => {
 						GlobalState.accessToken = res.accessToken;

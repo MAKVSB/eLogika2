@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { m } from '$lib/paraglide/messages.js';
@@ -22,7 +23,7 @@
 	<Button
 		variant="ghost"
 		class="relative"
-		href="/app/{page.params.courseId}/tutor/course/{page.params.itemId}/tests/{page.params
+		href="{base}/app/{page.params.courseId}/tutor/course/{page.params.itemId}/tests/{page.params
 			.testId}/instances/{id}"
 	>
 		<span>{m.edit()}</span>
