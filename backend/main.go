@@ -25,6 +25,7 @@ import (
 	"elogika.vsb.cz/backend/modules/courses"
 	"elogika.vsb.cz/backend/modules/files"
 	"elogika.vsb.cz/backend/modules/print"
+	printCrons "elogika.vsb.cz/backend/modules/print/crons"
 	"elogika.vsb.cz/backend/modules/questions"
 	"elogika.vsb.cz/backend/modules/templates"
 	"elogika.vsb.cz/backend/modules/tests"
@@ -107,6 +108,7 @@ func main() {
 	authCrons.DeleteExpiredExpirations()
 	testCrons.ExpireReadyTests()
 	testCrons.FinishActiveTests()
+	printCrons.ClearTempDir()
 
 	c := cron.New()
 	c.AddFunc("0 0 0 0 0", func() {
@@ -120,6 +122,10 @@ func main() {
 	c.AddFunc("* * * * 5", func() {
 		fmt.Println("Running job: ExpireReadyTestsStart", time.Now())
 		go testCrons.FinishActiveTests()
+	})
+	c.AddFunc("* * * * *", func() {
+		fmt.Println("Running job: ClearTempDir", time.Now())
+		go printCrons.ClearTempDir()
 	})
 	c.Start()
 

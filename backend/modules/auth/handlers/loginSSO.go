@@ -46,6 +46,7 @@ func SSOLogin(c *gin.Context) {
 		c.JSON(200, SSOLoginResponse{
 			RedirectUrl: "https://www.sso.vsb.cz/login?" + params.Encode(),
 		})
+		return
 	} else {
 		errr := &common.ErrorResponse{
 			Code:    500,

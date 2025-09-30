@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/url"
 	"strings"
 
@@ -68,8 +67,6 @@ func SSOLoginCallback(c *gin.Context) {
 
 		test1, err := casRestClient.ValidateServiceTicket(cas.ServiceTicket(reqData.Ticket))
 		if err != nil {
-			fmt.Println(err.Error())
-			utils.DebugPrintJSON(err)
 			errr := &common.ErrorResponse{
 				Code:    500,
 				Message: "Network error during validation",
