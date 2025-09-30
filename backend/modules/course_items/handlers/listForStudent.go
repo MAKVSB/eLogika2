@@ -65,7 +65,7 @@ func ListForStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 	if err := initializers.DB.
 		Where("student_id = ?", userData.ID).
 		InnerJoins("Term").
-		Preload("CourseItem").
+		InnerJoins("CourseItem", initializers.DB.Where("CourseItem.course_id = ?", params.CourseID)).
 		Preload("CourseItem.Parent").
 		Order("course_item_results.course_item_id, Term.active_from, course_item_results.created_at DESC").
 		Find(&results).Error; err != nil {

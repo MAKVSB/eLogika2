@@ -26,7 +26,11 @@ func (r *ClassRepository) GetClassByID(
 ) (*models.Class, *common.ErrorResponse) {
 	query := dbRef.
 		Where("id = ?", classID).
-		Where("course_id = ?", courseID)
+		Where("course_id = ?", courseID).
+		Preload("Tutors", func(db *gorm.DB) *gorm.DB {
+			return db.
+				InnerJoins("User")
+		})
 
 	if filters != nil {
 		query = (*filters)(query)
@@ -35,10 +39,6 @@ func (r *ClassRepository) GetClassByID(
 	if full {
 		query = query.
 			Preload("Students", func(db *gorm.DB) *gorm.DB {
-				return db.
-					InnerJoins("User")
-			}).
-			Preload("Tutors", func(db *gorm.DB) *gorm.DB {
 				return db.
 					InnerJoins("User")
 			})

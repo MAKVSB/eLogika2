@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Pageloader from '$lib/components/ui/loader/pageloader.svelte';
 	import TiptapRenderer from '$lib/components/tiptap-renderer/tiptap-renderer.svelte';
+	import { m } from '$lib/paraglide/messages.js';
 
 	let { data } = $props()
 </script>
@@ -9,7 +10,7 @@
 	{#await data.chapter}
 		<Pageloader></Pageloader>
 	{:then chapter}
-		{#if chapter.data}
+		{#if chapter.data.visible}
 			<div class="flex flex-row justify-between">
 				<h1 class="mb-8 text-2xl">Study materials
 					<b>
@@ -31,7 +32,7 @@
 			<h1 class="text-2xl">Chapter content</h1>
 			<TiptapRenderer jsonContent={chapter.data.content}></TiptapRenderer>
 		{:else}
-			<!-- TODO add text about unavailable chapter  -->
+				{m.study_materials_invisible()}
 		{/if}
 	{/await}
 </div>
