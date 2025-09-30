@@ -42,7 +42,7 @@ func init() {
 	initializers.LoadEnvVariables()
 	initializers.ConnectToDB(true)
 	if initializers.GlobalAppConfig.ACCESS_TOKEN_REVOKE_SYNC {
-		helpers.StartRevokedTokenSync(initializers.DB, time.Second)
+		helpers.StartRevokedTokenSync(initializers.DB, 10*time.Minute)
 	}
 }
 
@@ -109,7 +109,7 @@ func main() {
 	testCrons.FinishActiveTests()
 
 	c := cron.New()
-	c.AddFunc("0 0 * * 5", func() {
+	c.AddFunc("0 0 0 0 0", func() {
 		fmt.Println("Running job: DeleteExpiredExpirations", time.Now())
 		go authCrons.DeleteExpiredExpirations()
 	})
