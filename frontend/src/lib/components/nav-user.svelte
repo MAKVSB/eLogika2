@@ -33,6 +33,7 @@
 			method: 'POST',
 			credentials: 'include'
 		});
+		GlobalState.accessToken = null;
 		GlobalState.loggedUser = null;
 		console.log('Transfering 10');
 		goto(base + '/');

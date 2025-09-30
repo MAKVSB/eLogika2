@@ -3,7 +3,7 @@
 	import TiptapRenderer from '$lib/components/tiptap-renderer/tiptap-renderer.svelte';
 	import { m } from '$lib/paraglide/messages.js';
 
-	let { data } = $props()
+	let { data } = $props();
 </script>
 
 <div class="m-8">
@@ -12,7 +12,8 @@
 	{:then chapter}
 		{#if chapter.data.visible}
 			<div class="flex flex-row justify-between">
-				<h1 class="mb-8 text-2xl">Study materials
+				<h1 class="mb-8 text-2xl">
+					Study materials
 					<b>
 						{chapter.data.name}
 					</b>
@@ -32,7 +33,7 @@
 			<h1 class="text-2xl">Chapter content</h1>
 			<TiptapRenderer jsonContent={chapter.data.content}></TiptapRenderer>
 		{:else}
-				{m.study_materials_invisible()}
+			{m.study_materials_invisible()}
 		{/if}
 	{/await}
 </div>
