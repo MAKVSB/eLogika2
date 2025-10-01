@@ -204,7 +204,7 @@ func UserLeave(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.C
 	joinedStudent.DeletedByID = &userData.ID
 
 	if err := initializers.DB.
-		Save(joinedStudent).Error; err != nil {
+		Save(&joinedStudent).Error; err != nil {
 		return &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to leave term",
@@ -213,7 +213,7 @@ func UserLeave(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.C
 	}
 
 	if err := initializers.DB.
-		Delete(joinedStudent).Error; err != nil {
+		Delete(&joinedStudent).Error; err != nil {
 		return &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to leave term",
