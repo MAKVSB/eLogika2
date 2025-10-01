@@ -56,7 +56,7 @@ func List(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Course
 		Model(&m)
 
 	// Apply filters, sorting, pagination
-	query, err = m.ApplyFilters(query, searchParams.ColumnFilters, m, map[string]interface{}{})
+	query, err = m.ApplyFilters(query, searchParams.ColumnFilters, m, map[string]interface{}{}, "")
 	if err != nil {
 		return err
 	}

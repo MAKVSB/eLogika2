@@ -56,14 +56,14 @@ func ListCourseUsers(c *gin.Context, userData authdtos.LoggedUserDTO, userRole e
 	}
 
 	innerQuery := initializers.DB.Model(models.User{})
-	innerQuery, err = models.User{}.ApplyFilters(innerQuery, searchParams.ColumnFilters, models.User{}, map[string]interface{}{})
+	innerQuery, err = models.User{}.ApplyFilters(innerQuery, searchParams.ColumnFilters, models.User{}, map[string]interface{}{}, "")
 	if err != nil {
 		return err
 	}
 	innerQuery = models.User{}.ApplySorting(innerQuery, searchParams.Sorting)
 
 	query := initializers.DB.Model(models.CourseUser{})
-	query, err = models.CourseUser{}.ApplyFilters(query, searchParams.ColumnFilters, models.CourseUser{}, map[string]interface{}{})
+	query, err = models.CourseUser{}.ApplyFilters(query, searchParams.ColumnFilters, models.CourseUser{}, map[string]interface{}{}, "")
 	if err != nil {
 		return err
 	}

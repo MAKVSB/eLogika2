@@ -117,7 +117,7 @@ func (r *ChapterRepository) ListChapters(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Chapter{}.ApplyFilters(query, searchParams.ColumnFilters, models.Chapter{}, map[string]interface{}{})
+	query, err := models.Chapter{}.ApplyFilters(query, searchParams.ColumnFilters, models.Chapter{}, map[string]interface{}{}, "")
 	if err != nil {
 		return nil, 0, err
 	}
@@ -162,7 +162,7 @@ func (r *ChapterRepository) ListChaptersStudent(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Chapter{}.ApplyFilters(query, searchParams.ColumnFilters, models.Chapter{}, map[string]interface{}{})
+	query, err := models.Chapter{}.ApplyFilters(query, searchParams.ColumnFilters, models.Chapter{}, map[string]interface{}{}, "")
 	if err != nil {
 		return nil, 0, err
 	}

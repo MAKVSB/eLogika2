@@ -11,12 +11,22 @@
 <Tooltip.Provider>
 	<Tooltip.Root>
 		<Tooltip.Trigger class="w-full">
-			{#each users.slice(0, showItems) as user}
-				<p>
-					{user.firstName}
-					{user.familyName}
-				</p>
-			{/each}
+			<table>
+				<tbody>
+					{#each users.slice(0, showItems) as user}
+						<tr>
+							<td class="pr-2">
+								{user.firstName}
+								{user.familyName}
+							</td>
+							<td>
+								{new Date(user.checkedAt).toLocaleDateString(getLocale())}
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+
 			{#if users.length > showItems}
 				{m.and_num_more({
 					number: users.length - showItems

@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	"elogika.vsb.cz/backend/initializers"
@@ -33,9 +34,10 @@ func (CommonModel) ApplyPagination(query *gorm.DB, pagination *common.SearchRequ
 	return query
 }
 
-func (q CommonModel) ApplyFilters(query *gorm.DB, filters []common.SearchRequestFilter, model any, extra map[string]interface{}) (*gorm.DB, *common.ErrorResponse) {
+func (q CommonModel) ApplyFilters(query *gorm.DB, filters []common.SearchRequestFilter, model any, extra map[string]interface{}, columnPrefix string) (*gorm.DB, *common.ErrorResponse) {
 	for _, filter := range filters {
-		column, err := GetModelColumnName(initializers.DB, model, CapitalizeFirstLetter(filter.ID))
+		column, typ, err := GetModelColumnName(initializers.DB, model, CapitalizeFirstLetter(filter.ID))
+
 		if err != nil {
 			// return nil, &common.ErrorResponse{
 			// 	Message: "Failed to find filters",
@@ -44,8 +46,13 @@ func (q CommonModel) ApplyFilters(query *gorm.DB, filters []common.SearchRequest
 			continue //Todo not the best ????
 		}
 		value := filter.Value
+
 		// TODO figure out a syntax for defining type of filter (>, <, contains, ...)
-		query = query.Where(fmt.Sprintf("%s like ?", column), fmt.Sprintf("%%%v%%", value))
+		if typ.Kind() == reflect.Int || typ.Kind() == reflect.Uint {
+			query = query.Where(fmt.Sprintf(columnPrefix+"%s = ?", column), value)
+		} else {
+			query = query.Where(fmt.Sprintf(columnPrefix+"%s like ?", column), fmt.Sprintf("%%%v%%", value))
+		}
 	}
 	return query, nil
 }
@@ -56,10 +63,10 @@ func (CommonModel) GetCount(query *gorm.DB) int64 {
 	return totalCount
 }
 
-func GetModelColumnName(db *gorm.DB, model any, fieldName string) (string, error) {
+func GetModelColumnName(db *gorm.DB, model any, fieldName string) (string, reflect.Type, error) {
 	stmt := &gorm.Statement{DB: db}
 	if err := stmt.Parse(model); err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	// Replace only the last "Id" with "ID"
@@ -69,9 +76,9 @@ func GetModelColumnName(db *gorm.DB, model any, fieldName string) (string, error
 
 	field := stmt.Schema.LookUpField(fieldName)
 	if field == nil {
-		return "", fmt.Errorf("Field %s not found in schema", fieldName)
+		return "", nil, fmt.Errorf("field %s not found in schema", fieldName)
 	}
-	return field.DBName, nil
+	return field.DBName, field.FieldType, nil
 }
 
 func CapitalizeFirstLetter(s string) string {

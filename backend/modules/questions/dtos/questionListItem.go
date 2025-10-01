@@ -18,8 +18,10 @@ type QuestionListItemDTO struct {
 	CreatedBy       QuestionCreatedByDTO     `json:"createdBy"`
 	Active          bool                     `json:"active"`
 	QuestionGroupID uint                     `json:"questionGroupId"`
-	// ChapterID      uint                     `json:"chapterId"`
-	// CategoryID     *uint                    `json:"categoryId"`
+	ChapterID       uint                     `json:"chapterId"`
+	ChapterName     string                   `json:"chapterName"`
+	CategoryID      *uint                    `json:"categoryId"`
+	CategoryName    *string                  `json:"categoryName"`
 }
 
 func (m QuestionListItemDTO) From(d *models.Question) QuestionListItemDTO {
@@ -33,8 +35,13 @@ func (m QuestionListItemDTO) From(d *models.Question) QuestionListItemDTO {
 		CreatedBy:       QuestionCreatedByDTO{}.From(d.CreatedBy),
 		Active:          d.Active,
 		QuestionGroupID: d.QuestionGroupID,
-		// ChapterID: d.ChapterID,
-		// CategoryID: d.CategoryID,
+		ChapterID:       d.CourseLink.ChapterID,
+		ChapterName:     d.CourseLink.Chapter.Name,
+		CategoryID:      d.CourseLink.CategoryID,
+	}
+
+	if d.CourseLink.CategoryID != nil {
+		dto.CategoryName = &d.CourseLink.Category.Name
 	}
 
 	for i, userCheck := range d.CheckedBy {

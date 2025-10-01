@@ -185,9 +185,17 @@ func (r *QuestionRepository) ListQuestions(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.Question, int64, *common.ErrorResponse) {
+	courseLinkQuery := initializers.DB.Where("CourseLink.course_id = ?", courseID)
+
+	// Apply filters to innerobjects
+	courseLinkQuery, err := models.CourseQuestion{}.ApplyFilters(courseLinkQuery, searchParams.ColumnFilters, models.CourseQuestion{}, map[string]interface{}{}, "CourseLink.")
+	if err != nil {
+		return nil, 0, err
+	}
+
 	query := dbRef.
 		Model(&models.Question{}).
-		InnerJoins("CourseLink", initializers.DB.Where("CourseLink.course_id = ?", courseID)).
+		InnerJoins("CourseLink", courseLinkQuery).
 		InnerJoins("CreatedBy").
 		Preload("CheckedBy").
 		Preload("CheckedBy.User")
@@ -204,7 +212,7 @@ func (r *QuestionRepository) ListQuestions(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Question{}.ApplyFilters(query, searchParams.ColumnFilters, models.Question{}, map[string]interface{}{
+	query, err = models.Question{}.ApplyFilters(query, searchParams.ColumnFilters, models.Question{}, map[string]interface{}{
 		"userID": userID,
 	})
 	if err != nil {

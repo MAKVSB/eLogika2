@@ -61,7 +61,7 @@ func (Question) ApplyFilters(query *gorm.DB, filters []common.SearchRequestFilte
 			}
 		}
 
-		query, err := CommonModel{}.ApplyFilters(query, remainingFilters, Question{}, nil)
+		query, err := CommonModel{}.ApplyFilters(query, remainingFilters, Question{}, nil, "")
 		if err != nil {
 			return query, err
 		}

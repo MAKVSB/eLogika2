@@ -129,7 +129,7 @@ func (r *TemplateRepository) ListTemplates(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Template{}.ApplyFilters(query, searchParams.ColumnFilters, models.Template{}, map[string]interface{}{})
+	query, err := models.Template{}.ApplyFilters(query, searchParams.ColumnFilters, models.Template{}, map[string]interface{}{}, "")
 	if err != nil {
 		return nil, 0, err
 	}

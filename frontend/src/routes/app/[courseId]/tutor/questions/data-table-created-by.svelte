@@ -14,9 +14,14 @@
 
 <Tooltip.Provider>
 	<Tooltip.Root>
-		<Tooltip.Trigger class="w-full">
-			{createdBy.firstName}
-			{createdBy.familyName}
+		<Tooltip.Trigger class="flex w-full gap-2">
+			<span>
+				{createdBy.firstName}
+				{createdBy.familyName}
+			</span>
+			<span>
+				{new Date(createdAt).toLocaleDateString(getLocale())}
+			</span>
 		</Tooltip.Trigger>
 		<Tooltip.Content class="grid grid-cols-2">
 			<p>

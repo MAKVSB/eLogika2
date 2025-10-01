@@ -11,6 +11,7 @@ import (
 	"elogika.vsb.cz/backend/services"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type QuestionListResponse struct {
@@ -52,7 +53,12 @@ func List(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Course
 		return err
 	}
 	questionServ := services.NewQuestionService(repositories.NewQuestionRepository())
-	questions, questionCount, err := questionServ.ListQuestions(initializers.DB, params.CourseID, userData.ID, userRole, nil, false, searchParams)
+	modifier := func(db *gorm.DB) *gorm.DB {
+		return db.
+			Preload("CourseLink.Chapter").
+			Preload("CourseLink.Category")
+	}
+	questions, questionCount, err := questionServ.ListQuestions(initializers.DB, params.CourseID, userData.ID, userRole, &modifier, false, searchParams)
 	if err != nil {
 		return err
 	}

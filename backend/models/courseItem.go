@@ -131,7 +131,7 @@ func (CourseItem) ApplyFilters(query *gorm.DB, filters []common.SearchRequestFil
 			}
 		}
 
-		query, err := CommonModel{}.ApplyFilters(query, remainingFilters, CourseItem{}, nil)
+		query, err := CommonModel{}.ApplyFilters(query, remainingFilters, CourseItem{}, nil, "")
 		if err != nil {
 			return query, err
 		}

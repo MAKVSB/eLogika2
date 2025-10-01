@@ -18,6 +18,20 @@ export const filters: Filter[] = [
 	},
 	{
 		type: FilterTypeEnum.SELECT,
+		accessorKey: 'chapterId',
+		values: [],
+		emptyValue: 'No filter',
+		placeholder: m.filter_chapter()
+	},
+	{
+		type: FilterTypeEnum.SELECT,
+		accessorKey: 'categoryId',
+		values: [],
+		emptyValue: 'No filter',
+		placeholder: m.filter_category()
+	},
+	{
+		type: FilterTypeEnum.SELECT,
 		accessorKey: 'questionType',
 		values: enumToOptions(QuestionTypeEnum),
 		emptyValue: 'No filter',
@@ -59,6 +73,20 @@ export const columns: (ColumnDef<QuestionListItemDTO> & { uniqueId?: string })[]
 				sorted: column.getIsSorted(),
 				onclick: column.getToggleSortingHandler()
 			})
+	},
+	{
+		accessorKey: 'chapterId'
+	},
+	{
+		accessorKey: 'chapterName',
+		header: 'Chapter name'
+	},
+	{
+		accessorKey: 'categoryId'
+	},
+	{
+		accessorKey: 'categoryName',
+		header: 'Category name'
 	},
 	{
 		accessorKey: 'questionType',

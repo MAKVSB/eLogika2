@@ -124,7 +124,7 @@ func (r *TermRepository) ListTerms(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Term{}.ApplyFilters(query, searchParams.ColumnFilters, models.Term{}, map[string]interface{}{})
+	query, err := models.Term{}.ApplyFilters(query, searchParams.ColumnFilters, models.Term{}, map[string]interface{}{}, "")
 	if err != nil {
 		return nil, 0, err
 	}
@@ -207,7 +207,7 @@ func (r *TermRepository) ListJoinedStudents(
 	// Apply filters, sorting, pagination
 	if searchParams != nil {
 		var err *common.ErrorResponse
-		query, err = models.UserTerm{}.ApplyFilters(query, searchParams.ColumnFilters, models.UserTerm{}, map[string]interface{}{})
+		query, err = models.UserTerm{}.ApplyFilters(query, searchParams.ColumnFilters, models.UserTerm{}, map[string]interface{}{}, "")
 		if err != nil {
 			return nil, 0, err
 		}

@@ -171,9 +171,7 @@ func (r *ClassRepository) ListClasses(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Class{}.ApplyFilters(query, searchParams.ColumnFilters, models.Class{}, map[string]interface{}{
-		"userID": userID,
-	})
+	query, err := models.Class{}.ApplyFilters(query, searchParams.ColumnFilters, models.Class{}, map[string]interface{}{}, "")
 	if err != nil {
 		return nil, 0, err
 	}
@@ -235,9 +233,7 @@ func (r *ClassRepository) ListClassesTutor(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Class{}.ApplyFilters(query, searchParams.ColumnFilters, models.Class{}, map[string]interface{}{
-		"userID": userID,
-	})
+	query, err := models.Class{}.ApplyFilters(query, searchParams.ColumnFilters, models.Class{}, map[string]interface{}{}, "")
 	if err != nil {
 		return nil, 0, err
 	}
@@ -279,7 +275,7 @@ func (r *ClassRepository) ListClassStudents(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.User{}.ApplyFilters(query, searchParams.ColumnFilters, models.User{}, map[string]interface{}{})
+	query, err := models.User{}.ApplyFilters(query, searchParams.ColumnFilters, models.User{}, map[string]interface{}{}, "")
 	if err != nil {
 		return nil, 0, err
 	}

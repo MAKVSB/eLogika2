@@ -203,7 +203,7 @@ func (r *TestRepository) ListTests(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Test{}.ApplyFilters(query, searchParams.ColumnFilters, models.Test{}, map[string]interface{}{})
+	query, err := models.Test{}.ApplyFilters(query, searchParams.ColumnFilters, models.Test{}, map[string]interface{}{}, "")
 	if err != nil {
 		return nil, 0, err
 	}
@@ -288,7 +288,7 @@ func (r *TestRepository) ListTestInstances(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.TestInstance{}.ApplyFilters(query, searchParams.ColumnFilters, models.TestInstance{}, map[string]interface{}{})
+	query, err := models.TestInstance{}.ApplyFilters(query, searchParams.ColumnFilters, models.TestInstance{}, map[string]interface{}{}, "")
 	if err != nil {
 		return nil, 0, err
 	}

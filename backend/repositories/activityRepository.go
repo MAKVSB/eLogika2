@@ -166,7 +166,7 @@ func (r *ActivityRepository) ListActivityInstances(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.ActivityInstance{}.ApplyFilters(query, searchParams.ColumnFilters, models.ActivityInstance{}, map[string]interface{}{})
+	query, err := models.ActivityInstance{}.ApplyFilters(query, searchParams.ColumnFilters, models.ActivityInstance{}, map[string]interface{}{}, "")
 	if err != nil {
 		return nil, 0, err
 	}

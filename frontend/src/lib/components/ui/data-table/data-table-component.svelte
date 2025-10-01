@@ -84,7 +84,7 @@
 			}
 			if (queryParam) {
 				newUrl.searchParams.set(queryParam, queryString);
-				console.log("Transfering 11")
+				console.log('Transfering 11');
 				goto(newUrl);
 			}
 		}, 0);
@@ -309,7 +309,16 @@
 									<Select.Item
 										value={value.value as string}
 										onclick={() => {
-											table && table.getColumn(filter.accessorKey)?.setFilterValue(value.value);
+											if (table) {
+												const column = table.getColumn(filter.accessorKey);
+												if (column) {
+													column.setFilterValue(String(value.value));
+												} else {
+													console.error('COLUMN NOT FOUND', filter.accessorKey);
+												}
+											} else {
+												console.error('TABLE NOT INITIATED');
+											}
 										}}>{value.display}</Select.Item
 									>
 								{/each}
