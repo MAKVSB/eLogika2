@@ -16,10 +16,8 @@ import (
 )
 
 type ActivityDetailCourseItemUpdateRequest struct {
-	Description json.RawMessage `json:"description" ts_type:"JSONContent"` // Assignemnt of activity
-	// DescriptionFile    []File                     ``
+	Description    json.RawMessage `json:"description" ts_type:"JSONContent"`    // Assignemnt of activity
 	ExpectedResult json.RawMessage `json:"expectedResult" ts_type:"JSONContent"` // Expected result of the activity
-	// ExpectedResultFiles []File
 }
 
 type GroupDetailCourseItemUpdateRequest struct {
@@ -29,16 +27,15 @@ type GroupDetailCourseItemUpdateRequest struct {
 }
 
 type TestDetailCourseItemUpdateRequest struct {
-	TestType enums.QuestionTypeEnum `json:"testType"` // Further filters questions used for this test
-	// TODO TestTemplate
-	TimeLimit   uint `json:"timeLimit"`   // Time limit for this test
-	ShowResults bool `json:"showResults"` // Show results to student after finishing test
-	ShowTest    bool `json:"showTest"`    // Show the exact test (questions)
-	// TODO add here option to show also what was the correct answer and explanation
-	AllowOffline   bool   `json:"allowOffline"`   // Allow offline answer sending
-	IsPaper        bool   `json:"isPaper"`        // Test is written physically on paper
-	IPRanges       string `json:"ipRanges"`       // Allowed ip ranges to write a test
-	TestTemplateID uint   `json:"testTemplateId"` // Id of selected test template
+	TestType        enums.QuestionTypeEnum `json:"testType"`        // Further filters questions used for this test
+	TimeLimit       uint                   `json:"timeLimit"`       // Time limit for this test
+	ShowResults     bool                   `json:"showResults"`     // Show results to student after finishing test
+	ShowTest        bool                   `json:"showTest"`        // Show the exact test (questions)
+	ShowCorrectness bool                   `json:"showCorrectness"` // Show what answers were correct
+	AllowOffline    bool                   `json:"allowOffline"`    // Allow offline answer sending
+	IsPaper         bool                   `json:"isPaper"`         // Test is written physically on paper
+	IPRanges        string                 `json:"ipRanges"`        // Allowed ip ranges to write a test
+	TestTemplateID  uint                   `json:"testTemplateId"`  // Id of selected test template
 }
 
 // @Description Request to update course item
@@ -203,6 +200,7 @@ func Update(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 		courseItem.TestDetail.TimeLimit = reqData.TestDetail.TimeLimit
 		courseItem.TestDetail.ShowResults = reqData.TestDetail.ShowResults
 		courseItem.TestDetail.ShowTest = reqData.TestDetail.ShowTest
+		courseItem.TestDetail.ShowCorrectness = reqData.TestDetail.ShowCorrectness
 		courseItem.TestDetail.AllowOffline = reqData.TestDetail.AllowOffline
 		courseItem.TestDetail.IsPaper = reqData.TestDetail.IsPaper
 		courseItem.TestDetail.IPRanges = reqData.TestDetail.IPRanges

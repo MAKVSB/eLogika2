@@ -5,12 +5,15 @@
 	import Checkbox from '../checkbox/checkbox.svelte';
 	import { cn } from '$lib/utils';
 	import type { ErrorObject } from './types';
+	import { CircleQuestionMark } from '@lucide/svelte';
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
 	let {
 		ref = $bindable(null),
 		name,
 		title,
 		disabled,
+		tooltip,
 		id,
 		class: className,
 		innerClass,
@@ -31,13 +34,27 @@
 		disabled?: boolean;
 		value: boolean;
 		error: string | ErrorObject;
+		tooltip?: string;
 		wide?: boolean;
 	} & WithElementRef<HTMLAttributes<HTMLElement>> = $props();
 </script>
 
 <div class={cn('flex flex-col gap-2', className, wide ? 'w-full' : '')}>
 	{#if title}
-		<Label for={id}>{title} {required ? '*' : ''}</Label>
+		<Label for={id}>
+			{title}
+			{required ? '*' : ''}
+			{#if tooltip}
+				<Tooltip.Provider>
+					<Tooltip.Root>
+						<Tooltip.Trigger><CircleQuestionMark /></Tooltip.Trigger>
+						<Tooltip.Content>
+							<p>{tooltip}</p>
+						</Tooltip.Content>
+					</Tooltip.Root>
+				</Tooltip.Provider>
+			{/if}
+		</Label>
 	{/if}
 	<Checkbox
 		class={cn('h-9 w-full rounded-md', wide ? 'w-full' : 'w-9', innerClass)}

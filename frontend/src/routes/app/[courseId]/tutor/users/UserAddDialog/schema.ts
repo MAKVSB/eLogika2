@@ -4,7 +4,6 @@ import DataTableActions from './data-table-actions.svelte';
 import { CourseUserRoleEnum, type CourseUserDTO } from '$lib/api_types';
 import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
-import { enumToOptions } from '$lib/utils';
 
 export const filters: Filter[] = [
 	{
@@ -60,6 +59,14 @@ export const columns: (ColumnDef<CourseUserDTO> & { uniqueId?: string })[] = [
 	{
 		accessorKey: 'familyName',
 		header: m.user_family_name()
+	},
+	{
+		accessorKey: 'degreeBefore',
+		header: m.user_degree_before()
+	},
+	{
+		accessorKey: 'degreeAfter',
+		header: m.user_degree_after()
 	},
 	{
 		accessorKey: 'email',

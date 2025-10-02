@@ -10,7 +10,8 @@
 	import Superscript from '@tiptap/extension-superscript';
 	import { TableKit } from '@tiptap/extension-table';
 	import Hightlight from '@tiptap/extension-highlight';
-	import Math from '@tiptap/extension-mathematics';
+	import CustomInlineMath from './plugins/InlineMath';
+	import CustomBlockMath from './plugins/BlockMath';
 	import FileHandler from '@tiptap/extension-file-handler';
 	import TipTapImage from './plugins/image';
 	import { Details, DetailsContent, DetailsSummary } from '@tiptap/extension-details';
@@ -121,36 +122,34 @@
 					}
 				}),
 
-				Math.configure({
-					blockOptions: {
-						onClick: (node, pos) => {
-							const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
-							if (newCalculation) {
-								$editor
-									.chain()
-									.setNodeSelection(pos)
-									.updateBlockMath({ latex: newCalculation })
-									.focus()
-									.run();
-							} else {
-								$editor.chain().deleteBlockMath().focus().run();
-							}
+				CustomInlineMath.configure({
+					onClick: (node, pos) => {
+						const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
+						if (newCalculation) {
+							editor;
+							$editor
+								.chain()
+								.setNodeSelection(pos)
+								.updateInlineMath({ latex: newCalculation })
+								.focus()
+								.run();
+						} else {
+							$editor.chain().deleteInlineMath().focus().run();
 						}
-					},
-					inlineOptions: {
-						onClick: (node, pos) => {
-							const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
-							if (newCalculation) {
-								editor;
-								$editor
-									.chain()
-									.setNodeSelection(pos)
-									.updateInlineMath({ latex: newCalculation })
-									.focus()
-									.run();
-							} else {
-								$editor.chain().deleteInlineMath().focus().run();
-							}
+					}
+				}),
+				CustomBlockMath.configure({
+					onClick: (node, pos) => {
+						const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
+						if (newCalculation) {
+							$editor
+								.chain()
+								.setNodeSelection(pos)
+								.updateBlockMath({ latex: newCalculation })
+								.focus()
+								.run();
+						} else {
+							$editor.chain().deleteBlockMath().focus().run();
 						}
 					}
 				}),
@@ -221,9 +220,9 @@
 				TextAlign.configure({
 					types: ['heading', 'paragraph']
 				}),
-				CodeBlockLowlight.configure({
-					lowlight: createLowlight(LLCommon)
-				}),
+				// CodeBlockLowlight.configure({
+				// 	lowlight: createLowlight(LLCommon)
+				// }),
 				TipTapImage
 			],
 			content: value,
@@ -262,6 +261,6 @@
 			className
 		)}
 	>
-		<EditorContent editor={$editor} class="overflow-auto"/>
+		<EditorContent editor={$editor} class="overflow-auto" />
 	</div>
 </div>

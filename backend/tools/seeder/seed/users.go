@@ -19,11 +19,13 @@ func CreateUsers() []models.User {
 	}
 
 	users = append(users, models.User{
-		Username:   "MAK0065",
-		FirstName:  "Daniel",
-		FamilyName: "Makovský",
-		Password:   pass1,
-		Email:      "mak0065@vsb.cz",
+		Username:     "MAK0065",
+		DegreeBefore: "Bc.",
+		FirstName:    "Daniel",
+		FamilyName:   "Makovský",
+		DegreeAfter:  "",
+		Password:     pass1,
+		Email:        "mak0065@vsb.cz",
 		Notification: models.UserNotification{
 			Discord: models.NotificationDiscord{
 				UserID: "794923933991305228",

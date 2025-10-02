@@ -69,12 +69,20 @@ export const columns: (ColumnDef<CourseUserDTO> & { uniqueId?: string })[] = [
 		header: m.user_family_name()
 	},
 	{
+		accessorKey: 'degreeBefore',
+		header: m.user_degree_before()
+	},
+	{
+		accessorKey: 'degreeAfter',
+		header: m.user_degree_after()
+	},
+	{
 		accessorKey: 'email',
 		header: m.user_email()
 	},
 	{
 		accessorKey: 'roles',
-		header: 'Role',
+		header: m.user_roles(),
 		cell: ({ row }) => {
 			return row.original.roles.map((r) => m.course_user_role_enum({ value: r })).join(', ');
 		}

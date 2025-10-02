@@ -23,11 +23,47 @@ type TestInstanceDTO struct {
 
 	Participant       TestParticipantDTO `json:"participant"`
 	Points            float64            `json:"points"`
+	PointsFinal       bool               `json:"pointsFinal"`
 	BonusPoints       float64            `json:"bonusPoints"`
 	BonusPointsReason string             `json:"bonusPointsReason"`
+
+	ShowContent     bool `json:"showContent"`
+	ShowCorrectness bool `json:"showCorrectness"`
 }
 
-func (m TestInstanceDTO) From(d *models.TestInstance, isTutor bool) TestInstanceDTO {
+func (m TestInstanceDTO) From(
+	d *models.TestInstance,
+	isTutor bool,
+) TestInstanceDTO {
+	showResults := true
+	showCorrectness := d.CourseItem.TestDetail.ShowCorrectness
+	showTestContent := false
+	showLayout := d.CourseItem.TestDetail.IsPaper
+
+	if !d.CourseItem.TestDetail.ShowResults {
+		if d.Term.ActiveTo.After(time.Now()) {
+			showResults = false
+		}
+	}
+
+	if d.State == enums.TestInstanceStateFinished {
+		showTestContent = d.CourseItem.TestDetail.ShowTest
+	}
+
+	if d.State == enums.TestInstanceStateActive {
+		showTestContent = true
+		showCorrectness = false
+		showResults = false
+		showLayout = true
+	}
+
+	if isTutor {
+		showTestContent = true
+		showCorrectness = true
+		showResults = true
+		showLayout = true
+	}
+
 	dto := TestInstanceDTO{
 		ID:            d.ID,
 		State:         d.State,
@@ -39,18 +75,22 @@ func (m TestInstanceDTO) From(d *models.TestInstance, isTutor bool) TestInstance
 		Participant:   TestParticipantDTO{}.From(d.Participant),
 	}
 
-	if isTutor || d.State == enums.TestInstanceStateActive {
+	if showLayout || showTestContent {
 		dto.Questions = make([]TestInstanceQuestionDTO, len(d.Questions))
 		for q_i, q := range d.Questions {
-			dto.Questions[q_i] = TestInstanceQuestionDTO{}.From(&q, isTutor)
+			dto.Questions[q_i] = TestInstanceQuestionDTO{}.From(&q, isTutor, showTestContent, showCorrectness)
 		}
 	}
 
-	if isTutor {
+	if showResults {
 		dto.Points = d.Result.Points
+		dto.PointsFinal = d.Result.Final
 		dto.BonusPoints = d.BonusPoints
 		dto.BonusPointsReason = d.BonusPointsReason
 	}
+
+	dto.ShowContent = showTestContent
+	dto.ShowCorrectness = showCorrectness
 
 	return dto
 }

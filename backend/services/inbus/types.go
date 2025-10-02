@@ -91,6 +91,7 @@ type StudyRelation struct {
 	FirstName    string `json:"firstName"`
 	SecondName   string `json:"secondName"`
 	DegreeBefore string `json:"degreeBefore"`
+	DegreeAfter  string `json:"degreeAfter"`
 }
 
 type ConcreteActivity struct {

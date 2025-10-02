@@ -8,14 +8,15 @@ type CourseItemTest struct {
 	CommonModel
 	ID uint `gorm:"primarykey"`
 
-	TestType       enums.QuestionTypeEnum ``
-	TestTemplateID uint                   ``
-	TimeLimit      uint                   ``
-	ShowResults    bool                   ``
-	ShowTest       bool                   ``
-	AllowOffline   bool                   ``
-	IsPaper        bool                   ``
-	IPRanges       string                 ``
+	TestType        enums.QuestionTypeEnum ``
+	TestTemplateID  uint                   ``
+	TimeLimit       uint                   ``
+	ShowResults     bool                   ``
+	ShowTest        bool                   ``
+	ShowCorrectness bool                   ``
+	AllowOffline    bool                   ``
+	IsPaper         bool                   ``
+	IPRanges        string                 ``
 
 	TestTemplate *Template ``
 }

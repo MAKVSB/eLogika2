@@ -81,7 +81,10 @@ func TestInstanceGet(c *gin.Context, userData authdtos.LoggedUserDTO, userRole e
 	}
 
 	c.JSON(200, TestInstanceGetResponse{
-		InstanceData: dtos.TestInstanceDTO{}.From(testInstance, false),
+		InstanceData: dtos.TestInstanceDTO{}.From(
+			testInstance,
+			false,
+		),
 	})
 
 	return nil

@@ -34,7 +34,6 @@
 	});
 </script>
 
-<!-- {JSON.stringify(rowItems)} -->
 <DataTable
 	data={rowItems}
 	{columns}
@@ -45,4 +44,3 @@
 	queryParam='search'
 />
 
-<!-- {"EventType":"","EventData":null,"PageID":"3379fb37-354d-49e9-a849-aba04e5640f3","User":{"id":1,"firstName":"Daniel","familyName":"Admin","username":"MAK0065","email":"mak0065@vsb.cz"}} -->

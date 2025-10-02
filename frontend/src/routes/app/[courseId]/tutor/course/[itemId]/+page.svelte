@@ -111,19 +111,18 @@
 		switch (type) {
 			case CourseItemTypeEnum.ACTIVITY:
 				formData.activityDetail = {
-					id: 0,
 					description: TipTapDefaultContent,
 					expectedResult: TipTapDefaultContent
 				};
 				break;
 			case CourseItemTypeEnum.TEST:
 				formData.testDetail = {
-					id: 0,
 					testType: QuestionTypeEnum.EXAM,
 					testTemplateId: 0,
 					timeLimit: 60,
 					showResults: false,
 					showTest: false,
+					showCorrectness: false,
 					allowOffline: false,
 					isPaper: false,
 					ipRanges: ''
@@ -131,7 +130,6 @@
 				break;
 			case CourseItemTypeEnum.GROUP:
 				formData.groupDetail = {
-					id: 0,
 					choice: false,
 					chooseMin: 1,
 					chooseMax: 1
@@ -211,7 +209,7 @@
 					error={form.errors.name ?? ''}
 					disabled={!form.fields.editable}
 				></Form.TextInput>
-				<div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+				<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
 					<Form.TextInput
 						title={m.courseitem_min_points()}
 						name="pointsMin"

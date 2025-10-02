@@ -57,7 +57,12 @@
 								</Avatar.Fallback>
 							</Avatar.Root>
 							<div class="grid flex-1 text-sm leading-tight text-left">
-								<span class="font-medium truncate">{user.firstName} {user.familyName}</span>
+								<span class="font-medium truncate">
+									{user.degreeBefore}
+									{user.firstName}
+									{user.familyName}
+									{user.degreeAfter}
+								</span>
 								<span class="text-xs truncate">{user.email}</span>
 							</div>
 							<ChevronsUpDownIcon class="ml-auto size-4" />
@@ -78,13 +83,18 @@
 								</Avatar.Fallback>
 							</Avatar.Root>
 							<div class="grid flex-1 text-sm leading-tight text-left">
-								<span class="font-medium truncate">{user.firstName} {user.familyName}</span>
+								<span class="font-medium truncate">
+									{user.degreeBefore}
+									{user.firstName}
+									{user.familyName}
+									{user.degreeAfter}
+								</span>
 								<span class="text-xs truncate">{user.email}</span>
 							</div>
 						</div>
 					</DropdownMenu.Label>
 					<DropdownMenu.Separator />
-					<DropdownMenu.Item onclick={() => goto(base+"/app/user")}>
+					<DropdownMenu.Item onclick={() => goto(base + '/app/user')}>
 						<SettingsIcon />
 						Profile
 					</DropdownMenu.Item>

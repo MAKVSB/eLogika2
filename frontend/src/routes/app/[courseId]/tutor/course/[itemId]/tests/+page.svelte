@@ -144,7 +144,7 @@
 			{
 				method: 'POST',
 				body: {
-					termId: termIdFilter,
+					termId: Number(termIdFilter),
 					courseItemId: Number(page.params.itemId),
 					printInstances: instances
 				}

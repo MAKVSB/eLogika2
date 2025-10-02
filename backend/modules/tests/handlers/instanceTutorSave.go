@@ -237,7 +237,10 @@ func TestInstanceTutorSave(c *gin.Context, userData authdtos.LoggedUserDTO, user
 	}
 
 	c.JSON(202, TestInstanceTutorSaveResponse{
-		InstanceData: dtos.TestInstanceDTO{}.From(testInstance, true),
+		InstanceData: dtos.TestInstanceDTO{}.From(
+			testInstance,
+			true,
+		),
 	})
 
 	return nil

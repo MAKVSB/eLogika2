@@ -6,24 +6,28 @@ import (
 )
 
 type LoggedUserDTO struct {
-	ID         uint                  `json:"id"`
-	FirstName  string                `json:"firstName"`
-	FamilyName string                `json:"familyName"`
-	Username   string                `json:"username"`
-	Email      string                `json:"email"`
-	Courses    []LoggedUserCourseDTO `json:"courses"`
-	Type       enums.UserTypeEnum    `json:"type"`
+	ID           uint                  `json:"id"`
+	DegreeBefore string                `json:"degreeBefore"`
+	FirstName    string                `json:"firstName"`
+	FamilyName   string                `json:"familyName"`
+	DegreeAfter  string                `json:"degreeAfter"`
+	Username     string                `json:"username"`
+	Email        string                `json:"email"`
+	Courses      []LoggedUserCourseDTO `json:"courses"`
+	Type         enums.UserTypeEnum    `json:"type"`
 }
 
 func (m LoggedUserDTO) From(d *models.User) LoggedUserDTO {
 	loggedUser := LoggedUserDTO{
-		ID:         d.ID,
-		FirstName:  d.FirstName,
-		FamilyName: d.FamilyName,
-		Username:   d.Username,
-		Email:      d.Email,
-		Courses:    make([]LoggedUserCourseDTO, len(d.UserCourses)),
-		Type:       d.Type,
+		ID:           d.ID,
+		DegreeBefore: d.DegreeBefore,
+		FirstName:    d.FirstName,
+		FamilyName:   d.FamilyName,
+		DegreeAfter:  d.DegreeAfter,
+		Username:     d.Username,
+		Email:        d.Email,
+		Courses:      make([]LoggedUserCourseDTO, len(d.UserCourses)),
+		Type:         d.Type,
 	}
 
 	for i, course := range d.UserCourses {

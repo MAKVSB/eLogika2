@@ -5,24 +5,28 @@ import (
 )
 
 type CourseItemResultsDTO struct {
-	ID         uint    `json:"id"`
-	Username   string  `json:"username"`
-	FirstName  string  `json:"firstName"`
-	FamilyName string  `json:"familyName"`
-	Email      string  `json:"email"`
-	Points     float64 `json:"points"` // External
-	Passed     bool    `json:"passed"` // External
+	ID           uint    `json:"id"`
+	Username     string  `json:"username"`
+	DegreeBefore string  `json:"degreeBefore"`
+	FirstName    string  `json:"firstName"`
+	FamilyName   string  `json:"familyName"`
+	DegreeAfter  string  `json:"degreeAfter"`
+	Email        string  `json:"email"`
+	Points       float64 `json:"points"` // External
+	Passed       bool    `json:"passed"` // External
 
 	Results []*CourseItemResultDTO `json:"results"`
 }
 
 func (m CourseItemResultsDTO) From(d *models.User) CourseItemResultsDTO {
 	dto := CourseItemResultsDTO{
-		ID:         d.ID,
-		FirstName:  d.FirstName,
-		FamilyName: d.FamilyName,
-		Username:   d.Username,
-		Email:      d.Email,
+		ID:           d.ID,
+		DegreeBefore: d.DegreeBefore,
+		FirstName:    d.FirstName,
+		FamilyName:   d.FamilyName,
+		DegreeAfter:  d.DegreeAfter,
+		Username:     d.Username,
+		Email:        d.Email,
 
 		Results: make([]*CourseItemResultDTO, len(d.Results)),
 	}

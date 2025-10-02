@@ -6,7 +6,9 @@
 
 {#each tutors as user}
 	<p>
+		{user.degreeBefore}
 		{user.firstName}
 		{user.familyName}
+		{user.degreeAfter}
 	</p>
 {/each}

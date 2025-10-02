@@ -16,8 +16,10 @@
 					{#each users.slice(0, showItems) as user}
 						<tr>
 							<td class="pr-2">
+								{user.degreeBefore}
 								{user.firstName}
 								{user.familyName}
+								{user.degreeAfter}
 							</td>
 							<td>
 								{new Date(user.checkedAt).toLocaleDateString(getLocale())}
@@ -36,8 +38,10 @@
 		<Tooltip.Content class="grid grid-cols-2">
 			{#each users as user}
 				<p>
+					{user.degreeBefore}
 					{user.firstName}
 					{user.familyName}
+					{user.degreeAfter}
 				</p>
 				({new Date(user.checkedAt).toLocaleString(getLocale())})
 			{/each}

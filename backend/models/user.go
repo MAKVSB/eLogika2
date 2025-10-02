@@ -41,8 +41,10 @@ type User struct {
 	DeletedAt gorm.DeletedAt ``
 	Version   uint           ``
 
+	DegreeBefore       string                     ``                       // Degree before name
 	FirstName          string                     ``                       // First name of the user
 	FamilyName         string                     ``                       // Family name of the user
+	DegreeAfter        string                     ``                       // Degree after name
 	Username           string                     ``                       // Username
 	Password           string                     ``                       // Hashed password
 	Email              string                     ``                       // Email of the user
@@ -55,6 +57,10 @@ type User struct {
 
 	// Temp helper data
 	Results []*CourseItemResult `gorm:"foreignKey:StudentID"`
+}
+
+func (user User) FullName() string {
+	return user.DegreeBefore + " " + user.FirstName + " " + user.FamilyName + " " + user.DegreeAfter
 }
 
 func (User) TableName() string {

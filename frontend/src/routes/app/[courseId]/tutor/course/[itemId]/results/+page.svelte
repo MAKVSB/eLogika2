@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { type CourseItemResultsDTO } from '$lib/api_types';
 	import * as Table from '$lib/components/ui/table/index.js';
 	import { toast } from 'svelte-sonner';
@@ -26,8 +25,7 @@
 	<Table.Row>
 		<Table.Head></Table.Head>
 		<Table.Head>{m.user_username()}</Table.Head>
-		<Table.Head>{m.user_first_name()}</Table.Head>
-		<Table.Head>{m.user_family_name()}</Table.Head>
+		<Table.Head>{m.user_full_name()}</Table.Head>
 		<Table.Head>{m.points_real()}</Table.Head>
 		<Table.Head>{m.course_item_passed()}</Table.Head>
 	</Table.Row>
@@ -40,9 +38,6 @@
 		<div class="flex flex-row justify-between">
 			<h1 class="text-2xl">
 				Course item results:
-				<!-- <b>
-					{staticResourceData?.data?.name ?? 'New course item'}
-				</b> -->
 			</h1>
 		</div>
 		<Table.Root>
@@ -52,7 +47,7 @@
 			<Table.Body>
 				{#if staticResourceData.data.length === 0}
 					<Table.Row>
-						<Table.Cell colspan={7}>No items found</Table.Cell>
+						<Table.Cell colspan={7}>{m.no_items_found()}</Table.Cell>
 					</Table.Row>
 				{:else}
 					{#each staticResourceData.data as item}

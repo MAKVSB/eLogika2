@@ -32,6 +32,7 @@ func (tp TestPrinter) GenerateTestContent(testData *models.Test) string {
 	\usepackage{amsmath, amssymb}
 	\usepackage{ulem}
 	\usepackage{graphicx}
+	\usepackage{ifoddpage}
 	\usepackage{tabularx}
 	\usepackage{enumitem}
 	\usepackage{hyperref}
@@ -101,6 +102,19 @@ func (tp TestPrinter) GenerateTestContent(testData *models.Test) string {
 
 		latexCode += `\end{samepage}`
 	}
+
+	latexCode += `
+	\clearpage
+	\checkoddpage
+	\ifoddpage
+	% do nothing, page count is odd
+	\else
+	% insert a blank page
+	\thispagestyle{empty}
+	\null
+	\newpage
+	\fi
+	`
 
 	latexCode += `\end{document}`
 

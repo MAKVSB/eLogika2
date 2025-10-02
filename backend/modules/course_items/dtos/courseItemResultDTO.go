@@ -39,7 +39,7 @@ func (m CourseItemResultDTO) From(d *models.CourseItemResult) CourseItemResultDT
 	}
 
 	if d.UpdatedBy != nil {
-		dto.UpdatedBy = d.UpdatedBy.FirstName + " " + d.UpdatedBy.FamilyName
+		dto.UpdatedBy = d.UpdatedBy.FullName()
 	} else {
 		dto.UpdatedBy = "System eLogika"
 	}

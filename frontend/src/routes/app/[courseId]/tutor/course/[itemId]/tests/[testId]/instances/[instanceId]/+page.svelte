@@ -33,7 +33,7 @@
 				<Tabs.Trigger value="events">Events</Tabs.Trigger>
 			</Tabs.List>
 			<Tabs.Content value="instanceEditor">
-				<InstanceEditor {instanceData}></InstanceEditor>
+				<InstanceEditor {instanceData} editable={true}></InstanceEditor>
 			</Tabs.Content>
 			<Tabs.Content value="events">
 				<InstanceEvents></InstanceEvents>

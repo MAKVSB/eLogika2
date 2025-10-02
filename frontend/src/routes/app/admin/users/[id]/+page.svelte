@@ -34,8 +34,10 @@
 	const defaultFormData: UserDTO = {
 		id: 0,
 		version: 0,
+		degreeBefore: '',
 		firstName: '',
 		familyName: '',
+		degreeAfter: '',
 		username: '',
 		email: '',
 		notification: {
@@ -112,16 +114,22 @@
 			</div>
 			<Form.Root bind:form onsubmit={handleSubmit} isCreating={data.creating}>
 				<div class="flex flex-col gap-4 p-2">
-					<div
-						class="grid {GlobalState.loggedUser?.type == UserTypeEnum.ADMIN
-							? 'grid-cols-3'
-							: 'grid-cols-2'} gap-4"
-					>
+					<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+						<Form.TextInput
+							title={m.user_degree_before()}
+							name="degreeBefore"
+							id="degreeBefore"
+							type="text"
+							bind:value={form.fields.degreeBefore}
+							error={form.errors.degreeBefore}
+							class="order-3 lg:order-1"
+						></Form.TextInput>
 						<Form.TextInput
 							title={m.user_first_name()}
 							name="firstName"
 							id="firstName"
 							type="text"
+							class="order-1 lg:order-2"
 							bind:value={form.fields.firstName}
 							error={form.errors.firstName}
 						></Form.TextInput>
@@ -130,26 +138,27 @@
 							name="familyName"
 							id="familyName"
 							type="text"
+							class="order-2 lg:order-1"
 							bind:value={form.fields.familyName}
-							error={form.errors.firstName}
+							error={form.errors.familyName}
 						></Form.TextInput>
-						{#if GlobalState.loggedUser?.type == UserTypeEnum.ADMIN}
-							<Form.SingleSelect
-								title="User type"
-								name="type"
-								id="type"
-								options={enumToOptions(UserTypeEnum, m.user_type_enum)}
-								error={form.errors.type}
-								bind:value={form.fields.type}
-							></Form.SingleSelect>
-						{/if}
+						<Form.TextInput
+							title={m.user_degree_after()}
+							name="degreeAfter"
+							id="degreeAfter"
+							type="text"
+							class="order-4 lg:order-1"
+							bind:value={form.fields.degreeAfter}
+							error={form.errors.degreeAfter}
+						></Form.TextInput>
 					</div>
-					<div class="grid grid-cols-3 gap-4">
+					<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
 						<Form.TextInput
 							title={m.user_username()}
 							name="username"
 							id="username"
 							type="text"
+							class="order-1 lg:order-1"
 							bind:value={form.fields.username}
 							error={form.errors.username}
 						></Form.TextInput>
@@ -158,10 +167,21 @@
 							name="email"
 							id="email"
 							type="email"
-							class="col-span-2"
+							class="order-3 col-span-2 lg:order-2"
 							bind:value={form.fields.email}
 							error={form.errors.email}
 						></Form.TextInput>
+						{#if GlobalState.loggedUser?.type == UserTypeEnum.ADMIN}
+							<Form.SingleSelect
+								title="User type"
+								name="type"
+								id="type"
+								class="order-2 lg:order-3"
+								options={enumToOptions(UserTypeEnum, m.user_type_enum)}
+								error={form.errors.type}
+								bind:value={form.fields.type}
+							></Form.SingleSelect>
+						{/if}
 					</div>
 					<div class="grid grid-cols-1 gap-4">
 						<h3 class="text-xl">Notification settings:</h3>

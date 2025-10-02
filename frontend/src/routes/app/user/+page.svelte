@@ -31,8 +31,10 @@
 	const defaultFormData: UserDTO = {
 		id: 0,
 		version: 0,
+		degreeBefore: "",
 		firstName: '',
 		familyName: '',
+		degreeAfter: "",
 		username: '',
 		email: '',
 		notification: {
@@ -95,15 +97,25 @@
 			<Form.Root bind:form onsubmit={handleSubmit} isCreating={false}>
 				<div class="flex flex-col gap-4 p-2">
 					<div
-						class="grid {GlobalState.loggedUser?.type == UserTypeEnum.ADMIN
-							? 'grid-cols-3'
-							: 'grid-cols-2'} gap-4"
+						class="grid grid-cols-2 gap-4 lg:grid-cols-4"
 					>
+						<Form.TextInput
+							title={m.user_degree_before()}
+							name="degreeBefore"
+							id="degreeBefore"
+							type="text"
+							class="order-3 lg:order-1"
+							bind:value={form.fields.degreeBefore}
+							error={form.errors.degreeBefore}
+							disabled={form.fields.identityProvider != 'VSB' &&
+								GlobalState.activeRole != CourseUserRoleEnum.ADMIN}
+						></Form.TextInput>
 						<Form.TextInput
 							title={m.user_first_name()}
 							name="firstName"
 							id="firstName"
 							type="text"
+							class="order-1 lg:order-2"
 							bind:value={form.fields.firstName}
 							error={form.errors.firstName}
 							disabled={form.fields.identityProvider != 'VSB' &&
@@ -114,8 +126,20 @@
 							name="familyName"
 							id="familyName"
 							type="text"
+							class="order-2 lg:order-3"
 							bind:value={form.fields.familyName}
-							error={form.errors.firstName}
+							error={form.errors.familyName}
+							disabled={form.fields.identityProvider != 'VSB' &&
+								GlobalState.activeRole != CourseUserRoleEnum.ADMIN}
+						></Form.TextInput>
+						<Form.TextInput
+							title={m.user_degree_after()}
+							name="degreeAfter"
+							id="degreeAfter"
+							type="text"
+							class="order-4 lg:order-4"
+							bind:value={form.fields.degreeAfter}
+							error={form.errors.degreeAfter}
 							disabled={form.fields.identityProvider != 'VSB' &&
 								GlobalState.activeRole != CourseUserRoleEnum.ADMIN}
 						></Form.TextInput>

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"time"
 
 	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
@@ -66,6 +67,7 @@ func ListForStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 		Where("student_id = ?", userData.ID).
 		InnerJoins("Term").
 		InnerJoins("CourseItem", initializers.DB.Where("CourseItem.course_id = ?", params.CourseID)).
+		Preload("CourseItem.TestDetail").
 		Preload("CourseItem.Parent").
 		Order("course_item_results.course_item_id, Term.active_from, course_item_results.created_at DESC").
 		Find(&results).Error; err != nil {
@@ -73,6 +75,17 @@ func ListForStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 			Code:    500,
 			Message: "Failed to fetch student restuls",
 			Details: err.Error(),
+		}
+	}
+
+	for _, res := range results {
+		if res.CourseItem.Type == enums.CourseItemTypeTest {
+			if !res.CourseItem.TestDetail.ShowResults {
+				if res.Term.ActiveTo.After(time.Now()) {
+					res.Points = 0
+					res.Final = false
+				}
+			}
 		}
 	}
 

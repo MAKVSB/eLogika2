@@ -8,8 +8,10 @@ import (
 type UserDTO struct {
 	ID               uint                       `json:"id"`
 	Version          uint                       `json:"version"`
+	DegreeBefore     string                     `json:"degreeBefore"`
 	FirstName        string                     `json:"firstName"`
 	FamilyName       string                     `json:"familyName"`
+	DegreeAfter      string                     `json:"degreeAfter"`
 	Username         string                     `json:"username"`
 	Email            string                     `json:"email"`
 	Notification     UserNotificationDTO        `json:"notification"`
@@ -21,8 +23,10 @@ type UserDTO struct {
 func (m UserDTO) From(d *models.User) UserDTO {
 	dto := UserDTO{
 		ID:               d.ID,
+		DegreeBefore:     d.DegreeBefore,
 		FirstName:        d.FirstName,
 		FamilyName:       d.FamilyName,
+		DegreeAfter:      d.DegreeAfter,
 		Username:         d.Username,
 		Email:            d.Email,
 		Type:             d.Type,

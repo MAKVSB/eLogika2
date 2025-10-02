@@ -15,13 +15,17 @@
 <Tooltip.Provider>
 	<Tooltip.Root>
 		<Tooltip.Trigger class="w-full">
+			{createdBy.degreeBefore}
 			{createdBy.firstName}
 			{createdBy.familyName}
+			{createdBy.degreeAfter}
 		</Tooltip.Trigger>
 		<Tooltip.Content class="grid grid-cols-2">
 			<p>
+				{createdBy.degreeBefore}
 				{createdBy.firstName}
 				{createdBy.familyName}
+				{createdBy.degreeAfter}
 			</p>
 			({new Date(createdAt).toLocaleString(getLocale())})
 		</Tooltip.Content>

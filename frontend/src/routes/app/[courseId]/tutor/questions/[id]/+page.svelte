@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { API, ApiError } from '$lib/services/api.svelte';
+	import { API } from '$lib/services/api.svelte';
 	import { page } from '$app/state';
 	import * as Form from '$lib/components/ui/form';
 	import { goto } from '$app/navigation';
@@ -70,7 +70,7 @@
 	) {
 		form.fields = res.data;
 		isLoaded = true;
-		console.log("Transfering 30")
+		console.log('Transfering 30');
 		goto(String(res.data.id), {
 			replaceState: true
 		});
@@ -133,7 +133,7 @@
 	}
 
 	function printUserName(user: QuestionCheckedByDTO, last: boolean) {
-		return `${user.firstName} ${user.familyName}${last ? '' : ', '}`;
+		return `${user.degreeBefore} ${user.firstName} ${user.familyName} ${user.degreeAfter} ${last ? '' : ', '}`;
 	}
 </script>
 

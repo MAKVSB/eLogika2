@@ -16,10 +16,8 @@ import (
 )
 
 type ActivityDetailCourseItemInsertRequest struct {
-	Description json.RawMessage `json:"description" ts_type:"JSONContent"` // Assignemnt of activity
-	// DescriptionFile    []File                     ``
+	Description    json.RawMessage `json:"description" ts_type:"JSONContent"`    // Assignemnt of activity
 	ExpectedResult json.RawMessage `json:"expectedResult" ts_type:"JSONContent"` // Expected result of the activity
-	// ExpectedResultFiles []File
 }
 
 type GroupDetailCourseItemInsertRequest struct {
@@ -29,16 +27,15 @@ type GroupDetailCourseItemInsertRequest struct {
 }
 
 type TestDetailCourseItemInsertRequest struct {
-	TestType enums.QuestionTypeEnum `json:"testType"` // Further filters questions used for this test
-	// TODO TestTemplate
-	TimeLimit   uint `json:"timeLimit"`   // Time limit for this test
-	ShowResults bool `json:"showResults"` // Show results to student after finishing test
-	ShowTest    bool `json:"showTest"`    // Show the exact test (questions)
-	// TODO add here option to show also what was the correct answer and explanation
-	AllowOffline   bool   `json:"allowOffline"`                       // Allow offline answer sending
-	IsPaper        bool   `json:"isPaper"`                            // Test is written physically on paper
-	IPRanges       string `json:"ipRanges"`                           // Allowed ip ranges to write a test
-	TestTemplateID uint   `json:"testTemplateId" validate:"required"` // Id of selected test template
+	TestType        enums.QuestionTypeEnum `json:"testType"`                           // Further filters questions used for this test
+	TimeLimit       uint                   `json:"timeLimit"`                          // Time limit for this test
+	ShowResults     bool                   `json:"showResults"`                        // Show results to student after finishing test
+	ShowTest        bool                   `json:"showTest"`                           // Show the exact test (questions)
+	ShowCorrectness bool                   `json:"showCorrectness"`                    // Show what answers were correct
+	AllowOffline    bool                   `json:"allowOffline"`                       // Allow offline answer sending
+	IsPaper         bool                   `json:"isPaper"`                            // Test is written physically on paper
+	IPRanges        string                 `json:"ipRanges"`                           // Allowed ip ranges to write a test
+	TestTemplateID  uint                   `json:"testTemplateId" validate:"required"` // Id of selected test template
 }
 
 // @Description Request to insert new course item
@@ -214,14 +211,15 @@ func Insert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 		courseItem.GroupDetailID = &innerCourseItem.ID
 	case enums.CourseItemTypeTest:
 		innerCourseItem := models.CourseItemTest{
-			TestType:       reqData.TestDetail.TestType,
-			TimeLimit:      reqData.TestDetail.TimeLimit,
-			ShowResults:    reqData.TestDetail.ShowResults,
-			ShowTest:       reqData.TestDetail.ShowTest,
-			AllowOffline:   reqData.TestDetail.AllowOffline,
-			IsPaper:        reqData.TestDetail.IsPaper,
-			IPRanges:       reqData.TestDetail.IPRanges,
-			TestTemplateID: reqData.TestDetail.TestTemplateID,
+			TestType:        reqData.TestDetail.TestType,
+			TimeLimit:       reqData.TestDetail.TimeLimit,
+			ShowResults:     reqData.TestDetail.ShowResults,
+			ShowTest:        reqData.TestDetail.ShowTest,
+			ShowCorrectness: reqData.TestDetail.ShowCorrectness,
+			AllowOffline:    reqData.TestDetail.AllowOffline,
+			IsPaper:         reqData.TestDetail.IsPaper,
+			IPRanges:        reqData.TestDetail.IPRanges,
+			TestTemplateID:  reqData.TestDetail.TestTemplateID,
 		}
 		if err := transaction.Save(&innerCourseItem).Error; err != nil {
 			transaction.Rollback()

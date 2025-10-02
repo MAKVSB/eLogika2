@@ -278,8 +278,10 @@ func UpsertUser(dbRef *gorm.DB, activityStudent *inbus.StudyRelation) (*models.U
 
 	user.Version = user.Version + 1
 	user.Username = activityStudent.Login
+	user.DegreeBefore = activityStudent.DegreeBefore
 	user.FirstName = activityStudent.FirstName
 	user.FamilyName = activityStudent.SecondName
+	user.DegreeAfter = activityStudent.DegreeAfter
 	user.Email = activityStudent.Login + "@vsb.cz"
 	user.IdentityProvider = enums.IdentityProviderVSB
 	user.IdentityProviderID = strconv.Itoa(int(activityStudent.PersonId))
@@ -393,7 +395,7 @@ func UpsertClassUser(dbRef *gorm.DB, user *models.User, courseClassIDs []uint, c
 
 		res = append(res, common.ErrorResources{
 			ResourceType: "user",
-			ResourceData: user.FirstName + " " + user.FamilyName,
+			ResourceData: user.FullName(),
 		})
 
 		return nil, &common.ErrorResponse{

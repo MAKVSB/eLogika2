@@ -92,7 +92,7 @@ func ClassDelete(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 		}
 	}
 
-	if err := transaction.Delete(class).Error; err != nil {
+	if err := transaction.Delete(&class).Error; err != nil {
 		transaction.Rollback()
 		return &common.ErrorResponse{
 			Code:    500,

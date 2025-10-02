@@ -3,7 +3,7 @@
 	import * as Table from '$lib/components/ui/table/index.js';
 	import { m } from '$lib/paraglide/messages';
 	import * as Collapsible from '$lib/components/ui/collapsible/index.js';
-    
+
 	import ChevronsRightIcon from '@lucide/svelte/icons/chevron-right';
 	import ChevronsDownIcon from '@lucide/svelte/icons/chevron-down';
 	import { Button } from '$lib/components/ui/button';
@@ -15,7 +15,7 @@
 		userData: CourseItemResultsDTO;
 	} = $props();
 
-    let open = $state(false)
+	let open = $state(false);
 </script>
 
 <Table.Row>
@@ -33,8 +33,13 @@
 		</Collapsible.Root>
 	</Table.Cell>
 	<Table.Cell>{userData.username}</Table.Cell>
-	<Table.Cell>{userData.firstName}</Table.Cell>
-	<Table.Cell>{userData.familyName}</Table.Cell>
+	<Table.Cell>
+		{userData.degreeBefore}
+		{userData.firstName}
+		{userData.familyName}
+		{userData.degreeAfter}
+	</Table.Cell>
+	<Table.Cell></Table.Cell>
 	<Table.Cell>
 		{userData.points}
 	</Table.Cell>
@@ -42,7 +47,7 @@
 </Table.Row>
 {#if open}
 	<Table.Row>
-        <Table.Cell></Table.Cell>
+		<Table.Cell></Table.Cell>
 		<Table.Cell colspan={6}>
 			<ResultsTable studentId={userData.id} results={userData.results}></ResultsTable>
 		</Table.Cell>

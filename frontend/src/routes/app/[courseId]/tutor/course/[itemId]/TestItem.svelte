@@ -33,12 +33,12 @@
 	});
 </script>
 
-<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 	<Form.SingleSelect
 		title={m.courseitem_group_test_type()}
 		name="testType"
 		id="testType"
-		class="sm:col-span-2 lg:col-span-4"
+		class="sm:col-span-2 lg:col-span-3"
 		options={enumToOptions(QuestionTypeEnum, m.question_type_enum)}
 		bind:value={fields.testType}
 		error={errors.testType}
@@ -48,7 +48,7 @@
 		title={m.courseitem_group_test_template()}
 		name="testTemplateId"
 		id="testTemplateId"
-		class="sm:col-span-2 lg:col-span-4"
+		class="sm:col-span-2 lg:col-span-3"
 		options={templates}
 		bind:value={fields.testTemplateId}
 		error={errors.testTemplateId}
@@ -59,7 +59,7 @@
 		name="timeLimit"
 		id="timeLimit"
 		type="number"
-		class="sm:col-span-2 lg:col-span-4"
+		class="sm:col-span-2 lg:col-span-3"
 		bind:value={fields.timeLimit}
 		error={errors.timeLimit ?? ''}
 		{disabled}
@@ -70,6 +70,7 @@
 		id="showResults"
 		bind:value={fields.showResults}
 		error={errors.showResults}
+		tooltip={m.courseitem_group_test_show_results_tooltip()}
 		{disabled}
 	></Form.Checkbox>
 	<Form.Checkbox
@@ -78,6 +79,16 @@
 		id="showTest"
 		bind:value={fields.showTest}
 		error={errors.showTest}
+		tooltip={m.courseitem_group_test_show_test_tooltip()}
+		{disabled}
+	></Form.Checkbox>
+	<Form.Checkbox
+		title={m.courseite_group_test_show_correctness()}
+		name="showTest"
+		id="showTest"
+		bind:value={fields.showCorrectness}
+		error={errors.showCorrectness}
+		tooltip={m.courseitem_group_test_show_correctness_tooltip()}
 		{disabled}
 	></Form.Checkbox>
 	<Form.Checkbox
@@ -86,7 +97,8 @@
 		id="allowOffline"
 		bind:value={fields.allowOffline}
 		error={errors.allowOffline}
-		{disabled}
+		tooltip={m.courseitem_group_test_offline_tooltip()}
+		disabled
 	></Form.Checkbox>
 	<Form.Checkbox
 		title={m.courseitem_group_test_ispaper()}
@@ -94,6 +106,7 @@
 		id="isPaper"
 		bind:value={fields.isPaper}
 		error={errors.isPaper}
+		tooltip={m.courseitem_group_test_ispaper_tooltip()}
 		{disabled}
 	></Form.Checkbox>
 	<Form.TextInput
@@ -101,7 +114,7 @@
 		name="ipRanges"
 		id="ipRanges"
 		type="text"
-		class="sm:col-span-2 lg:col-span-4"
+		class="sm:col-span-2 lg:col-span-3"
 		bind:value={fields.ipRanges}
 		error={errors.ipRanges ?? ''}
 		{disabled}

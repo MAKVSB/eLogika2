@@ -53,10 +53,10 @@ export const columns: ColumnDef<UserListItemDTO>[] = [
 			})
 	},
 	{
-		accessorKey: 'email',
+		accessorKey: 'firstName',
 		header: ({ column }) =>
 			renderComponent(SortButton, {
-				name: m.user_email(),
+				name: m.user_first_name(),
 				sorted: column.getIsSorted(),
 				onclick: column.getToggleSortingHandler()
 			})
@@ -71,10 +71,18 @@ export const columns: ColumnDef<UserListItemDTO>[] = [
 			})
 	},
 	{
-		accessorKey: 'firstName',
+		accessorKey: 'degreeBefore',
+		header: m.user_degree_before()
+	},
+	{
+		accessorKey: 'degreeAfter',
+		header: m.user_degree_after()
+	},
+	{
+		accessorKey: 'email',
 		header: ({ column }) =>
 			renderComponent(SortButton, {
-				name: m.user_first_name(),
+				name: m.user_email(),
 				sorted: column.getIsSorted(),
 				onclick: column.getToggleSortingHandler()
 			})

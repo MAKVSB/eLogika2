@@ -31,7 +31,7 @@ export const columns: (ColumnDef<ActivityListItemDTO> & { uniqueId?: string })[]
 		accessorKey: 'participant',
 		header: m.question_created_by(),
 		cell: ({ row }) => {
-			return `${row.original.participant.firstName} ${row.original.participant.familyName} (${row.original.participant.username})`;
+			return `${row.original.participant.degreeBefore} ${row.original.participant.firstName} ${row.original.participant.familyName} ${row.original.participant.degreeAfter} (${row.original.participant.username})`;
 		}
 	},
 	{

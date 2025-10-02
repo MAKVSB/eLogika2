@@ -14,15 +14,22 @@ type TestInstanceQuestionAnswerDTO struct {
 	Correct  *bool           `json:"correct,omitempty"`
 }
 
-func (m TestInstanceQuestionAnswerDTO) From(d *models.TestInstanceQuestionAnswer, isTutor bool) TestInstanceQuestionAnswerDTO {
+func (m TestInstanceQuestionAnswerDTO) From(
+	d *models.TestInstanceQuestionAnswer,
+	showTest bool,
+	showCorrectness bool,
+) TestInstanceQuestionAnswerDTO {
 	dto := TestInstanceQuestionAnswerDTO{
 		ID:       d.ID,
 		Selected: d.Selected,
 		Order:    d.TestQuestionAnswer.Order,
-		Content:  d.TestQuestionAnswer.Answer.Content,
 	}
 
-	if isTutor {
+	if showTest {
+		dto.Content = d.TestQuestionAnswer.Answer.Content
+	}
+
+	if showCorrectness {
 		dto.Correct = &d.TestQuestionAnswer.Answer.Correct
 	}
 

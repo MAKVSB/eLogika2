@@ -1,4 +1,4 @@
-import { Extension, nodePasteRule, textInputRule, textPasteRule } from '@tiptap/core';
+import { Extension, textInputRule, textPasteRule } from '@tiptap/core';
 
 const rules = [
 	{
@@ -34,7 +34,6 @@ export const CharsReplacer = Extension.create({
 		let inputrules = [];
 
 		for (const rule of rules) {
-			console.log(new RegExp(`${escapeRegExp(rule.from)}`, 'g'));
 			inputrules.push(
 				textPasteRule({
 					find: new RegExp(`${escapeRegExp(rule.from)}`, 'g'),

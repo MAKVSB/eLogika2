@@ -94,7 +94,10 @@ func TestInstanceTutorGet(c *gin.Context, userData authdtos.LoggedUserDTO, userR
 	}
 
 	c.JSON(200, TestInstanceGetResponse{
-		InstanceData: dtos.TestInstanceDTO{}.From(testInstance, true),
+		InstanceData: dtos.TestInstanceDTO{}.From(
+			testInstance,
+			true,
+		),
 	})
 
 	return nil

@@ -38,7 +38,7 @@ export const columns: (ColumnDef<TestInstanceListItemDTO> & { uniqueId?: string 
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return `${row.original.participant.firstName} ${row.original.participant.familyName} (${row.original.participant.username})`;
+			return `${row.original.participant.degreeBefore} ${row.original.participant.firstName} ${row.original.participant.familyName} ${row.original.participant.degreeAfter} (${row.original.participant.username})`;
 		}
 	},
 	{

@@ -91,7 +91,7 @@ func (asp AnswerSheetPrinter) GenerateAnswerSheets(testData *models.Test, testIn
 		pdf.Rect(pageSpacing, pageSpacing+headingHeight, pw-pageSpacing*2, ph-pageSpacing*2-headingHeight, "")
 
 		DrawAnswers(pdf, pageSpacing, pageSpacing+headingHeight, pw-pageSpacing*2, ph-headingHeight-pageSpacing*2, sheet)
-
+		pdf.AddPage() // Make sure the other side of the page is empty for both-sided printing
 	}
 
 	outputPath := filepath.Join(asp.OutputDir, asp.OutputName)
@@ -319,8 +319,8 @@ func DrawParticipantQR(pdf *fpdf.Fpdf, toprightX float64, toprightY float64, siz
 		pdf.ImageOptions(identifier, topleftXQR, toprightY, size, size, false, imgOpts, 0, "")
 
 		participantLines := []string{}
-		participantLines = append(participantLines, testInstance.Participant.FirstName)
-		participantLines = append(participantLines, testInstance.Participant.FamilyName)
+		participantLines = append(participantLines, testInstance.Participant.DegreeBefore+" "+testInstance.Participant.FirstName)
+		participantLines = append(participantLines, testInstance.Participant.FamilyName+" "+testInstance.Participant.DegreeAfter)
 		participantLines = append(participantLines, testInstance.Participant.Username)
 
 		pdf.SetXY(topleftX+10, toprightY+10)

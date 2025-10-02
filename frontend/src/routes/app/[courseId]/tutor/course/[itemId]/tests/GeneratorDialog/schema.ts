@@ -45,6 +45,14 @@ export const columns: (ColumnDef<CourseUserDTO> & { uniqueId?: string })[] = [
 		header: m.user_family_name()
 	},
 	{
+		accessorKey: 'degreeBefore',
+		header: m.user_degree_before()
+	},
+	{
+		accessorKey: 'degreeAfter',
+		header: m.user_degree_after()
+	},
+	{
 		accessorKey: 'email',
 		header: m.user_email()
 	}

@@ -13,8 +13,10 @@ import (
 
 // @Description Request to create new user
 type UserUpdateSelfRequest struct {
+	DegreeBefore string                   `json:"degreeBefore" binding:"required"` // Degree before name
 	FirstName    string                   `json:"firstName" binding:"required"`    // First name
 	FamilyName   string                   `json:"familyName" binding:"required"`   // (Family) Last name
+	DegreeAfter  string                   `json:"degreeAfter" binding:"required"`  // Degree after name
 	Username     string                   `json:"username" binding:"required"`     // Username
 	Email        string                   `json:"email" binding:"required"`        // Email of the user
 	Notification dtos.UserNotificationDTO `json:"notification" binding:"required"` // Notification setting
@@ -44,7 +46,7 @@ func UserUpdateSelf(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 	// Load request data
 	err, _, reqData := utils.GetRequestData[
 		any,
-		UserUpdateRequest,
+		UserUpdateSelfRequest,
 	](c)
 	if err != nil {
 		return err
@@ -77,8 +79,10 @@ func UserUpdateSelf(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 		user.Type = reqData.Type
 	}
 	if user.IdentityProvider == enums.IdentityProviderInternal {
+		user.DegreeBefore = reqData.DegreeBefore
 		user.FirstName = reqData.FirstName
 		user.FamilyName = reqData.FamilyName
+		user.DegreeAfter = reqData.DegreeAfter
 		user.Username = reqData.Username
 		user.Email = reqData.Email
 	}

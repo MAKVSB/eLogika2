@@ -25,6 +25,7 @@
 		required?: boolean;
 		value: string;
 		error: string | ErrorObject;
+		disabled?: boolean;
 	} & WithElementRef<HTMLAttributes<HTMLElement>> = $props();
 </script>
 

@@ -5,8 +5,6 @@ import (
 )
 
 type CourseItemGroupDTO struct {
-	ID uint `json:"id"`
-
 	Choice    bool `json:"choice"`
 	ChooseMin uint `json:"chooseMin"`
 	ChooseMax uint `json:"chooseMax"`
@@ -14,8 +12,6 @@ type CourseItemGroupDTO struct {
 
 func (m CourseItemGroupDTO) From(d *models.CourseItemGroup) CourseItemGroupDTO {
 	dto := CourseItemGroupDTO{
-		ID: d.ID,
-
 		Choice:    d.Choice,
 		ChooseMin: d.ChooseMin,
 		ChooseMax: d.ChooseMax,

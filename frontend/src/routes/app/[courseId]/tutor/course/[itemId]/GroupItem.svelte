@@ -30,6 +30,7 @@
             type="number"
             bind:value={fields.chooseMin}
             error={errors.chooseMin ?? ''}
+            {disabled}
         ></Form.TextInput>
         <Form.TextInput
             title={m.courseitem_group_pick_max()}
@@ -38,6 +39,7 @@
             type="number"
             bind:value={fields.chooseMax}
             error={errors.chooseMax ?? ''}
+            {disabled}
         ></Form.TextInput>
     {/if}
 </div>
