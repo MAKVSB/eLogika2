@@ -443,9 +443,9 @@ func linkFile(source string, destination string) {
 
 	err := os.Link(source, destination)
 	if err != nil {
-		panic(err)
+		// TODO do not ignore error
+		return
 	}
-	return
 }
 
 func getTableColsCount(node map[string]interface{}) int {
