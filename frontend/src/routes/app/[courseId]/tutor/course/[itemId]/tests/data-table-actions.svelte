@@ -32,7 +32,7 @@
 		class="relative"
 		onclick={() =>
 			handleActionClick('print', {
-				instances: false
+				instances: true
 			})}
 	>
 		<span>Print test</span>

@@ -32,7 +32,7 @@ type AnswerSheetPrinter struct {
 	OutputName string
 }
 
-func (asp AnswerSheetPrinter) GenerateAnswerSheets(testData *models.Test, testInstance *models.TestInstance) string {
+func (asp AnswerSheetPrinter) GenerateAnswerSheets(testData *models.Test, testInstance *models.TestInstance, separatePage bool) (string, int) {
 	// Divide questions into answer sheets
 	sheets := SplitToSheets(testData)
 
@@ -91,7 +91,9 @@ func (asp AnswerSheetPrinter) GenerateAnswerSheets(testData *models.Test, testIn
 		pdf.Rect(pageSpacing, pageSpacing+headingHeight, pw-pageSpacing*2, ph-pageSpacing*2-headingHeight, "")
 
 		DrawAnswers(pdf, pageSpacing, pageSpacing+headingHeight, pw-pageSpacing*2, ph-headingHeight-pageSpacing*2, sheet)
-		pdf.AddPage() // Make sure the other side of the page is empty for both-sided printing
+		if separatePage {
+			pdf.AddPage() // Make sure the other side of the page is empty for both-sided printing
+		}
 	}
 
 	outputPath := filepath.Join(asp.OutputDir, asp.OutputName)
@@ -100,7 +102,8 @@ func (asp AnswerSheetPrinter) GenerateAnswerSheets(testData *models.Test, testIn
 	if err != nil {
 		panic(err)
 	}
-	return outputPath
+
+	return outputPath, pdf.PageCount()
 }
 
 func SplitToSheets(testData *models.Test) []*SheetData {

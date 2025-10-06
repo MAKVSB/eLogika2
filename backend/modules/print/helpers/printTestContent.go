@@ -16,15 +16,16 @@ import (
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"github.com/google/uuid"
+	"github.com/pdfcpu/pdfcpu/pkg/api"
 )
 
 type TestPrinter struct {
 	WorkDir   string
 	AssetDir  string
-	Outputdir string
+	OutputDir string
 }
 
-func (tp TestPrinter) GenerateTestContent(testData *models.Test) string {
+func (tp TestPrinter) GenerateTestContent(testData *models.Test) (string, int) {
 	latexCode := `
 	\documentclass{article}
 	\usepackage[a4paper, margin=15mm]{geometry}
@@ -32,7 +33,6 @@ func (tp TestPrinter) GenerateTestContent(testData *models.Test) string {
 	\usepackage{amsmath, amssymb}
 	\usepackage{ulem}
 	\usepackage{graphicx}
-	\usepackage{ifoddpage}
 	\usepackage{tabularx}
 	\usepackage{enumitem}
 	\usepackage{hyperref}
@@ -105,15 +105,6 @@ func (tp TestPrinter) GenerateTestContent(testData *models.Test) string {
 
 	latexCode += `
 	\clearpage
-	\checkoddpage
-	\ifoddpage
-	% do nothing, page count is odd
-	\else
-	% insert a blank page
-	\thispagestyle{empty}
-	\null
-	\newpage
-	\fi
 	`
 
 	latexCode += `\end{document}`
@@ -122,7 +113,7 @@ func (tp TestPrinter) GenerateTestContent(testData *models.Test) string {
 
 	uniqueName := "output" + uuid.NewString()
 
-	texFile := tp.Outputdir + "/" + uniqueName + ".tex"
+	texFile := tp.OutputDir + "/" + uniqueName + ".tex"
 	var err error
 	err = os.WriteFile(texFile, []byte(latexCode), 0644)
 	if err != nil {
@@ -130,7 +121,7 @@ func (tp TestPrinter) GenerateTestContent(testData *models.Test) string {
 	}
 
 	// Run pdflatex
-	cmd := exec.Command("pdflatex", "-interaction=batchmode", "-halt-on-error", "-output-directory="+tp.Outputdir+"/", texFile)
+	cmd := exec.Command("pdflatex", "-interaction=batchmode", "-halt-on-error", "-output-directory="+tp.OutputDir+"/", texFile)
 	cmd.Stdout = io.Discard
 	cmd.Stderr = io.Discard
 	cmd.Stdin = nil
@@ -138,7 +129,15 @@ func (tp TestPrinter) GenerateTestContent(testData *models.Test) string {
 	if err != nil {
 		panic(err)
 	}
-	return filepath.Join(tp.Outputdir, uniqueName+".pdf")
+
+	returnPath := filepath.Join(tp.OutputDir, uniqueName+".pdf")
+
+	ctx, err := api.ReadContextFile(returnPath)
+	if err != nil {
+		panic("Cannot read number of pages")
+	}
+
+	return returnPath, ctx.PageCount
 }
 
 func (tp TestPrinter) ConvertNodeToLaTeX(node map[string]interface{}) string {

@@ -103,7 +103,8 @@ func PrintTest(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.C
 		}
 	}
 
-	filepath := helpers.PrintTests(printData, courseItem, reqData.PrintAnswerSheets)
+	// TODO separateAnswerPage
+	filepath := helpers.PrintTests(printData, courseItem, reqData.PrintAnswerSheets, false)
 	c.FileAttachment(filepath, uuid.NewString())
 
 	return nil

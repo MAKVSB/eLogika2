@@ -14,7 +14,7 @@ import (
 	"github.com/pdfcpu/pdfcpu/pkg/api"
 )
 
-func PrintTests(testsData []*models.Test, courseItem *models.CourseItem, printAnswerSheet bool) string {
+func PrintTests(testsData []*models.Test, courseItem *models.CourseItem, printAnswerSheet bool, separateAnswerPage bool) string {
 	workDir, err := os.Getwd()
 	if err != nil {
 		panic(err)
@@ -47,10 +47,10 @@ func PrintTests(testsData []*models.Test, courseItem *models.CourseItem, printAn
 			testPrinter := TestPrinter{
 				WorkDir:   workDir,
 				AssetDir:  utils.CreateFolder(filepath.Join(tmpFolder, "assets")),
-				Outputdir: testOutputDir,
+				OutputDir: testOutputDir,
 			}
 
-			finalTestPath := testPrinter.GenerateTestContent(testData)
+			finalTestPath, finalTestPages := testPrinter.GenerateTestContent(testData)
 
 			var paths []string
 
@@ -62,8 +62,12 @@ func PrintTests(testsData []*models.Test, courseItem *models.CourseItem, printAn
 						OutputDir:  answerSheetDir,
 						OutputName: "common" + uuid.NewString() + ".pdf",
 					}
-					answerSheetPath := answerSheetPrinter.GenerateAnswerSheets(testData, nil)
-					paths = append(paths, answerSheetPath, finalTestPath)
+					answerSheetPath, answerSheetPages := answerSheetPrinter.GenerateAnswerSheets(testData, nil, separateAnswerPage)
+					if ((answerSheetPages + finalTestPages) % 2) == 0 {
+						paths = append(paths, answerSheetPath, finalTestPath)
+					} else {
+						paths = append(paths, answerSheetPath, finalTestPath, workDir+"/assets/blank.pdf")
+					}
 				} else {
 					for _, instance := range testData.Instances {
 						answerSheetDir := utils.CreateFolder(filepath.Join(testOutputDir, "instances"))
@@ -72,8 +76,12 @@ func PrintTests(testsData []*models.Test, courseItem *models.CourseItem, printAn
 							OutputDir:  answerSheetDir,
 							OutputName: strconv.Itoa(int(instance.ID)) + ".pdf",
 						}
-						answerSheetPath := answerSheetPrinter.GenerateAnswerSheets(testData, &instance)
-						paths = append(paths, answerSheetPath, finalTestPath)
+						answerSheetPath, answerSheetPages := answerSheetPrinter.GenerateAnswerSheets(testData, &instance, separateAnswerPage)
+						if ((answerSheetPages + finalTestPages) % 2) == 0 {
+							paths = append(paths, answerSheetPath, finalTestPath)
+						} else {
+							paths = append(paths, answerSheetPath, finalTestPath, workDir+"/assets/blank.pdf")
+						}
 					}
 				}
 			} else {
