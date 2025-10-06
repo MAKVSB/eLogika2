@@ -218,7 +218,7 @@ func Generate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Co
 			testInstance, err := helpers.CreateInstance(
 				transaction,
 				generatedTest,
-				ju.ID,
+				ju.UserID,
 				params.TermID,
 				courseItem.ID,
 				reqData.Form,
