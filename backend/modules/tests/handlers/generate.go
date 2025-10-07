@@ -546,6 +546,9 @@ func PickRandomAnswers(reqAnswerCount int, allAnswers []helpers.QuestionAnswer, 
 	}
 
 	if remainingCorrect == 0 && remainingIncorrect == 0 && remainingRandom == 0 {
+		for pa_i, pa := range pickedAnswers {
+			pa.Order = uint(pa_i)
+		}
 		return &pickedAnswers, nil
 	} else {
 		fmt.Println(remainingCorrect, remainingIncorrect, remainingRandom)
