@@ -68,11 +68,16 @@ func PrintTest(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.C
 		Where("tests.course_item_id = ?", reqData.CourseItemID).
 		Preload("Questions", func(db *gorm.DB) *gorm.DB {
 			return db.
+				Unscoped().
+				Joins("Question", initializers.DB.Unscoped()).
 				Order("\"order\" ASC")
 		}).
-		Preload("Questions.Question").
-		Preload("Questions.Answers").
-		Preload("Questions.Answers.Answer").
+		Preload("Questions.Answers", func(db *gorm.DB) *gorm.DB {
+			return db.
+				Unscoped().
+				Joins("Answer", initializers.DB.Unscoped()).
+				Order("\"order\" ASC")
+		}).
 		Preload("Course")
 
 	if reqData.TermID != nil {
