@@ -395,15 +395,15 @@ func GenerateTest(
 	return generatedTestVariant, nil
 }
 
-func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks bool, mixEverything bool) ([]models.TestQuestion, error) {
+func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks bool, mixEverything bool) ([]*models.TestQuestion, error) {
 	variantQuestionIDs := []uint{}
 
-	blockedQuestions := make([][]models.TestQuestion, 0)
+	blockedQuestions := make([][]*models.TestQuestion, 0)
 
 	order := uint(1)
 
 	for _, block := range generatorCache.Blocks {
-		blockQuestions := make([]models.TestQuestion, 0)
+		blockQuestions := make([]*models.TestQuestion, 0)
 
 		for s_id, segment := range block.Segments {
 			segment.QuestionPool = Shuffle(segment.QuestionPool)
@@ -418,7 +418,7 @@ func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks 
 						continue
 					}
 
-					pickedQuestion := models.TestQuestion{
+					pickedQuestion := &models.TestQuestion{
 						Order:      order,
 						BlockID:    block.BlockData.ID,
 						QuestionID: segment.QuestionPool[q].ID,
@@ -458,7 +458,7 @@ func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks 
 		blockedQuestions = Shuffle(blockedQuestions)
 	}
 
-	variantQuestions := make([]models.TestQuestion, 0)
+	variantQuestions := make([]*models.TestQuestion, 0)
 
 	for _, questionsInBlock := range blockedQuestions {
 		variantQuestions = append(variantQuestions, questionsInBlock...)
@@ -468,11 +468,15 @@ func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks 
 		variantQuestions = Shuffle(variantQuestions)
 	}
 
+	for vq_i, vq := range variantQuestions {
+		vq.Order = uint(vq_i)
+	}
+
 	return variantQuestions, nil
 }
 
-func PickRandomAnswers(reqAnswerCount int, allAnswers []helpers.QuestionAnswer, distribution enums.AnswerDistributionEnum) (*[]models.TestQuestionAnswer, error) {
-	pickedAnswers := make([]models.TestQuestionAnswer, 0)
+func PickRandomAnswers(reqAnswerCount int, allAnswers []helpers.QuestionAnswer, distribution enums.AnswerDistributionEnum) (*[]*models.TestQuestionAnswer, error) {
+	pickedAnswers := make([]*models.TestQuestionAnswer, 0)
 
 	// Prepare searching data
 	var remainingIncorrect int
@@ -505,14 +509,14 @@ func PickRandomAnswers(reqAnswerCount int, allAnswers []helpers.QuestionAnswer, 
 		if a.Answer.Correct {
 			if remainingCorrect > 0 {
 				remainingCorrect -= 1
-				pickedAnswers = append(pickedAnswers, models.TestQuestionAnswer{
+				pickedAnswers = append(pickedAnswers, &models.TestQuestionAnswer{
 					AnswerID: a.Answer.ID,
 					Order:    order,
 				})
 				order++
 			} else if remainingRandom > 0 {
 				remainingRandom -= 1
-				pickedAnswers = append(pickedAnswers, models.TestQuestionAnswer{
+				pickedAnswers = append(pickedAnswers, &models.TestQuestionAnswer{
 					AnswerID: a.Answer.ID,
 					Order:    order,
 				})
@@ -521,14 +525,14 @@ func PickRandomAnswers(reqAnswerCount int, allAnswers []helpers.QuestionAnswer, 
 		} else {
 			if remainingIncorrect > 0 {
 				remainingIncorrect -= 1
-				pickedAnswers = append(pickedAnswers, models.TestQuestionAnswer{
+				pickedAnswers = append(pickedAnswers, &models.TestQuestionAnswer{
 					AnswerID: a.Answer.ID,
 					Order:    order,
 				})
 				order++
 			} else if remainingRandom > 0 {
 				remainingRandom -= 1
-				pickedAnswers = append(pickedAnswers, models.TestQuestionAnswer{
+				pickedAnswers = append(pickedAnswers, &models.TestQuestionAnswer{
 					AnswerID: a.Answer.ID,
 					Order:    order,
 				})

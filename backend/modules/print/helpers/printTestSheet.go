@@ -23,7 +23,7 @@ type SheetData struct {
 	Format         enums.QuestionFormatEnum
 	SheetOrder     uint
 	MaxAnswerCount int
-	Questions      []models.TestQuestion
+	Questions      []*models.TestQuestion
 }
 
 type AnswerSheetPrinter struct {
@@ -121,7 +121,7 @@ func SplitToSheets(testData *models.Test) []*SheetData {
 				newSheet := &SheetData{
 					Format:         enums.QuestionFormatOpen,
 					SheetOrder:     lastTeacherSheetOrder,
-					Questions:      []models.TestQuestion{},
+					Questions:      make([]*models.TestQuestion, 0),
 					MaxAnswerCount: 11,
 				}
 				lastTeacherSheetOrder++
@@ -139,7 +139,7 @@ func SplitToSheets(testData *models.Test) []*SheetData {
 				newSheet := &SheetData{
 					Format:     enums.QuestionFormatTest,
 					SheetOrder: lastStudentSheetOrder,
-					Questions:  []models.TestQuestion{},
+					Questions:  make([]*models.TestQuestion, 0),
 				}
 				lastStudentSheetOrder++
 				sheets = append(sheets, newSheet)

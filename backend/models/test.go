@@ -20,13 +20,13 @@ type Test struct {
 	Name  string ``
 	Group string ``
 
-	Course     *Course        ``
-	CourseItem *CourseItem    ``
-	Term       *Term          ``
-	CreatedBy  *User          ``
-	Blocks     []TestBlock    `gorm:"serializer:json"`
-	Questions  []TestQuestion ``
-	Instances  []TestInstance ``
+	Course     *Course         ``
+	CourseItem *CourseItem     ``
+	Term       *Term           ``
+	CreatedBy  *User           ``
+	Blocks     []TestBlock     `gorm:"serializer:json"`
+	Questions  []*TestQuestion ``
+	Instances  []TestInstance  ``
 }
 
 type TestBlock struct {
