@@ -406,7 +406,7 @@ func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks 
 		blockQuestions := make([]models.TestQuestion, 0)
 
 		for s_id, segment := range block.Segments {
-			Shuffle(segment.QuestionPool)
+			segment.QuestionPool = Shuffle(segment.QuestionPool)
 			SortQuestionCandidates(segment.QuestionPool)
 
 			succesfullyPickedQuestionCount := 0
@@ -448,14 +448,14 @@ func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks 
 		}
 
 		if block.BlockData.MixInsideBlock {
-			Shuffle(blockQuestions)
+			blockQuestions = Shuffle(blockQuestions)
 		}
 
 		blockedQuestions = append(blockedQuestions, blockQuestions)
 	}
 
 	if mixBlocks {
-		Shuffle(blockedQuestions)
+		blockedQuestions = Shuffle(blockedQuestions)
 	}
 
 	variantQuestions := make([]models.TestQuestion, 0)
@@ -465,7 +465,7 @@ func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks 
 	}
 
 	if mixEverything {
-		Shuffle(variantQuestions)
+		variantQuestions = Shuffle(variantQuestions)
 	}
 
 	return variantQuestions, nil
@@ -498,7 +498,7 @@ func PickRandomAnswers(reqAnswerCount int, allAnswers []helpers.QuestionAnswer, 
 	}
 
 	//Shuffle all answers
-	Shuffle(allAnswers)
+	allAnswers = Shuffle(allAnswers)
 
 	//Loop over and pick
 	for _, a := range allAnswers {
@@ -542,9 +542,6 @@ func PickRandomAnswers(reqAnswerCount int, allAnswers []helpers.QuestionAnswer, 
 	}
 
 	if remainingCorrect == 0 && remainingIncorrect == 0 && remainingRandom == 0 {
-
-		Shuffle(pickedAnswers)
-
 		return &pickedAnswers, nil
 	} else {
 		fmt.Println(remainingCorrect, remainingIncorrect, remainingRandom)
