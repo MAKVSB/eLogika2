@@ -177,7 +177,7 @@ func DrawAnswers(pdf *fpdf.Fpdf, posX float64, posY float64, w float64, h float6
 			offsetY += offsetYAddHeader
 		}
 
-		questionString := strconv.Itoa(int(q.Order))
+		questionString := strconv.Itoa(int(q.Order + 1)) // Offset so it does not start printing on 1
 		switch q.Question.QuestionFormat {
 		case enums.QuestionFormatOpen:
 			DrawAnswerRow(pdf, posX, posY+offsetY, squareSize, questionString, 11)

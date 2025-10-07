@@ -5,7 +5,6 @@ import (
 
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common"
-	"elogika.vsb.cz/backend/utils"
 	"gorm.io/gorm"
 )
 
@@ -192,8 +191,9 @@ func (r *TermRepository) ListJoinedStudents(
 ) ([]*models.UserTerm, int64, *common.ErrorResponse) {
 	query := dbRef.
 		Model(&models.UserTerm{}).
-		Preload("User").
-		Where("term_id = ?", termID)
+		Joins("User").
+		Where("term_id = ?", termID).
+		Order("\"User\".\"family_name\"")
 
 	if filters != nil {
 		query = (*filters)(query)
@@ -201,8 +201,6 @@ func (r *TermRepository) ListJoinedStudents(
 
 	if full {
 	}
-
-	utils.DebugPrintJSON(searchParams)
 
 	// Apply filters, sorting, pagination
 	if searchParams != nil {

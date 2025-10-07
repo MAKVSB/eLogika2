@@ -32,14 +32,14 @@ type ListJoinedStudentsResponse struct {
 // @Router /api/v2/courses/{courseId}/items/{courseItemId}/terms/{termId}/students [get]
 func ListJoinedStudents(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.CourseUserRoleEnum) *common.ErrorResponse {
 	// Load request data
-	err, params, _ := utils.GetRequestData[
+	err, params, _, searchParams := utils.GetRequestDataWithSearch[
 		struct {
 			CourseID     uint `uri:"courseId" binding:"required"`
 			CourseItemID uint `uri:"courseItemId" binding:"required"`
 			TermID       uint `uri:"termId" binding:"required"`
 		},
 		any,
-	](c)
+	](c, "search")
 	if err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func ListJoinedStudents(c *gin.Context, userData authdtos.LoggedUserDTO, userRol
 	}
 
 	termService := services.TermService{}
-	joinedStudents, joinedStudentsCount, err := termService.ListJoinedStudents(initializers.DB, params.TermID, userData.ID, userRole, nil, false, nil)
+	joinedStudents, joinedStudentsCount, err := termService.ListJoinedStudents(initializers.DB, params.TermID, userData.ID, userRole, nil, false, searchParams)
 	if err != nil {
 		return err
 	}
