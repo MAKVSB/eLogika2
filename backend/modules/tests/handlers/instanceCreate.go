@@ -13,7 +13,8 @@ import (
 )
 
 type TestInstanceCreateRequest struct {
-	Form enums.TestInstanceFormEnum `json:"form" binding:"required"`
+	Form   enums.TestInstanceFormEnum `json:"form" binding:"required"`
+	UserID uint                       `json:"userId" binding:"required"`
 }
 
 type TestInstanceCreateResponse struct {
@@ -95,10 +96,12 @@ func CreateInstance(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 		}
 	}
 
+	// TODO validate that userID is a member of course
+
 	testInstance, err := helpers.CreateInstance(
 		initializers.DB,
 		test,
-		userData.ID,
+		reqData.UserID,
 		test.TermID,
 		params.CourseItemID,
 		reqData.Form,

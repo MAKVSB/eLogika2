@@ -79,11 +79,12 @@
 					{
 						method: 'POST',
 						body: {
-							form: instanceForm
+							form: instanceForm,
+							userId: id,
 						}
 					}
 				)
-					.then((res) => {
+					.then((res: TestInstanceCreateResponse) => {
 						invalidateAll();
 						console.log("Transfering 28")
 						goto(
