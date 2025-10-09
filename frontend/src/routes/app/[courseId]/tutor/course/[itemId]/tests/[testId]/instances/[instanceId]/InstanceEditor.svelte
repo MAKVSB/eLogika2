@@ -18,6 +18,7 @@
 	import { m } from '$lib/paraglide/messages';
 	import { parseAbsoluteToLocal } from '@internationalized/date';
 	import GlobalState from '$lib/shared.svelte';
+	import { displayUserName } from '$lib/utils';
 
 	let {
 		instanceData,
@@ -118,9 +119,7 @@
 		title={m.testinstance_participants()}
 		id="participant"
 		name="participant"
-		value="{instanceData.participant.username} ({instanceData.participant
-			.degreeBefore} {instanceData.participant.firstName} {instanceData.participant
-			.familyName} {instanceData.participant.degreeAfter})"
+		value="{displayUserName(instanceData.participant)} (instanceData.participant.username)"
 		disabled
 		error=""
 	></Form.TextInput>

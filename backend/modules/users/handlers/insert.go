@@ -13,10 +13,10 @@ import (
 
 // @Description Request to insert new user
 type UserInsertRequest struct {
-	DegreeBefore string                   `json:"degreeBefore" binding:"required"` // Degree before name
+	DegreeBefore string                   `json:"degreeBefore"`                    // Degree before name
 	FirstName    string                   `json:"firstName" binding:"required"`    // First name
 	FamilyName   string                   `json:"familyName" binding:"required"`   // (Family) Last name
-	DegreeAfter  string                   `json:"degreeAfter" binding:"required"`  // Degree after name
+	DegreeAfter  string                   `json:"degreeAfter"`                     // Degree after name
 	Username     string                   `json:"username" binding:"required"`     // Username
 	Email        string                   `json:"email" binding:"required"`        // Email of the user
 	Notification dtos.UserNotificationDTO `json:"notification" binding:"required"` // Notification setting

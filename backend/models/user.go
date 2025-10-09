@@ -60,7 +60,16 @@ type User struct {
 }
 
 func (user User) FullName() string {
-	return user.DegreeBefore + " " + user.FirstName + " " + user.FamilyName + " " + user.DegreeAfter
+	tmpDegreeBefore := ""
+	if user.DegreeBefore != "" {
+		tmpDegreeBefore = user.DegreeBefore + " "
+	}
+	tmpDegreeAfter := ""
+	if user.DegreeBefore != "" {
+		tmpDegreeAfter = ", " + user.DegreeAfter
+	}
+
+	return tmpDegreeBefore + user.FirstName + " " + user.FamilyName + tmpDegreeAfter
 }
 
 func (User) TableName() string {

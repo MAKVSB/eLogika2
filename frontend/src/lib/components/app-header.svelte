@@ -17,7 +17,7 @@
 			<SidebarIcon />
 		</Button>
 		<Separator orientation="vertical" class="h-4 mr-2" />
-		<a href="/{base}" class="flex ms-2 md:me-24">
+		<a href="{base}" class="flex ms-2 md:me-24">
 			<img src={Logo} alt="eLogika logo" class="h-8 me-3" />
 			<span class="self-center text-xl font-semibold whitespace-nowrap sm:text-2xl dark:text-white">
 				eLogika

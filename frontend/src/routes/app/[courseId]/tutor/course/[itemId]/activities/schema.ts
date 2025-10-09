@@ -5,6 +5,7 @@ import DataTableCreatedBy from './data-table-created-by.svelte';
 import type { ActivityListItemDTO } from '$lib/api_types';
 import { type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
+import { displayUserName } from '$lib/utils';
 
 export const filters: Filter[] = [];
 
@@ -31,7 +32,7 @@ export const columns: (ColumnDef<ActivityListItemDTO> & { uniqueId?: string })[]
 		accessorKey: 'participant',
 		header: m.question_created_by(),
 		cell: ({ row }) => {
-			return `${row.original.participant.degreeBefore} ${row.original.participant.firstName} ${row.original.participant.familyName} ${row.original.participant.degreeAfter} (${row.original.participant.username})`;
+			return `${displayUserName(row.original.participant)} (${row.original.participant.username})`;
 		}
 	},
 	{

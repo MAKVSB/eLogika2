@@ -14,6 +14,7 @@
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
+	import { displayUserName } from '$lib/utils';
 
 	let {
 		user = $bindable(undefined)
@@ -58,10 +59,7 @@
 							</Avatar.Root>
 							<div class="grid flex-1 text-sm leading-tight text-left">
 								<span class="font-medium truncate">
-									{user.degreeBefore}
-									{user.firstName}
-									{user.familyName}
-									{user.degreeAfter}
+									{displayUserName(user)}
 								</span>
 								<span class="text-xs truncate">{user.email}</span>
 							</div>
@@ -84,10 +82,7 @@
 							</Avatar.Root>
 							<div class="grid flex-1 text-sm leading-tight text-left">
 								<span class="font-medium truncate">
-									{user.degreeBefore}
-									{user.firstName}
-									{user.familyName}
-									{user.degreeAfter}
+									{displayUserName(user)}
 								</span>
 								<span class="text-xs truncate">{user.email}</span>
 							</div>

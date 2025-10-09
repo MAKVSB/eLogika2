@@ -13,10 +13,10 @@ import (
 
 // @Description Request to create new user
 type UserUpdateRequest struct {
-	DegreeBefore string                   `json:"degreeBefore" binding:"required"` // Degree before name
+	DegreeBefore string                   `json:"degreeBefore"`                    // Degree before name
 	FirstName    string                   `json:"firstName" binding:"required"`    // First name
 	FamilyName   string                   `json:"familyName" binding:"required"`   // (Family) Last name
-	DegreeAfter  string                   `json:"degreeAfter" binding:"required"`  // Degree after name
+	DegreeAfter  string                   `json:"degreeAfter"`                     // Degree after name
 	Username     string                   `json:"username" binding:"required"`     // Username
 	Email        string                   `json:"email" binding:"required"`        // Email of the user
 	Notification dtos.UserNotificationDTO `json:"notification" binding:"required"` // Notification setting
@@ -90,14 +90,14 @@ func UserUpdate(c *gin.Context, userData authdtos.LoggedUserDTO) {
 	if userData.Type == enums.UserTypeAdmin {
 		user.Type = reqData.Type
 	}
-	if user.IdentityProvider == enums.IdentityProviderInternal {
-		user.DegreeBefore = reqData.DegreeBefore
-		user.FirstName = reqData.FirstName
-		user.FamilyName = reqData.FamilyName
-		user.DegreeAfter = reqData.DegreeAfter
-		user.Username = reqData.Username
-		user.Email = reqData.Email
-	}
+	// if user.IdentityProvider == enums.IdentityProviderInternal {
+	user.DegreeBefore = reqData.DegreeBefore
+	user.FirstName = reqData.FirstName
+	user.FamilyName = reqData.FamilyName
+	user.DegreeAfter = reqData.DegreeAfter
+	user.Username = reqData.Username
+	user.Email = reqData.Email
+	// }
 	user.Notification.Discord.Level.Messages = reqData.Notification.Discord.Level.Messages
 	user.Notification.Discord.Level.Results = reqData.Notification.Discord.Level.Results
 	user.Notification.Discord.Level.Terms = reqData.Notification.Discord.Level.Terms

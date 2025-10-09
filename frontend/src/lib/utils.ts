@@ -38,3 +38,12 @@ export function deepMerge(target: any, source: any) {
 	}
 	return target;
 }
+
+export function displayUserName(pud: {
+	degBefore: string,
+	firstName: string,
+	familyName: string,
+	degAfter: string,
+} ) {
+	return `${pud.degBefore} ${pud.firstName} ${pud.familyName}${pud.degAfter && pud.degAfter != '' ? ', ' + pud.degAfter : ''}`;
+}

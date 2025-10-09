@@ -26,6 +26,7 @@
 	import TabSteps from './TabSteps.svelte';
 	import TabQuestion from './TabQuestion.svelte';
 	import { QuestionInsertRequestSchema } from '$lib/schemas';
+	import { displayUserName } from '$lib/utils';
 
 	let courseId = $derived<string>(page.params.courseId);
 	let { data } = $props();
@@ -133,7 +134,7 @@
 	}
 
 	function printUserName(user: QuestionCheckedByDTO, last: boolean) {
-		return `${user.degreeBefore} ${user.firstName} ${user.familyName} ${user.degreeAfter} ${last ? '' : ', '}`;
+		return  displayUserName(user) + `${last ? '' : ', '}`;
 	}
 </script>
 

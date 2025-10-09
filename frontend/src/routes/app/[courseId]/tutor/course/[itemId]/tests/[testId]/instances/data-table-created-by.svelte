@@ -2,6 +2,7 @@
 	import type { QuestionCreatedByDTO } from '$lib/api_types';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import { displayUserName } from '$lib/utils';
 
 	let {
 		createdBy,
@@ -15,17 +16,11 @@
 <Tooltip.Provider>
 	<Tooltip.Root>
 		<Tooltip.Trigger class="w-full">
-			{createdBy.degreeBefore}
-			{createdBy.firstName}
-			{createdBy.familyName}
-			{createdBy.degreeAfter}
+			{displayUserName(createdBy)}
 		</Tooltip.Trigger>
 		<Tooltip.Content class="grid grid-cols-2">
 			<p>
-				{createdBy.degreeBefore}
-				{createdBy.firstName}
-				{createdBy.familyName}
-				{createdBy.degreeAfter}
+				{displayUserName(createdBy)}
 			</p>
 			({new Date(createdAt).toLocaleString(getLocale())})
 		</Tooltip.Content>

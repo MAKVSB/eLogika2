@@ -8,6 +8,7 @@
 	import ChevronsDownIcon from '@lucide/svelte/icons/chevron-down';
 	import { Button } from '$lib/components/ui/button';
 	import ResultsTable from './ResultsTable.svelte';
+	import { displayUserName } from '$lib/utils';
 
 	let {
 		userData
@@ -34,10 +35,7 @@
 	</Table.Cell>
 	<Table.Cell>{userData.username}</Table.Cell>
 	<Table.Cell>
-		{userData.degreeBefore}
-		{userData.firstName}
-		{userData.familyName}
-		{userData.degreeAfter}
+		{displayUserName(userData)}
 	</Table.Cell>
 	<Table.Cell></Table.Cell>
 	<Table.Cell>

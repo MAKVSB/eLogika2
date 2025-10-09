@@ -4,6 +4,7 @@ import type { TestInstanceEventDTO } from '$lib/api_types';
 import { getLocale } from '$lib/paraglide/runtime';
 import type { Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
+import { displayUserName } from '$lib/utils';
 
 export const filters: Filter[] = [];
 
@@ -44,7 +45,7 @@ export const columns: (ColumnDef<TestInstanceEventDTO> & { uniqueId?: string })[
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return `${row.original.user.degreeBefore} ${row.original.user.firstName} ${row.original.user.familyName} ${row.original.user.degreeAfter} (${row.original.user.username})`;
+			return `${displayUserName(row.original.user)} (${row.original.user.username})`;
 		}
 	},
 	{

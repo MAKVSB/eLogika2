@@ -7,6 +7,7 @@ import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 import type { TestInstanceListItemDTO, TestListItemDTO } from '$lib/api_types';
 import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
+import { displayUserName } from '$lib/utils';
 
 export const filters: Filter[] = [];
 
@@ -38,7 +39,7 @@ export const columns: (ColumnDef<TestInstanceListItemDTO> & { uniqueId?: string 
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return `${row.original.participant.degreeBefore} ${row.original.participant.firstName} ${row.original.participant.familyName} ${row.original.participant.degreeAfter} (${row.original.participant.username})`;
+			return `${displayUserName(row.original.participant)} (${row.original.participant.username})`;
 		}
 	},
 	{
