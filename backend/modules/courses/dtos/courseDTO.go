@@ -17,6 +17,8 @@ type CourseDTO struct {
 	Public        bool                       `json:"public"`
 	Year          uint                       `json:"year"`
 	Semester      enums.SemesterEnum         `json:"semester"`
+	PointsMin     float64                    `json:"pointsMin"`
+	PointsMax     float64                    `json:"pointsMax"`
 	ImportOptions models.CourseImportOptions `json:"importOptions"`
 }
 
@@ -31,6 +33,8 @@ func (m CourseDTO) From(d *models.Course) CourseDTO {
 		Public:        d.Public,
 		Year:          d.Year,
 		Semester:      d.Semester,
+		PointsMin:     d.PointsMin,
+		PointsMax:     d.PointsMax,
 		ImportOptions: d.ImportOptions,
 	}
 

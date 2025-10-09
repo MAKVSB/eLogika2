@@ -1,17 +1,20 @@
 package dtos
 
 import (
+	"time"
+
 	"elogika.vsb.cz/backend/models"
 )
 
 type CourseItemResultDTO struct {
-	ID             uint   `json:"id"`
-	StudentID      uint   `json:"studentId"`
-	CourseItemID   uint   `json:"courseItemId"`
-	CourseItemName string `json:"courseItemName"`
-	TermID         uint   `json:"termId"`
-	TermName       string `json:"termName"`
-	UpdatedBy      string `json:"updatedBy"`
+	ID             uint      `json:"id"`
+	StartedAt      time.Time `json:"startedAt"`
+	StudentID      uint      `json:"studentId"`
+	CourseItemID   uint      `json:"courseItemId"`
+	CourseItemName string    `json:"courseItemName"`
+	TermID         uint      `json:"termId"`
+	TermName       string    `json:"termName"`
+	UpdatedBy      string    `json:"updatedBy"`
 
 	TestInstanceID     *uint `json:"testInstanceId"`
 	ActivityInstanceID *uint `json:"activityInstanceId"`
@@ -36,6 +39,12 @@ func (m CourseItemResultDTO) From(d *models.CourseItemResult) CourseItemResultDT
 		Points:   d.Points,
 		Final:    d.Final,
 		Selected: d.Selected,
+	}
+
+	if d.TestInstanceID != nil {
+		dto.StartedAt = d.TestInstance.StartedAt
+	} else {
+		dto.StartedAt = d.ActivityInstance.CreatedAt
 	}
 
 	if d.UpdatedBy != nil {

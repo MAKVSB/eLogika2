@@ -567,5 +567,8 @@
 	"courseitem_group_test_ispaper_tooltip": "Disables generating and filling the test online. Also shows the scanned image and parsed boxes to student.",
 	"courseitem_group_test_offline_tooltip": "Allows students to download test data beforehand and fill in without the need to access internet (currently not implemented).",
 	"courseitem_group_test_show_correctness_tooltip": "Shows, which answers were correct and which incorrect. Has no effect when 'Show test' is not selected.",
-	"courseitem_group_test_show_test_tooltip": "Shows the text of questions and answers to the student after the test is finished."
+	"courseitem_group_test_show_test_tooltip": "Shows the text of questions and answers to the student after the test is finished.",
+	"course_points_min": "Minimum points",
+	"course_points_max": "Maximum points",
+	"menu_tutor_courseitems": "Tests and activities"
 }

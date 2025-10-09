@@ -23,6 +23,8 @@ type CourseInsertRequest struct {
 	Public        bool                       `json:"public"`                                           // Can any user join ?
 	Year          uint                       `json:"year" binding:"required"`                          // Start year of academic year
 	Semester      enums.SemesterEnum         `json:"semester" binding:"required"`                      // Semester of the above year
+	PointsMin     float64                    `json:"pointsMin" binding:"required"`                     // Minimum required points to pass
+	PointsMax     float64                    `json:"pointsMax" binding:"required"`                     // Maximum points
 	ImportOptions models.CourseImportOptions `json:"importOptions" binding:"required"`
 }
 
@@ -72,6 +74,8 @@ func CourseInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enum
 		Public:        reqData.Public,
 		Year:          reqData.Year,
 		Semester:      reqData.Semester,
+		PointsMin:     reqData.PointsMin,
+		PointsMax:     reqData.PointsMax,
 		ImportOptions: reqData.ImportOptions,
 	}
 

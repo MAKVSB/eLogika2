@@ -24,6 +24,8 @@ type CourseUpdateRequest struct {
 	Public        bool                       `json:"public"`                                           // Can any user join ?
 	Year          uint                       `json:"year" binding:"required"`                          // Start year of academic year
 	Semester      enums.SemesterEnum         `json:"semester" binding:"required"`                      // Semester of the above year
+	PointsMin     float64                    `json:"pointsMin" binding:"required"`                     // Minimum required points to pass
+	PointsMax     float64                    `json:"pointsMax" binding:"required"`                     // Maximum points
 	ImportOptions models.CourseImportOptions `json:"importOptions" binding:"required"`
 	Version       uint                       `json:"version" binding:"required"` // Version signature to prevent concurrency problems
 }
@@ -87,6 +89,8 @@ func Update(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 	course.Shortname = reqData.Shortname
 	course.Public = reqData.Public
 	course.Year = reqData.Year
+	course.PointsMin = reqData.PointsMin
+	course.PointsMax = reqData.PointsMax
 	course.Semester = reqData.Semester
 
 	course.ImportOptions = reqData.ImportOptions

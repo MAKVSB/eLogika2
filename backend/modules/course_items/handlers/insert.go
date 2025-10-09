@@ -179,7 +179,7 @@ func Insert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 		}
 
 		innerCourseItem.ContentFiles = files1
-		innerCourseItem.ContentFiles = append(courseItem.ActivityDetail.ContentFiles, files2...)
+		innerCourseItem.ContentFiles = append(innerCourseItem.ContentFiles, files2...)
 
 		if err := transaction.Model(&innerCourseItem).Association("ContentFiles").Replace(&innerCourseItem.ContentFiles); err != nil {
 			transaction.Rollback()

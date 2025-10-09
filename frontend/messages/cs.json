@@ -241,7 +241,7 @@
 				"value"
 			],
 			"match": {
-				"value=EXAM": "Zkoušková",
+				"value=EXAM": "Hlavní",
 				"value=PRACTISE": "Cvičná",
 				"value=SAMPLE": "Ukázková"
 			}
@@ -566,5 +566,8 @@
 	"courseitem_group_test_ispaper_tooltip": "Vypne možnost generovat test po zapnutí studentem. Také zobrazí naskenovaný obzázek testu a extrahované data.",
 	"courseitem_group_test_show_results_tooltip": "Zobrazí výsledky testu už během aktivního termínu. Studenti tak nemusí čekat na konec aktivního termínu pro zjištění výsledků.",
 	"filter_category": "Filtrovat podle kategorie",
-	"courseite_group_test_show_correctness": "Zobrazit správnost odpovědí"
+	"courseite_group_test_show_correctness": "Zobrazit správnost odpovědí",
+	"course_points_max": "Maximum bodů",
+	"course_points_min": "Minimum bodů",
+	"menu_tutor_courseitems": "Správa testů a aktivit"
 }

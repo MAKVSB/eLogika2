@@ -29,6 +29,8 @@ type Course struct {
 	Year          uint                ``
 	Semester      enums.SemesterEnum  ``
 	ChapterID     *uint               ``
+	PointsMin     float64             ``
+	PointsMax     float64             ``
 	ImportOptions CourseImportOptions `gorm:"serializer:json"`
 
 	Terms []Term ``

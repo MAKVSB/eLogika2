@@ -22,6 +22,7 @@
 		id: string;
 		type?: string;
 		placeholder?: string;
+		disabled?: boolean;
 		required?: boolean;
 		value: number;
 		error: string | ErrorObject;

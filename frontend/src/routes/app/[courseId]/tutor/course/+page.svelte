@@ -9,7 +9,8 @@
 		type CourseUpdateRequest,
 		type CourseUpdateResponse,
 		StudyFormEnum,
-		type CourseGetByIdResponse
+		type CourseGetByIdResponse,
+		CourseUserRoleEnum
 	} from '$lib/api_types';
 	import * as Form from '$lib/components/ui/form';
 	import { goto } from '$app/navigation';
@@ -22,6 +23,7 @@
 	import { CourseInsertRequestSchema } from '$lib/schemas';
 	import { date } from 'zod/v4';
 	import type { ErrorObject } from '$lib/components/ui/form';
+	import GlobalState from '$lib/shared.svelte';
 
 	let { data } = $props();
 
@@ -42,6 +44,8 @@
 		public: false,
 		year: new Date().getFullYear(),
 		semester: SemesterEnum.SUMMER,
+		pointsMax: 100,
+		pointsMin: 51,
 		importOptions: {
 			date: '',
 			code: ''
@@ -76,6 +80,11 @@
 
 		return request.then((res) => setResult(res));
 	}
+
+	let disabled = $state(
+		GlobalState.activeRole != CourseUserRoleEnum.ADMIN &&
+			GlobalState.activeRole != CourseUserRoleEnum.GARANT
+	);
 </script>
 
 <div class="flex flex-col gap-8 m-8">
@@ -100,6 +109,7 @@
 						type="text"
 						class="col-span-2"
 						bind:value={form.fields.name}
+						{disabled}
 						error={form.errors.name ?? ''}
 					></Form.TextInput>
 					<Form.TextInput
@@ -108,6 +118,7 @@
 						id="shortname"
 						type="text"
 						bind:value={form.fields.shortname}
+						{disabled}
 						error={form.errors.shortname ?? ''}
 					></Form.TextInput>
 				</div>
@@ -117,6 +128,7 @@
 						name="year"
 						id="year"
 						bind:value={form.fields.year}
+						{disabled}
 						error={form.errors.year ?? ''}
 					></Form.YearInput>
 					<Form.SingleSelect
@@ -124,6 +136,7 @@
 						name="semester"
 						id="semester"
 						bind:value={form.fields.semester}
+						{disabled}
 						options={enumToOptions(SemesterEnum, m.semester_enum)}
 						error={form.errors.semester ?? ''}
 					></Form.SingleSelect>
@@ -132,8 +145,29 @@
 						name="public"
 						id="public"
 						bind:value={form.fields.public}
+						{disabled}
 						error={form.errors.public ?? ''}
 					></Form.Checkbox>
+				</div>
+				<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+					<Form.TextInput
+						title={m.course_points_min()}
+						name="pointsMin"
+						id="pointsMin"
+						type="number"
+						bind:value={form.fields.pointsMin}
+						{disabled}
+						error={form.errors.pointsMin ?? ''}
+					></Form.TextInput>
+					<Form.TextInput
+						title={m.course_points_max()}
+						name="pointsMax"
+						id="pointsMax"
+						type="number"
+						bind:value={form.fields.pointsMax}
+						{disabled}
+						error={form.errors.pointsMax ?? ''}
+					></Form.TextInput>
 				</div>
 				{#key form.fields}
 					<Form.Tiptap
@@ -141,6 +175,7 @@
 						name="content"
 						id="content"
 						bind:value={form.fields.content}
+						{disabled}
 						error={form.errors.content}
 						enableFileUpload
 						enableFileLink
@@ -154,6 +189,7 @@
 							name="import_code"
 							id="impot_code"
 							bind:value={form.fields.importOptions.code}
+							{disabled}
 							error={((form.errors.importOptions as ErrorObject) ?? {}).code ?? ''}
 						></Form.TextInput>
 						<Form.TextInput
@@ -161,6 +197,7 @@
 							name="import_date"
 							id="import_date"
 							bind:value={form.fields.importOptions.date}
+							{disabled}
 							error={((form.errors.importOptions as ErrorObject) ?? {}).date ?? ''}
 						></Form.TextInput>
 					</div>

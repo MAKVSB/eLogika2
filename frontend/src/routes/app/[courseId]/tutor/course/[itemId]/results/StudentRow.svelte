@@ -37,7 +37,6 @@
 	<Table.Cell>
 		{displayUserName(userData)}
 	</Table.Cell>
-	<Table.Cell></Table.Cell>
 	<Table.Cell>
 		{userData.points}
 	</Table.Cell>

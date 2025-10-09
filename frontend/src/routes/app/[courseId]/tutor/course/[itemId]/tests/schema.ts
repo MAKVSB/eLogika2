@@ -57,7 +57,7 @@ export const columns: (ColumnDef<TestListItemDTO> & { uniqueId?: string })[] = [
 			})
 	},
 	{
-		accessorKey: 'termId',
+		accessorKey: 'term',
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: 'Term',

@@ -56,13 +56,29 @@
 					<Table.Row>
 						<Table.Cell>{m.points_total()}</Table.Cell>
 						<Table.Cell></Table.Cell>
-						<Table.Cell
-							>{staticResourceData.items.reduce((accumulator, current) => {
-								return accumulator + Math.min(current.points, current.pointsMax);
-							}, 0)}</Table.Cell
-						>
+						<Table.Cell>
+							<Tooltip.Provider>
+								<Tooltip.Root>
+									<Tooltip.Trigger
+										class={staticResourceData.totalPassed ? 'text-green-500' : 'text-red-500'}
+										>{staticResourceData.totalPoints > staticResourceData.totalMax
+											? staticResourceData.totalMax
+											: staticResourceData.totalPoints}</Tooltip.Trigger
+									>
+									<Tooltip.Content>
+										<p>
+											{m.points_min()}: {staticResourceData.totalMin}
+											<br />
+											{m.points_max()}: {staticResourceData.totalMax}
+											<br />
+											{m.points_real()}: {staticResourceData.totalPoints}
+										</p>
+									</Tooltip.Content>
+								</Tooltip.Root>
+							</Tooltip.Provider>
+						</Table.Cell>
 						<Table.Cell></Table.Cell>
-						<Table.Cell></Table.Cell>
+						<Table.Cell>{m.yes_no({ value: String(staticResourceData.totalPassed) })}</Table.Cell>
 						<Table.Cell></Table.Cell>
 					</Table.Row>
 				</Table.Footer>
@@ -130,7 +146,12 @@
 										{m.view()}
 									</Button>
 								{:else}
-									<!-- TODO  test: {result.testInstanceId} -->
+									<Button
+										variant="default"
+										href="{base}/app/{page.params.courseId}/student/tests/{result.activityInstanceId}"
+									>
+										{m.view()}
+									</Button>
 								{/if}
 							</Table.Cell>
 						</Table.TableRow>

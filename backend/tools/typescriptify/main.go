@@ -124,6 +124,7 @@ func main() {
 		Add(courseItemsHandlers.CourseItemGetByIdResponse{}).
 		Add(courseItemsHandlers.StudentCourseItemListResponse{}).
 		Add(courseItemsHandlers.CourseItemListResultsResponse{}).
+		Add(courseItemsHandlers.CourseItemSelectResultResponse{}).
 		Add(termsHandlers.TermsInsertRequest{}).
 		Add(termsHandlers.TermsInsertResponse{}).
 		Add(termsHandlers.TermsUpdateRequest{}).

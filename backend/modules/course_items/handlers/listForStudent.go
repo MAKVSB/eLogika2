@@ -20,6 +20,8 @@ import (
 type StudentCourseItemListResponse struct {
 	Items       []dtos.StudentCourseItemDTO       `json:"items"`
 	TotalPoints float64                           `json:"totalPoints"`
+	TotalMin    float64                           `json:"totalMin"`
+	TotalMax    float64                           `json:"totalMax"`
 	TotalPassed bool                              `json:"totalPassed"`
 	Results     []dtos.StudentCourseItemResultDTO `json:"results"`
 }
@@ -62,6 +64,16 @@ func ListForStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 
 	// TODO validate from here
 
+	var course *models.Course
+	if err := initializers.DB.
+		First(&course, params.CourseID).Error; err != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to fetch course data",
+			Details: err.Error(),
+		}
+	}
+
 	var results []*models.CourseItemResult
 	if err := initializers.DB.
 		Where("student_id = ?", userData.ID).
@@ -69,6 +81,8 @@ func ListForStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 		InnerJoins("CourseItem", initializers.DB.Where("CourseItem.course_id = ?", params.CourseID)).
 		Preload("CourseItem.TestDetail").
 		Preload("CourseItem.Parent").
+		Preload("TestInstance").
+		Preload("ActivityInstance").
 		Order("course_item_results.course_item_id, Term.active_from, course_item_results.created_at DESC").
 		Find(&results).Error; err != nil {
 		return &common.ErrorResponse{
@@ -139,6 +153,9 @@ func ListForStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 			}
 		}
 	}
+	if totalPoints < course.PointsMin {
+		totalPassed = false
+	}
 
 	dtoList2 := make([]dtos.StudentCourseItemResultDTO, len(results))
 	for i, res := range results {
@@ -149,6 +166,8 @@ func ListForStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 		Items:       dtoList,
 		Results:     dtoList2,
 		TotalPoints: totalPoints,
+		TotalMin:    course.PointsMin,
+		TotalMax:    course.PointsMax,
 		TotalPassed: totalPassed,
 	})
 

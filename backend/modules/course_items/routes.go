@@ -16,4 +16,5 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.GET("courses/:courseId/items/:courseItemId", wrappers.WithUserDataRole(handlers.GetByID))
 
 	rg.GET("courses/:courseId/items/:courseItemId/results", wrappers.WithUserDataRole(handlers.ListResults))
+	rg.PUT("courses/:courseId/items/:courseItemId/results/:resultId", wrappers.WithUserDataRole(handlers.SelectResult))
 }

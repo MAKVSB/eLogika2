@@ -188,8 +188,9 @@ func (r *TestRepository) ListTests(
 	query := dbRef.
 		Model(&models.Test{}).
 		InnerJoins("CreatedBy").
-		Where("course_id = ?", courseID).
-		Where("course_item_id = ?", courseItemID)
+		InnerJoins("Term").
+		Where("Tests.course_id = ?", courseID).
+		Where("Tests.course_item_id = ?", courseItemID)
 
 	if termID != nil && *termID != 0 {
 		query = query.Where("term_id = ?", *termID)
