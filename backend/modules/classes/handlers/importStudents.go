@@ -172,8 +172,9 @@ func ImportByConcreteActivity(course *models.Course, userRole enums.CourseUserRo
 		}
 
 		// Check if user in class. If already is. Return error. If not add him to this one
-		_, err = UpsertClassUser(transaction, user, courseClassesIDs, class.ID)
+		_, err = UpsertClassUser(transaction, user, courseClassesIDs, class)
 		if err != nil {
+			transaction.Rollback()
 			return err
 		}
 	}
@@ -247,7 +248,7 @@ func ImportPartTimeStudents(course *models.Course, userRole enums.CourseUserRole
 		}
 
 		// Check if user in class. If already is. Return error. If not add him to this one
-		_, err = UpsertClassUser(transaction, user, courseClassesIDs, class.ID)
+		_, err = UpsertClassUser(transaction, user, courseClassesIDs, class)
 		if err != nil {
 			return err
 		}
@@ -370,16 +371,19 @@ func UpsertCourseUser(dbRef *gorm.DB, courseId uint, userId uint, studyFormCode 
 	return courseUser, nil
 }
 
-func UpsertClassUser(dbRef *gorm.DB, user *models.User, courseClassIDs []uint, currentClassId uint) (*models.ClassStudent, *common.ErrorResponse) {
+func UpsertClassUser(dbRef *gorm.DB, user *models.User, courseClassIDs []uint, currentClass *models.Class) (*models.ClassStudent, *common.ErrorResponse) {
 	var userClasses []models.ClassStudent
 
-	if err := dbRef.
-		Where("user_id = ?", user.ID).
-		Where("class_id in ?", courseClassIDs).
-		Find(&userClasses).Error; err != nil {
-		return nil, &common.ErrorResponse{
-			Code:    500,
-			Message: "Failed to find class students",
+	// If class type is "přednáška" user can be imported regardless
+	if currentClass.Type != enums.ClassTypeP {
+		if err := dbRef.
+			Where("user_id = ?", user.ID).
+			Where("class_id in ?", courseClassIDs).
+			Find(&userClasses).Error; err != nil {
+			return nil, &common.ErrorResponse{
+				Code:    500,
+				Message: "Failed to find class students",
+			}
 		}
 	}
 
@@ -409,7 +413,7 @@ func UpsertClassUser(dbRef *gorm.DB, user *models.User, courseClassIDs []uint, c
 	var classUser *models.ClassStudent
 	if err := dbRef.
 		Where("user_id = ?", user.ID).
-		Where("class_id = ?", currentClassId).
+		Where("class_id = ?", currentClass.ID).
 		Find(&classUser).Error; err != nil {
 		return nil, &common.ErrorResponse{
 			Code:    500,
@@ -419,7 +423,7 @@ func UpsertClassUser(dbRef *gorm.DB, user *models.User, courseClassIDs []uint, c
 
 	if classUser.ID == 0 {
 		classUser.UserID = user.ID
-		classUser.ClassID = currentClassId
+		classUser.ClassID = currentClass.ID
 	}
 
 	if err := dbRef.

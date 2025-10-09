@@ -40,10 +40,10 @@ export function deepMerge(target: any, source: any) {
 }
 
 export function displayUserName(pud: {
-	degBefore: string,
-	firstName: string,
-	familyName: string,
-	degAfter: string,
-} ) {
-	return `${pud.degBefore} ${pud.firstName} ${pud.familyName}${pud.degAfter && pud.degAfter != '' ? ', ' + pud.degAfter : ''}`;
+	degreeBefore: string;
+	firstName: string;
+	familyName: string;
+	degreeAfter: string;
+}) {
+	return `${pud.degreeBefore} ${pud.firstName} ${pud.familyName}${pud.degreeAfter && pud.degreeAfter != '' ? ', ' + pud.degreeAfter : ''}`;
 }
