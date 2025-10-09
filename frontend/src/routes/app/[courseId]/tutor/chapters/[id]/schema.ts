@@ -11,6 +11,16 @@ export const filters: Filter[] = [];
 
 export const columns: (ColumnDef<ChapterListItemDTO> & { uniqueId?: string })[] = [
 	{
+		accessorKey: 'id',
+		header: 'ID',
+		cell: ({ row, table }) => {
+			return (
+				table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1
+			);
+		},
+		size: 0
+	},
+	{
 		accessorKey: 'order',
 		header: 'Order',
 		cell: ({ row, column, table }) => {

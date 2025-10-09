@@ -10,6 +10,16 @@ import DataTableCheck from '$lib/components/ui/data-table/data-table-check.svelt
 export const filters: Filter[] = [];
 
 export const columns: (ColumnDef<CourseItemDTO> & { uniqueId?: string })[] = [
+	{
+		accessorKey: 'id',
+		header: 'ID',
+		cell: ({ row, table }) => {
+			return (
+				table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1
+			);
+		},
+		size: 0
+	},
 	// {
 	// 	id: 'select',
 	// 	header: ({ table }) =>
