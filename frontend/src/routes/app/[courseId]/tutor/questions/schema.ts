@@ -2,7 +2,7 @@ import type { ColumnDef } from '@tanstack/table-core';
 import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableCheckedBy from './data-table-checked-by.svelte';
-import DataTableCreatedBy from './data-table-created-by.svelte';
+import DataTableCreatedBy from '$lib/components/ui/data-table/data-table-created-by.svelte';
 import { QuestionCheckedByFilterEnum, QuestionTypeEnum } from '$lib/api_types';
 import type { QuestionListItemDTO } from '$lib/api_types';
 import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
