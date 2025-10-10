@@ -23,7 +23,7 @@
 	<Button
 		variant="outline"
 		class="relative"
-		href="{base}/app/{page.params.courseId}/tutor/course/{page.params.itemId}/tests/{page.params
+		href="{base}/app/{page.params.courseId}/tutor/courseitems/{page.params.itemId}/tests/{page.params
 			.testId}/instances/{id}"
 	>
 		<span>{m.edit()}</span>

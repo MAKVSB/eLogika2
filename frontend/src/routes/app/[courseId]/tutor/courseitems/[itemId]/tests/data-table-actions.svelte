@@ -23,26 +23,28 @@
 	<Button
 		variant="outline"
 		class="relative"
-		href="{base}/app/{page.params.courseId}/tutor/course/{page.params.itemId}/{id}"
+		href="{base}/app/{page.params.courseId}/tutor/courseitems/{page.params.itemId}/tests/{id}/instances"
 	>
-		<span>{m.edit()}</span>
+		<span>{m.test_participants()}</span>
 	</Button>
-
 	<Button
 		variant="outline"
 		class="relative"
-		href="{base}/app/{page.params.courseId}/tutor/course/{page.params.itemId}/{id}/students"
+		onclick={() =>
+			handleActionClick('print', {
+				instances: true
+			})}
 	>
-		<span>{m.term_signed_students()}</span>
+		<span>Print test</span>
 	</Button>
-
-	<Button
-		variant="destructive"
+	<!-- <Button
+		variant="outline"
 		class="relative"
-		onclick={() => {
-			handleActionClick('delete');
-		}}
+		onclick={() => handleActionClick('print', { instances: true })}
 	>
+		<span>Print instances</span>
+	</Button> -->
+	<Button variant="destructive" class="relative" onclick={() => handleActionClick('delete')}>
 		<span>{m.delete()}</span>
 	</Button>
 </div>

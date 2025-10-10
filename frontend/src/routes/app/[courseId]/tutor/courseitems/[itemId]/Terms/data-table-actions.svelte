@@ -23,11 +23,26 @@
 	<Button
 		variant="outline"
 		class="relative"
-		href="{base}/app/{page.params.courseId}/tutor/course/{page.params.itemId}/activities/{id}"
+		href="{base}/app/{page.params.courseId}/tutor/courseitems/{page.params.itemId}/{id}"
 	>
-		<span>Edit</span>
+		<span>{m.edit()}</span>
 	</Button>
-	<Button variant="destructive" class="relative" onclick={() => handleActionClick('delete')}>
+
+	<Button
+		variant="outline"
+		class="relative"
+		href="{base}/app/{page.params.courseId}/tutor/courseitems/{page.params.itemId}/{id}/students"
+	>
+		<span>{m.term_signed_students()}</span>
+	</Button>
+
+	<Button
+		variant="destructive"
+		class="relative"
+		onclick={() => {
+			handleActionClick('delete');
+		}}
+	>
 		<span>{m.delete()}</span>
 	</Button>
 </div>

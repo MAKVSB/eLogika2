@@ -26,17 +26,17 @@
 
 <div class="flex justify-between gap-2">
 	{#if editable}
-		<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/course/{id}">
+		<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/courseitems/{id}">
 			<span>{m.edit()}</span>
 		</Button>
 	{:else}
-		<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/course/{id}">
+		<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/courseitems/{id}">
 			<span>{m.view()}</span>
 		</Button>
 	{/if}
 
 	{#if editable}
-		<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/course/{id}/results">
+		<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/courseitems/{id}/results">
 			<span>Výsledky</span>
 		</Button>
 	{:else}
@@ -47,7 +47,7 @@
 		<Button
 			variant="outline"
 			class="relative"
-			href="{base}/app/{page.params.courseId}/tutor/course/{id}/tests"
+			href="{base}/app/{page.params.courseId}/tutor/courseitems/{id}/tests"
 		>
 			<span>{m.courseitem_test_generated()}</span>
 		</Button>
@@ -55,7 +55,7 @@
 		<Button
 			variant="outline"
 			class="relative"
-			href="{base}/app/{page.params.courseId}/tutor/course/{id}/activities"
+			href="{base}/app/{page.params.courseId}/tutor/courseitems/{id}/activities"
 		>
 			<span>{m.courseitem_activity_submissions()}</span>
 		</Button>

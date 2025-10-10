@@ -40,6 +40,11 @@
 						icon: GalleryVerticalEndIcon
 					},
 					{
+						title: m.menu_tutor_courseitems(),
+						url: base+`/app/${GlobalState.activeCourse?.id}/tutor/courseitems`,
+						icon: GalleryVerticalEndIcon
+					},
+					{
 						title: m.menu_tutor_classes(),
 						url: base+`/app/${GlobalState.activeCourse?.id}/tutor/classes`,
 						icon: UsersIcon

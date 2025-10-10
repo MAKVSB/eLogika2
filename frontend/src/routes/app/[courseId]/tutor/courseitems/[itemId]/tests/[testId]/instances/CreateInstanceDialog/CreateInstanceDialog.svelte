@@ -88,7 +88,7 @@
 						invalidateAll();
 						console.log("Transfering 28")
 						goto(
-							base+`/app/${page.params.courseId}/tutor/course/${page.params.itemId}/tests/${page.params.testId}/instances/${res.instanceId}`
+							base+`/app/${page.params.courseId}/tutor/courseitems/${page.params.itemId}/tests/${page.params.testId}/instances/${res.instanceId}`
 						);
 					})
 					.catch(() => {});

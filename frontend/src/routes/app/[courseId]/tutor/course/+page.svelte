@@ -8,7 +8,6 @@
 		type CourseDTO,
 		type CourseUpdateRequest,
 		type CourseUpdateResponse,
-		StudyFormEnum,
 		type CourseGetByIdResponse,
 		CourseUserRoleEnum
 	} from '$lib/api_types';
@@ -19,9 +18,7 @@
 	import { TipTapDefaultContent } from '$lib/constants';
 	import { enumToOptions } from '$lib/utils';
 	import { m } from '$lib/paraglide/messages';
-	import CourseItems from './CourseItems/CourseItems.svelte';
 	import { CourseInsertRequestSchema } from '$lib/schemas';
-	import { date } from 'zod/v4';
 	import type { ErrorObject } from '$lib/components/ui/form';
 	import GlobalState from '$lib/shared.svelte';
 
@@ -92,7 +89,7 @@
 		<Pageloader></Pageloader>
 	{:then staticResourceData}
 		<div class="flex flex-row justify-between">
-			<h1 class="mb-8 text-2xl">
+			<h1 class="text-2xl">
 				Course management:
 				<b>
 					{staticResourceData?.data?.name ?? 'New course'}
@@ -204,18 +201,5 @@
 				</div>
 			</div>
 		</Form.Root>
-
-		{#if staticResourceData && staticResourceData.data.id != 0}
-			<CourseItems
-				canGroup={true}
-				courseId={page.params.courseId}
-				mode={StudyFormEnum.FULLTIME}
-			></CourseItems>
-			<CourseItems
-				canGroup={true}
-				courseId={page.params.courseId}
-				mode={StudyFormEnum.COMBINED}
-			></CourseItems>
-		{/if}
 	{/await}
 </div>

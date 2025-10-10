@@ -288,7 +288,7 @@
 {#if table}
 	<div class="flex flex-col gap-4">
 		{#if filters && filters.length > 0}
-			<div class="flex flex-col gap-2 lg:flex-row lg:items-center">
+			<div class="flex flex-col gap-2 overflow-scroll lg:flex-row lg:items-center">
 				{#each filters as filter}
 					{#if filter.type === FilterTypeEnum.SELECT}
 						<Select.Root

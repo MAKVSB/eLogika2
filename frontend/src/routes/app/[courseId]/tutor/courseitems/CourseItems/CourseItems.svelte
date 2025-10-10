@@ -157,18 +157,18 @@
 	<div class="flex-1"></div>
 	{#if canGroup}
 		<Button
-			href={`${base}/app/${courseId}/tutor/course/0?studyForm=${mode}&type=${CourseItemTypeEnum.GROUP}${parentId ? `&parentId=${parentId}` : ''}`}
+			href={`${base}/app/${courseId}/tutor/courseitems/0?studyForm=${mode}&type=${CourseItemTypeEnum.GROUP}${parentId ? `&parentId=${parentId}` : ''}`}
 		>
 			{m.course_add_group()}
 		</Button>
 	{/if}
 	<Button
-		href={`${base}/app/${courseId}/tutor/course/0?studyForm=${mode}&type=${CourseItemTypeEnum.ACTIVITY}${parentId ? `&parentId=${parentId}` : ''}`}
+		href={`${base}/app/${courseId}/tutor/courseitems/0?studyForm=${mode}&type=${CourseItemTypeEnum.ACTIVITY}${parentId ? `&parentId=${parentId}` : ''}`}
 	>
 		{m.course_add_activity()}
 	</Button>
 	<Button
-		href={`${base}/app/${courseId}/tutor/course/0?studyForm=${mode}&type=${CourseItemTypeEnum.TEST}${parentId ? `&parentId=${parentId}` : ''}`}
+		href={`${base}/app/${courseId}/tutor/courseitems/0?studyForm=${mode}&type=${CourseItemTypeEnum.TEST}${parentId ? `&parentId=${parentId}` : ''}`}
 	>
 		{m.course_add_test()}
 	</Button>

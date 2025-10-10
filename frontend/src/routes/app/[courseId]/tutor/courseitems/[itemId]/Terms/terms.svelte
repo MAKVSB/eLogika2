@@ -114,7 +114,7 @@
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Terms</h1>
 		<div class="flex gap-2">
-			<Button href="{base}/app/{courseId}/tutor/course/{itemId}/0">Add term</Button>
+			<Button href="{base}/app/{courseId}/tutor/courseitems/{itemId}/0">Add term</Button>
 		</div>
 	</div>
 	{#if !loading}
