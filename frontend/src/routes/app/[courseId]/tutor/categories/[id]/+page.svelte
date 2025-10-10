@@ -28,9 +28,7 @@
 
 	$effect(() => {
 		if (data.category) {
-			data.category
-				.then((data) => setResult(data))
-				.catch(() => {});
+			data.category.then((data) => setResult(data)).catch(() => {});
 		} else {
 			form.fields = defaultFormData;
 		}
@@ -66,7 +64,7 @@
 	) {
 		form.fields = res.data;
 		changeCounter += 1;
-		console.log("Transfering 19")
+		console.log('Transfering 19');
 		goto(String(res.data.id), {
 			replaceState: true
 		});
@@ -92,7 +90,14 @@
 			);
 		}
 
-		return request.then((res) => setResult(res));
+		return request.then((res) => {
+			setResult(res);
+			if (data.creating) {
+				toast.success('Created succesfully');
+			} else {
+				toast.success('Saved succesfully');
+			}
+		});
 	}
 
 	function deleteAnswerAtIndex(index: number) {

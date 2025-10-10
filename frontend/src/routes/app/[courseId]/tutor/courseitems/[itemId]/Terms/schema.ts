@@ -9,8 +9,6 @@ import DateRange from '$lib/components/date-range.svelte';
 
 export const filters: Filter[] = [];
 
-// studentsMax: number;
-
 export const columns: (ColumnDef<TermDTO> & { uniqueId?: string })[] = [
 	{
 		accessorKey: 'id',

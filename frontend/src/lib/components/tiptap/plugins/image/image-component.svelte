@@ -46,7 +46,7 @@
 			});
 
 			// Create download link
-			const a = document.createElement("a");
+			const a = document.createElement('a');
 			const objectUrl = URL.createObjectURL(response);
 			a.href = objectUrl;
 			a.download = node.attrs.originalFilename;
@@ -66,7 +66,7 @@
 
 <NodeViewWrapper class="my-4 w-full {selected && editor.options.editable ? 'border' : ''}">
 	{#if selected && editor.options.editable}
-		{#if (node.attrs.type as string).startsWith("image/")}
+		{#if (node.attrs.type as string).startsWith('image/')}
 			{#if node.attrs.src}
 				<div class="relative h-max w-max" bind:this={imageEl}>
 					<img
@@ -99,15 +99,15 @@
 				<div>
 					<Button variant="default" onclick={downloadFile}>Download file</Button>
 					{#if editor.options.editable}
-					<Button variant="destructive" onclick={deleteNode}>Delete file</Button>
+						<Button variant="destructive" onclick={deleteNode}>Delete file</Button>
 					{/if}
 				</div>
 			</div>
 		{:else}
 			<div class="flex items-center gap-4 p-4 border rounded-2xl">
 				Attachment: {node.attrs.originalFilename}
-					<Button variant="default" onclick={downloadFile}>Download file</Button>
-					<Button variant="destructive" onclick={deleteNode}>Delete file</Button>
+				<Button variant="default" onclick={downloadFile}>Download file</Button>
+				<Button variant="destructive" onclick={deleteNode}>Delete file</Button>
 			</div>
 		{/if}
 	{:else}

@@ -57,7 +57,7 @@
 
 	function setResult(res: ClassGetByIdResponse | ClassInsertResponse | ClassUpdateResponse) {
 		form.fields = res.data;
-		console.log("Transfering 22")
+		console.log('Transfering 22');
 		goto(String(res.data.id), {
 			replaceState: true
 		});
@@ -82,7 +82,14 @@
 				}
 			);
 		}
-		return request.then((res) => setResult(res));
+		return request.then((res) => {
+			setResult(res);
+			if (data.creating) {
+				toast.success('Created succesfully');
+			} else {
+				toast.success('Saved succesfully');
+			}
+		});
 	}
 </script>
 

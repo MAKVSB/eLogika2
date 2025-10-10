@@ -3,8 +3,8 @@ import { renderComponent, SortButton } from '$lib/components/ui/data-table/index
 import DataTableActions from './data-table-actions.svelte';
 import DataTableDateRange from './data-table-date-range.svelte';
 import { Checkbox } from '$lib/components/ui/checkbox/index.js';
-import type { TestInstanceListItemDTO, TestListItemDTO } from '$lib/api_types';
-import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
+import type { TestInstanceListItemDTO } from '$lib/api_types';
+import { type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
 import { displayUserName } from '$lib/utils';
 

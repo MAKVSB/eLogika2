@@ -9,11 +9,9 @@
 	import { API } from '$lib/services/api.svelte';
 
 	let {
-		results,
-		studentId
+		results
 	}: {
 		results: CourseItemResultDTO[];
-		studentId: number;
 	} = $props();
 
 	const toggleSelect = (itemId: number, resultId: number) => {

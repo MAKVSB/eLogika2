@@ -52,7 +52,7 @@
 
 	function setResult(res: CourseGetByIdResponse | CourseInsertResponse | CourseUpdateResponse) {
 		form.fields = res.data;
-		console.log("Transfering 23")
+		console.log('Transfering 23');
 		goto(page.url, {
 			replaceState: true
 		});
@@ -75,7 +75,14 @@
 			);
 		}
 
-		return request.then((res) => setResult(res));
+		return request.then((res) => {
+			setResult(res)
+			if (data.creating) {
+				toast.success("Created succesfully")
+			} else {
+				toast.success("Saved succesfully")
+			}
+		});
 	}
 
 	let disabled = $state(

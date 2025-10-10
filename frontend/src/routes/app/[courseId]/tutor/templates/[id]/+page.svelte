@@ -16,6 +16,7 @@
 	import { m } from '$lib/paraglide/messages';
 	import GlobalState from '$lib/shared.svelte';
 	import { TemplateInsertRequestSchema } from '$lib/schemas';
+	import { toast } from 'svelte-sonner';
 
 	let courseId = $derived<string | null>(page.params.courseId);
 	let { data } = $props();
@@ -44,7 +45,7 @@
 		res: TemplateGetByIdResponse | TemplateInsertResponse | TemplateUpdateResponse
 	) {
 		form.fields = res.data;
-		console.log("Transfering 31")
+		console.log('Transfering 31');
 		goto(String(res.data.id), {
 			replaceState: true
 		});
@@ -69,7 +70,14 @@
 				}
 			);
 		}
-		return request.then((res) => setResult(res));
+		return request.then((res) => {
+			setResult(res);
+			if (data.creating) {
+				toast.success('Created succesfully');
+			} else {
+				toast.success('Saved succesfully');
+			}
+		});
 	}
 </script>
 

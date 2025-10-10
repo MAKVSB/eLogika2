@@ -76,7 +76,7 @@
 			childs: res.data.childs.sort((a, b) => a.order - b.order)
 		};
 		form.fields = res.data;
-		console.log("Transfering 20")
+		console.log('Transfering 20');
 		goto(String(res.data.id), {
 			replaceState: true
 		});
@@ -112,10 +112,14 @@
 			);
 		}
 
-		return request
-			.then((res) => {
-				setResult(res);
-			});
+		return request.then((res) => {
+			setResult(res);
+			if (data.creating) {
+				toast.success('Created succesfully');
+			} else {
+				toast.success('Saved succesfully');
+			}
+		});
 	}
 </script>
 
@@ -148,7 +152,13 @@
 					{m.chapter_subchapters()}
 					<p class="text-xs">({m.table_changes_instant()})</p>
 				</Label>
-				<DataTable data={form.fields.childs ?? []} {columns} {filters} paginationEnabled={false} queryParam='search'/>
+				<DataTable
+					data={form.fields.childs ?? []}
+					{columns}
+					{filters}
+					paginationEnabled={false}
+					queryParam="search"
+				/>
 			</div>
 		{/if}
 		<Form.Root bind:form onsubmit={handleSubmit} isCreating={data.creating}>

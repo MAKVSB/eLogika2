@@ -148,7 +148,8 @@
 								{:else}
 									<Button
 										variant="default"
-										href="{base}/app/{page.params.courseId}/student/tests/{result.activityInstanceId}"
+										href="{base}/app/{page.params
+											.courseId}/student/tests/{result.activityInstanceId}"
 									>
 										{m.view()}
 									</Button>

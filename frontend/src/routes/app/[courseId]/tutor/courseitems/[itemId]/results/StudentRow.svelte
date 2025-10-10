@@ -46,7 +46,7 @@
 	<Table.Row>
 		<Table.Cell></Table.Cell>
 		<Table.Cell colspan={6}>
-			<ResultsTable studentId={userData.id} results={userData.results}></ResultsTable>
+			<ResultsTable results={userData.results}></ResultsTable>
 		</Table.Cell>
 	</Table.Row>
 {/if}

@@ -1,9 +1,8 @@
 import type { ColumnDef } from '@tanstack/table-core';
 import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
-import { CourseUserRoleEnum, type CourseUserDTO } from '$lib/api_types';
-import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
+import { type CourseUserDTO } from '$lib/api_types';
+import { type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
-import { enumToOptions } from '$lib/utils';
 import DataTableActions from './data-table-actions.svelte';
 
 export const filters: Filter[] = [];

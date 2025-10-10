@@ -68,38 +68,37 @@
 	});
 
 	function helperFieldChanged() {
-		console.log(helperFields.active.start?.toAbsoluteString())
 		if (helperFields.active.start) {
-			form.fields.activeFrom = helperFields.active.start?.toAbsoluteString()
+			form.fields.activeFrom = helperFields.active.start?.toAbsoluteString();
 		} else {
-			form.fields.activeFrom = ""
+			form.fields.activeFrom = '';
 		}
 		if (helperFields.active.end) {
-			form.fields.activeTo = helperFields.active.end?.toAbsoluteString()
+			form.fields.activeTo = helperFields.active.end?.toAbsoluteString();
 		} else {
-			form.fields.activeTo = ""
+			form.fields.activeTo = '';
 		}
 
 		if (helperFields.signIn.start) {
-			form.fields.signInFrom = helperFields.signIn.start?.toAbsoluteString()
+			form.fields.signInFrom = helperFields.signIn.start?.toAbsoluteString();
 		} else {
-			form.fields.signInFrom = ""
+			form.fields.signInFrom = '';
 		}
 		if (helperFields.signIn.end) {
-			form.fields.signInTo = helperFields.signIn.end?.toAbsoluteString()
+			form.fields.signInTo = helperFields.signIn.end?.toAbsoluteString();
 		} else {
-			form.fields.signInTo = ""
+			form.fields.signInTo = '';
 		}
 
 		if (helperFields.signOut.start) {
-			form.fields.signOutFrom = helperFields.signOut.start?.toAbsoluteString()
+			form.fields.signOutFrom = helperFields.signOut.start?.toAbsoluteString();
 		} else {
-			form.fields.signOutFrom = ""
+			form.fields.signOutFrom = '';
 		}
 		if (helperFields.signOut.end) {
-			form.fields.signOutTo = helperFields.signOut.end?.toAbsoluteString()
+			form.fields.signOutTo = helperFields.signOut.end?.toAbsoluteString();
 		} else {
-			form.fields.signOutTo = ""
+			form.fields.signOutTo = '';
 		}
 	}
 
@@ -165,7 +164,7 @@
 			end: parseAbsoluteToLocal(res.data.signOutTo)
 		};
 
-		console.log("Transfering 25")
+		console.log('Transfering 25');
 		goto(String(res.data.id), {
 			replaceState: true
 		});
@@ -190,7 +189,14 @@
 				}
 			);
 		}
-		return request.then((res) => setResult(res));
+		return request.then((res) => {
+			setResult(res);
+			if (data.creating) {
+				toast.success('Created succesfully');
+			} else {
+				toast.success('Saved succesfully');
+			}
+		});
 	}
 </script>
 

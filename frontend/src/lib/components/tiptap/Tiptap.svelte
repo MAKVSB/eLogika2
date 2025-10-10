@@ -18,6 +18,7 @@
 	import Typography from '@tiptap/extension-typography';
 	import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 	import TextAlign from '@tiptap/extension-text-align';
+	import { toast } from 'svelte-sonner';
 
 	import MathReplacer from './plugins/MathReplacer';
 	import CharsReplacer from './plugins/CharsReplacer';
@@ -67,13 +68,13 @@
 		formData.append('file', file);
 
 		try {
-			const res = await API.request<FormData, FileUploadResponse>('/api/v2/files', {
+			return await API.request<FormData, FileUploadResponse>('/api/v2/files', {
 				method: 'POST',
 				body: formData
 			});
-			return res;
 		} catch (err) {
 			console.error(err);
+			toast.error("Failed to upload file")
 			throw new Error(`Upload failed: ${err}`);
 		}
 	}

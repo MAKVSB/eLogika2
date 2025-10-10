@@ -12,13 +12,12 @@
 	import { page } from '$app/state';
 	import { Label } from '$lib/components/ui/label';
 	import DateRangeField from '$lib/components/ui/date-range-field/date-range-field.svelte';
-	import { enumToOptions } from '$lib/utils';
+	import { displayUserName, enumToOptions } from '$lib/utils';
 	import TiptapRenderer from '$lib/components/tiptap-renderer/tiptap-renderer.svelte';
 	import Tiptap from '$lib/components/tiptap/Tiptap.svelte';
 	import { m } from '$lib/paraglide/messages';
 	import { parseAbsoluteToLocal } from '@internationalized/date';
 	import GlobalState from '$lib/shared.svelte';
-	import { displayUserName } from '$lib/utils';
 
 	let {
 		instanceData,
