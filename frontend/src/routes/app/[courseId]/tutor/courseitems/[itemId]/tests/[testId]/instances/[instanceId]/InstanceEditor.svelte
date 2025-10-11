@@ -118,7 +118,7 @@
 		title={m.testinstance_participants()}
 		id="participant"
 		name="participant"
-		value="{displayUserName(instanceData.participant)} (instanceData.participant.username)"
+		value="{displayUserName(instanceData.participant)} ({instanceData.participant.username})"
 		disabled
 		error=""
 	></Form.TextInput>
@@ -209,7 +209,7 @@
 				{#each instanceData.questions ?? [] as question}
 					<Table.Row>
 						<Table.Cell>
-							{question.order}
+							{question.order + 1}
 						</Table.Cell>
 						{#if hasTitle}
 							<Table.Cell>
@@ -263,7 +263,10 @@
 			{#each instanceData.questions ?? [] as question}
 				<div class="flex flex-col gap-4 p-4 border">
 					<div>
-						<h2 class="text-xl">{m.question()} {question.order}</h2>
+						<h2 class="text-xl">
+							{m.question()}
+							{question.order + 1}
+						</h2>
 						<TiptapRenderer jsonContent={question.content}></TiptapRenderer>
 					</div>
 					{#if question.questionFormat == QuestionFormatEnum.ABCD}

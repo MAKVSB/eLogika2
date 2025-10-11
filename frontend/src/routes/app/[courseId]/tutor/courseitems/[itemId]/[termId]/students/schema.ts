@@ -12,7 +12,7 @@ export const filters: Filter[] = [];
 
 export const columns: (ColumnDef<JoinedStudentDTO> & { uniqueId?: string })[] = [
 	{
-		accessorKey: 'id',
+		accessorKey: 'row_index',
 		header: 'ID',
 		cell: ({ row, table }) => {
 			return (

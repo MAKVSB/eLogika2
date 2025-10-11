@@ -26,7 +26,7 @@ export const filters: Filter[] = [
 
 export const columns: ColumnDef<UserListItemDTO>[] = [
 	{
-		accessorKey: 'id',
+		accessorKey: 'row_index',
 		header: 'ID',
 		cell: ({ row, table }) => {
 			return (

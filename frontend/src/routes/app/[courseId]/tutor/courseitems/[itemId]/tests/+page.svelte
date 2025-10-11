@@ -39,7 +39,6 @@
 			clickEventHandler: async (event: string, id: number, otherParams: any) => {
 				switch (event) {
 					case 'print':
-						console.log(otherParams)
 						API.request<PrintTestRequest, Blob>(
 							`/api/v2/courses/${page.params.courseId}/print/tests`,
 							{
@@ -57,7 +56,7 @@
 								const url = URL.createObjectURL(res);
 								window.open(url); // opens in new tab
 							})
-					     .catch(() => {});
+							.catch(() => {});
 						break;
 					case 'delete':
 						if (!confirm('Test and all its instances will be deleted permanently.')) {
@@ -164,7 +163,15 @@
 		<h1 class="text-2xl">Generated tests management</h1>
 	</div>
 	{#if !loading[0] && !loading[1] && !loading[2]}
-		<DataTable data={rowItems} {columns} {filters} {initialState} {rowCount} {refetch} queryParam='search'/>
+		<DataTable
+			data={rowItems}
+			{columns}
+			{filters}
+			{initialState}
+			{rowCount}
+			{refetch}
+			queryParam="search"
+		/>
 	{/if}
 	<div class="flex justify-end gap-4">
 		<Dialog.Root bind:open={dialogOpen}>
