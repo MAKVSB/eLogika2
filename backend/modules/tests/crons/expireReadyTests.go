@@ -13,8 +13,10 @@ import (
 func ExpireReadyTests() {
 	var readyTestInstances []*models.TestInstance
 	initializers.DB.
-		InnerJoins("Term", initializers.DB.Select("").Where("active_to < ?", time.Now().Add(time.Minute))).
+		InnerJoins("Term", initializers.DB.Select("").Where("active_to < ?", time.Now().Add(5*time.Minute))).
+		Preload("CourseItem").
 		Where("state = ?", enums.TestInstanceStateReady).
+		Where("form = ?", enums.TestInstanceFormOnline).
 		Find(&readyTestInstances)
 
 	for _, testInstance := range readyTestInstances {

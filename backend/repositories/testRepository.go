@@ -190,7 +190,8 @@ func (r *TestRepository) ListTests(
 		InnerJoins("CreatedBy").
 		InnerJoins("Term").
 		Where("Tests.course_id = ?", courseID).
-		Where("Tests.course_item_id = ?", courseItemID)
+		Where("Tests.course_item_id = ?", courseItemID).
+		Order("Name ASC")
 
 	if termID != nil && *termID != 0 {
 		query = query.Where("term_id = ?", *termID)

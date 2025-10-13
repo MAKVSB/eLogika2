@@ -605,5 +605,6 @@
 	"test_generate_signed": "Pro přihlášené studenty",
 	"template_block_allowemptyanswers": "Povolit prázdné odpovědi",
 	"template_block_allowemptyanswers_tooltip": "Neaplikuje mínusové body pokud student neodpoví na otázku (všechny boxy prázdné, nebo všechny boxy plné) ",
-	"template_block_segment_add": "Přidat segment"
+	"template_block_segment_add": "Přidat segment",
+	"test_generate_skip": "Negenerovat pro studenty, kteří již test mají"
 }

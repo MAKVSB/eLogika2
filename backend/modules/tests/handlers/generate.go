@@ -21,10 +21,11 @@ import (
 )
 
 type TestGeneratorRequest struct {
-	Variants *uint                      `json:"variants"`
-	UsersAll bool                       `json:"usersAll"`
-	UsersIDs []uint                     `json:"usersIds"`
-	Form     enums.TestInstanceFormEnum `json:"form"  binding:"required"`
+	Variants              *uint                      `json:"variants"`
+	UsersAll              bool                       `json:"usersAll"`
+	UsersIDs              []uint                     `json:"usersIds"`
+	Form                  enums.TestInstanceFormEnum `json:"form"  binding:"required"`
+	SkipUsersWithInstance bool                       `json:"skipUsersWithInstance"`
 }
 
 type TestGeneratorResponse struct {
@@ -171,8 +172,9 @@ func Generate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Co
 		// Load all joined students
 		var joinedUsers []*models.UserTerm
 		query := transaction.
-			Preload("User").
-			Where("term_id = ?", params.TermID)
+			InnerJoins("User").
+			Where("term_id = ?", params.TermID).
+			Order("\"User\".\"family_name\" ASC")
 
 		if len(reqData.UsersIDs) != 0 {
 			query = query.Where("user_id in ?", reqData.UsersIDs)
@@ -190,6 +192,27 @@ func Generate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Co
 		generatedTestInstances := make([]*models.TestInstance, 0)
 
 		for _, ju := range joinedUsers {
+			if reqData.SkipUsersWithInstance {
+				var alreadyExistingInstancesCount int64
+				if err := transaction.
+					Model(models.TestInstance{}).
+					Where("course_item_id = ?", params.CourseItemID).
+					Where("term_id = ?", params.TermID).
+					Where("participant_id = ?", ju.UserID).
+					Count(&alreadyExistingInstancesCount).Error; err != nil {
+					transaction.Rollback()
+					return &common.ErrorResponse{
+						Code:    404,
+						Message: "Failed to check if student already has instance",
+						Details: err.Error(),
+					}
+				}
+
+				if alreadyExistingInstancesCount != 0 {
+					continue
+				}
+			}
+
 			generatedTest, err := GenerateTest(
 				transaction,
 				template,

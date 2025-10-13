@@ -608,5 +608,6 @@
 	"test_generate_signed": "Generate for signed students",
 	"template_block_allowemptyanswers": "Allow empty answers",
 	"template_block_allowemptyanswers_tooltip": "Does not reduce points when student does not select answer (all boxes empty or all boxes full)",
-	"template_block_segment_add": "Add segment"
+	"template_block_segment_add": "Add segment",
+	"test_generate_skip": "Skip students with already generated test"
 }

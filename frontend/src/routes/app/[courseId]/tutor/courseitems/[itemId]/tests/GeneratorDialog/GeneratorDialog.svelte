@@ -44,6 +44,7 @@
 	let loading = $state(true);
 
 	let instanceForm = $state(TestInstanceFormEnum.OFFLINE);
+	let skipUsersWithInstance = $state(true);
 
 	const loadData = () => {
 		initialState.columnFilters = [
@@ -95,7 +96,8 @@
 					variants: numberToGenerate,
 					usersAll: usersAll,
 					usersIds: users,
-					form: instanceForm
+					form: instanceForm,
+					skipUsersWithInstance: skipUsersWithInstance
 				}
 			},
 			fetch
@@ -137,6 +139,16 @@
 		<Label for="generateSigned">{m.test_generate_signed()}</Label>
 	</div>
 	{#if generateForSigned}
+		<div class="flex gap-2">
+			<Checkbox
+				class="rounded-md h-9 w-9"
+				name="skipUsersWithInstance"
+				id="skipUsersWithInstance"
+				bind:checked={skipUsersWithInstance}
+			/>
+			<Label for="skipUsersWithInstance">{m.test_generate_skip()}</Label>
+		</div>
+
 		{#if !loading}
 			<DataTable
 				data={rowItems}
