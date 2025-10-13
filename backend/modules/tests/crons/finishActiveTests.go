@@ -23,7 +23,7 @@ func FinishActiveTests() {
 		transaction := initializers.DB.Begin()
 
 		testInstance.State = enums.TestInstanceStateFinished
-		err := handlers.EvaluateTestInstance(transaction, testInstance.ID, nil)
+		err := handlers.EvaluateTestInstance(transaction, testInstance.ID, nil, true)
 		if err != nil {
 			transaction.Rollback()
 			continue

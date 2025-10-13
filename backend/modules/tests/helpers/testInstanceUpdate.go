@@ -19,7 +19,7 @@ type TestInstanceAnswer struct {
 type TestInstanceQuestion struct {
 	QuestionID           uint                 `json:"id" binding:"required"`
 	TextAnswer           json.RawMessage      `json:"textAnswer"`
-	TextAnswerPercentage *uint                `json:"textAnswerPercentage"` // Only for teacher endpoint
+	TextAnswerPercentage *float64             `json:"textAnswerPercentage"` // Only for teacher endpoint
 	TextAnswerReviewed   *bool                `json:"textAnswerReviewed"`   // Only for teacher endpoint
 	Answers              []TestInstanceAnswer `json:"answers"`
 }

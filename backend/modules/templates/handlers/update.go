@@ -39,6 +39,7 @@ type TemplateBlockModelUpdateRequest struct {
 	AnswerDistribution    enums.AnswerDistributionEnum `json:"answerDistribution" binding:"required"`
 	WrongAnswerPercentage uint                         `json:"wrongAnswerPercentage" binding:"required"`
 	MixInsideBlock        bool                         `json:"mixInsideBlock"`
+	AllowEmptyAnswers     bool                         `json:"allowEmptyAnswers"`
 
 	Segments []TemplateBlockSegmentUpdateRequest `json:"segments" binding:"required"`
 }
@@ -166,12 +167,13 @@ func Update(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 		template.Blocks[i].AnswerDistribution = b.AnswerDistribution
 		template.Blocks[i].WrongAnswerPercentage = b.WrongAnswerPercentage
 		template.Blocks[i].MixInsideBlock = b.MixInsideBlock
+		template.Blocks[i].AllowEmptyAnswers = b.AllowEmptyAnswers
 
 		if err := transaction.Save(&template.Blocks[i]).Error; err != nil {
 			transaction.Rollback()
 			return &common.ErrorResponse{
 				Code:    500,
-				Message: "Failed to insert template block",
+				Message: "Failed to update template block",
 			}
 		}
 
@@ -207,7 +209,7 @@ func Update(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 				transaction.Rollback()
 				return &common.ErrorResponse{
 					Code:    500,
-					Message: "Failed to insert template segment",
+					Message: "Failed to update template segment",
 				}
 			}
 
@@ -316,7 +318,7 @@ func Update(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 		transaction.Rollback()
 		return &common.ErrorResponse{
 			Code:    500,
-			Message: "Failed to insert template",
+			Message: "Failed to update template",
 		}
 	}
 

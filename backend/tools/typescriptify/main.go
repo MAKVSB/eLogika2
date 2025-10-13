@@ -152,6 +152,8 @@ func main() {
 		Add(testHandlers.TestInstanceCreateRequest{}).
 		Add(testHandlers.TestInstanceCreateResponse{}).
 		Add(testHandlers.TestInstanceTutorGetResponse{}).
+		Add(testHandlers.TestEvaluationRequest{}).
+		Add(testHandlers.TestEvaluationResponse{}).
 		Add(classHandlers.ClassUpdateRequest{}).
 		Add(classHandlers.ClassUpdateResponse{}).
 		Add(classHandlers.ClassInsertRequest{}).

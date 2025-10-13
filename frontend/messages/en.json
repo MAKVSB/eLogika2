@@ -570,5 +570,43 @@
 	"courseitem_group_test_show_test_tooltip": "Shows the text of questions and answers to the student after the test is finished.",
 	"course_points_min": "Minimum points",
 	"course_points_max": "Maximum points",
-	"menu_tutor_courseitems": "Tests and activities"
+	"menu_tutor_courseitems": "Tests and activities",
+	"print_test": [
+		{
+			"declarations": [
+				"input type"
+			],
+			"selectors": [
+				"type"
+			],
+			"match": {
+				"type=single": "Print test",
+				"type=*": "Print tests"
+			}
+		}
+	],
+	"test_reevaluate": [
+		{
+			"declarations": [
+				"input type"
+			],
+			"selectors": [
+				"type"
+			],
+			"match": {
+				"type=single": "Reevaluate test",
+				"type=*": "Reevaluate tests"
+			}
+		}
+	],
+	"print_test_printanswersheets": "Print answer sheets",
+	"print_test_separateanswersheets": "Separate answer sheets on its own pages",
+	"tests_generate": "Generate tests",
+	"test_generate_number": "Number of tests to generate",
+	"test_print_settings": "Print settings",
+	"test_instance_create": "Create instance",
+	"test_generate_signed": "Generate for signed students",
+	"template_block_allowemptyanswers": "Allow empty answers",
+	"template_block_allowemptyanswers_tooltip": "Does not reduce points when student does not select answer (all boxes empty or all boxes full)",
+	"template_block_segment_add": "Add segment"
 }

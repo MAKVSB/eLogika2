@@ -24,6 +24,7 @@ type TemplateBlock struct {
 	AnswerCount           uint                         ``
 	AnswerDistribution    enums.AnswerDistributionEnum ``
 	WrongAnswerPercentage uint                         ``
+	AllowEmptyAnswers     bool                         ``
 	MixInsideBlock        bool                         ``
 	TemplateID            uint                         ``
 

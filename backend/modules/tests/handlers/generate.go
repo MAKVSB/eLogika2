@@ -385,6 +385,7 @@ func GenerateTest(
 				ShowName:              tb.ShowName,
 				Weight:                tb.Weight,
 				WrongAnswerPercentage: tb.WrongAnswerPercentage,
+				AllowEmptyAnswers:     tb.AllowEmptyAnswers,
 			}
 		}
 

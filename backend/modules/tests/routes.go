@@ -21,7 +21,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 
 	rg.GET("courses/:courseId/tests/available", wrappers.WithUserData(handlers.ListAvailable))
 	rg.POST("courses/:courseId/tests/prepare", wrappers.WithUserData(handlers.TestInstancePrepare))
-	// TODO rework rg.POST("courses/:courseId/tests/evaluate", wrappers.WithUserData(handlers.TestEvaluate))
+	rg.POST("courses/:courseId/tests/evaluate", wrappers.WithUserDataRole(handlers.TestEvaluate))
 
 	rg.GET("tests/:instanceId", wrappers.WithUserDataRole(handlers.TestInstanceGet))
 	rg.PUT("tests/:instanceId/start", wrappers.WithUserDataRole(handlers.TestInstanceStart))

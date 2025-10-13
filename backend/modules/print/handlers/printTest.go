@@ -17,11 +17,12 @@ import (
 
 // @Description Request to insert new question
 type PrintTestRequest struct {
-	CourseItemID      uint  `json:"courseItemId" binding:"required"`
-	PrintAnswerSheets bool  `json:"printInstances"`
-	TestID            *uint `json:"testId"`
-	InstanceID        *uint `json:"instanceId"`
-	TermID            *uint `json:"termId"`
+	CourseItemID         uint  `json:"courseItemId" binding:"required"`
+	PrintAnswerSheets    bool  `json:"printAnswerSheets"`
+	SeparateAnswerSheets bool  `json:"separateAnswerSheets"`
+	TestID               *uint `json:"testId"`
+	InstanceID           *uint `json:"instanceId"`
+	TermID               *uint `json:"termId"`
 }
 
 // @Summary Print tests
@@ -108,8 +109,7 @@ func PrintTest(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.C
 		}
 	}
 
-	// TODO separateAnswerPage
-	filepath := helpers.PrintTests(printData, courseItem, reqData.PrintAnswerSheets, false)
+	filepath := helpers.PrintTests(printData, courseItem, reqData.PrintAnswerSheets, reqData.SeparateAnswerSheets)
 	c.FileAttachment(filepath, uuid.NewString())
 
 	return nil

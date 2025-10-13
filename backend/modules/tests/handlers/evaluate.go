@@ -3,23 +3,27 @@ package handlers
 import (
 	"fmt"
 
+	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/models"
 	authdtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
-	"elogika.vsb.cz/backend/modules/tests/dtos"
+	services_course_item "elogika.vsb.cz/backend/services/courseItem"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 type TestEvaluationRequest struct {
-	InstanceID uint `uri:"instanceId" binding:"required"`
+	CourseItemID uint  `json:"courseItemId" binding:"required"`
+	TermID       *uint `json:"termId"`
+	TestID       *uint `json:"testId"`
+	InstanceID   *uint `json:"instanceId"`
 }
 
-type EvaluateResponse struct {
-	InstanceData dtos.TestInstanceDTO `json:"instanceData"`
+type TestEvaluationResponse struct {
+	Success bool `json:"success"`
 }
 
 // @Summary (Re)evaluates test
@@ -36,74 +40,103 @@ type EvaluateResponse struct {
 // @Failure 500 {object} common.ErrorResponse "Fatal failure"
 // @Router /api/v2/courses/{courseId}/tests/evaluate [POST]
 
-func TestEvaluate(c *gin.Context, userData authdtos.LoggedUserDTO) {
+func TestEvaluate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.CourseUserRoleEnum) *common.ErrorResponse {
 	// Load request data
-	err, _, reqData := utils.GetRequestData[
-		any,
+	err, params, reqData := utils.GetRequestData[
+		struct {
+			CourseID uint `uri:"courseId" binding:"required"`
+		},
 		TestEvaluationRequest,
 	](c)
 	if err != nil {
-		c.AbortWithStatusJSON(err.Code, err)
-		return
+		return err
 	}
 
 	// TODO validate from here
 
-	// TODO check that user is in course, instance is active
-	// // check permissions
-	// coursePermissions := auth.GetClaimCourse(userData.Courses, params.CourseID)
-	// if coursePermissions == nil || (!coursePermissions.IsTutor() &&
-	// 	!coursePermissions.IsGarant() &&
-	// 	!coursePermissions.IsAdmin()) {
-	// 	c.JSON(403, common.ErrorResponse{
-	// 		Message: "Not enough permissions",
-	// 	})
-	// 	return
-	// }
-
-	// if testInstance.ParticipantID != userData.ID {
-	// 	c.AbortWithStatusJSON(401, common.ErrorResponse{
-	// 		Message: "User is not allowed to access test instance",
-	// 	})
-	// 	return
-	// }
-
-	// if testInstance.IsExpired(time.Now()) {
-	// 	c.AbortWithStatusJSON(401, common.ErrorResponse{
-	// 		Code:    403,
-	// 		Message: "Time expired",
-	// 	})
-	// 	return
-	// }
-
-	// if testInstance.State != enums.TestInstanceStateActive {
-	// 	c.AbortWithStatusJSON(401, common.ErrorResponse{
-	// 		Message: "Test already finished",
-	// 	})
-	// 	return
-	// }
-
-	// c.JSON(200, TestInstanceGetResponse{
-	// 	InstanceData: dtos.TestInstanceDTO{}.From(testInstance),
-	// })
-
-	err = EvaluateTestInstance(initializers.DB, reqData.InstanceID, &userData)
-	if err != nil {
-		c.JSON(500, err)
-		return
+	// Check role validity
+	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+		return err
 	}
 
-	// services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
-	// err = services_course_item.UpdateSelectedResults(transaction, params.CourseID, rootCoureItem, testInstance.ParticipantID)
-	// if err != nil {
-	// 	transaction.Rollback()
-	// 	return err
-	// }
+	// Check if tutor/garant can view/modify courseItem
+	courseItemService := services_course_item.CourseItemService{}
+	courseItem, err := courseItemService.GetCourseItemByID(initializers.DB, params.CourseID, reqData.CourseItemID, userData.ID, userRole, nil, true, nil)
+	if err != nil {
+		return err
+	}
 
-	c.JSON(200, true)
+	transaction := initializers.DB.Begin()
+
+	if reqData.InstanceID != nil {
+		err = EvaluateTestInstance(transaction, *reqData.InstanceID, &userData, true)
+		if err != nil {
+			return err
+		}
+	} else {
+		var instanceIDs []uint
+		query := transaction.
+			Model(models.TestInstance{}).
+			Where("course_item_id = ?", courseItem.ID)
+
+		if reqData.TermID != nil {
+			query = query.Where("term_id = ?", reqData.TermID)
+		}
+
+		if reqData.TestID != nil {
+			query = query.Where("test_id = ?", reqData.TestID)
+		}
+
+		if err := query.Pluck("id", &instanceIDs).Error; err != nil {
+			return &common.ErrorResponse{
+				Code:    500,
+				Message: "Failed to fetch test",
+				Details: err.Error(),
+			}
+		}
+
+		for _, instanceID := range instanceIDs {
+			err = EvaluateTestInstance(transaction, instanceID, &userData, true)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	if err := transaction.Commit().Error; err != nil {
+		transaction.Rollback()
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to commit changes",
+			Details: err.Error(),
+		}
+	}
+
+	c.JSON(200, TestEvaluationResponse{
+		Success: true,
+	})
+
+	return nil
 }
 
-func EvaluateTestInstance(dbRef *gorm.DB, instanceID uint, userData *authdtos.LoggedUserDTO) *common.ErrorResponse {
+type EvaluationBlock struct {
+	Weight         uint
+	QuestionFormat enums.QuestionFormatEnum
+
+	// Question format = ABCD questions
+	TotalAnswers          float64
+	CorrectlyAnswered     float64
+	IncorrectlyAnswered   float64
+	WrongAnswerPercentage uint
+	AllowEmptyAnswers     bool
+
+	// Question format = Open questions
+	TotalQuestions          float64
+	TextAnswerPercentageSum float64
+	TextAnswerReviewed      bool
+}
+
+func EvaluateTestInstance(dbRef *gorm.DB, instanceID uint, userData *authdtos.LoggedUserDTO, silentSkip bool) *common.ErrorResponse {
 	var testInstance models.TestInstance
 	if err := dbRef.
 		Preload("Questions", func(db *gorm.DB) *gorm.DB {
@@ -128,120 +161,76 @@ func EvaluateTestInstance(dbRef *gorm.DB, instanceID uint, userData *authdtos.Lo
 		}
 	}
 	if testInstance.State != enums.TestInstanceStateFinished && testInstance.State != enums.TestInstanceStateExpired {
-		return &common.ErrorResponse{
-			Code:    401,
-			Message: "Cannot evaluate points for active test",
+		if silentSkip {
+			return nil
+		} else {
+			return &common.ErrorResponse{
+				Code:    401,
+				Message: "Cannot evaluate points for active test",
+			}
 		}
 	}
-	type EvaluationQuestionAnswer struct {
-		AllocatedPoints float64
-		IsCorrect       bool
-		IsSelected      bool
-	}
 
-	type EvaluationQuestion struct {
-		AllocatedPoints      float64
-		QuestionFormat       enums.QuestionFormatEnum
-		Answers              []*EvaluationQuestionAnswer
-		TextAnswerPercentage int
-		TextAnswerReviewed   bool
-	}
-
-	type EvaluationBlock struct {
-		AllocatedPoints       float64
-		Weight                uint
-		WrongAnswerPercentage uint
-		Questions             []*EvaluationQuestion
-	}
-	// remap into a structure that is easier to process
+	// remap back into blocks
 	evaluationMap := make(map[uint]*EvaluationBlock)
 
 	for _, block := range testInstance.Test.Blocks {
 		evaluationMap[block.ID] = &EvaluationBlock{
 			Weight:                block.Weight,
 			WrongAnswerPercentage: block.WrongAnswerPercentage,
-			Questions:             make([]*EvaluationQuestion, 0),
-			AllocatedPoints:       float64(testInstance.CourseItem.PointsMax) * (float64(block.Weight) / 100),
+			AllowEmptyAnswers:     block.AllowEmptyAnswers,
 		}
 	}
+
 	for _, q := range testInstance.Questions {
-		blockId := q.TestQuestion.BlockID
-		var evaluationAnswer EvaluationQuestion
+		block := evaluationMap[q.TestQuestion.BlockID]
 
 		switch q.TestQuestion.Question.QuestionFormat {
 		case enums.QuestionFormatOpen:
-			evaluationAnswer = EvaluationQuestion{
-				QuestionFormat:       q.TestQuestion.Question.QuestionFormat,
-				TextAnswerPercentage: int(q.TextAnswerPercentage),
-				TextAnswerReviewed:   q.TextAnswerReviewedByID != nil,
-			}
-
+			block.TotalQuestions++
+			block.TextAnswerPercentageSum += float64(q.TextAnswerPercentage)
+			block.TextAnswerReviewed = block.TextAnswerReviewed && q.TextAnswerReviewedByID != nil
 		case enums.QuestionFormatTest:
-			answers := make([]*EvaluationQuestionAnswer, len(q.Answers))
-
-			for qa_i, qa := range q.Answers {
-				answers[qa_i] = &EvaluationQuestionAnswer{
-					IsCorrect:  qa.TestQuestionAnswer.Answer.Correct,
-					IsSelected: qa.Selected,
-				}
-			}
-
-			evaluationAnswer = EvaluationQuestion{
-				QuestionFormat: q.TestQuestion.Question.QuestionFormat,
-				Answers:        answers,
-			}
-
+			total, correct, incorrect := QuestionAnswersScore(q.Answers, block.AllowEmptyAnswers)
+			block.TotalAnswers += total
+			block.CorrectlyAnswered += correct
+			block.IncorrectlyAnswered += incorrect
+			block.QuestionFormat = q.TestQuestion.Question.QuestionFormat
 		default:
 			panic(fmt.Sprintf("unexpected enums.QuestionFormatEnum: %#v", q.TestQuestion.Question.QuestionFormat))
 		}
-
-		evaluationMap[blockId].Questions = append(evaluationMap[blockId].Questions, &evaluationAnswer)
 	}
-	//second loop over to assign allocated points correctly
 
-	for _, ev_b := range evaluationMap {
-		perQuestionPoints := ev_b.AllocatedPoints / float64(len(ev_b.Questions))
-		for _, ev_b_q := range ev_b.Questions {
-			ev_b_q.AllocatedPoints = perQuestionPoints
-			if ev_b_q.QuestionFormat == enums.QuestionFormatTest {
-				perAnswerPoints := ev_b_q.AllocatedPoints / float64(len(ev_b_q.Answers))
-				for _, ev_b_q_a := range ev_b_q.Answers {
-					ev_b_q_a.AllocatedPoints = perAnswerPoints
-				}
-			}
-		}
-	}
 	// calculate points
-
 	points := float64(0)
 	final := true
 
 	for _, block := range evaluationMap {
-		for _, block_question := range block.Questions {
-			switch block_question.QuestionFormat {
-			case enums.QuestionFormatOpen:
-				if !block_question.TextAnswerReviewed {
-					final = false
-				}
-				points += (float64(block_question.TextAnswerPercentage) / 100) * block_question.AllocatedPoints
-			case enums.QuestionFormatTest:
-				for _, block_question_answer := range block_question.Answers {
-					if block_question_answer.IsCorrect == block_question_answer.IsSelected {
-						points += block_question_answer.AllocatedPoints
-					} else {
-						points -= block_question_answer.AllocatedPoints // * (float64(block.WrongAnswerPercentage) / 100)
-					}
-				}
-			default:
-				panic(fmt.Sprintf("unexpected enums.QuestionFormatEnum: %#v", block_question.QuestionFormat))
+		blockWeight := utils.ToPercentage(block.Weight)
+		testPointsMax := float64(testInstance.CourseItem.PointsMax)
+
+		switch block.QuestionFormat {
+		case enums.QuestionFormatOpen:
+			if !block.TextAnswerReviewed {
+				final = false
 			}
+			textAnswerPercentage := block.TextAnswerPercentageSum / 100 * block.TotalQuestions
+
+			points += textAnswerPercentage * (testPointsMax * blockWeight)
+		case enums.QuestionFormatTest:
+			wrongAnswerPercentage := utils.ToPercentage(block.WrongAnswerPercentage)
+
+			ratio := (block.CorrectlyAnswered - wrongAnswerPercentage*block.IncorrectlyAnswered) / block.TotalAnswers
+			points += ratio * (testPointsMax * blockWeight)
+		default:
+			panic(fmt.Sprintf("unexpected enums.QuestionFormatEnum: %#v", block.QuestionFormat))
 		}
 	}
 
 	points += testInstance.BonusPoints
 
 	testInstance.Result.Version = testInstance.Result.Version + 1
-	testInstance.Result.Points = points
+	testInstance.Result.Points = utils.RoundToEven(points, 2)
 	testInstance.Result.Final = final
 	if userData != nil {
 		testInstance.Result.UpdatedByID = &userData.ID
@@ -256,4 +245,31 @@ func EvaluateTestInstance(dbRef *gorm.DB, instanceID uint, userData *authdtos.Lo
 	}
 
 	return nil
+}
+
+func QuestionAnswersScore(answers []models.TestInstanceQuestionAnswer, allowEmptyAnswers bool) (float64, float64, float64) {
+	var numAnswers = float64(0)
+	var numChecked = float64(0)
+	var numCorrect = float64(0)
+	var numIncorrect = float64(0)
+
+	// Assings answer statistics for question
+	for _, qa := range answers {
+		numAnswers++
+		if qa.Selected {
+			numChecked++
+		}
+
+		if qa.TestQuestionAnswer.Answer.Correct == qa.Selected {
+			numCorrect++
+		} else {
+			numIncorrect++
+		}
+	}
+
+	if allowEmptyAnswers && (numChecked == 0 || numChecked == numAnswers) {
+		return numAnswers, 0, 0
+	}
+
+	return numAnswers, numCorrect, numIncorrect
 }

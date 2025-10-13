@@ -76,6 +76,7 @@
 		bind:value={fields.showName}
 		error={errors.showName}
 	></Form.Checkbox>
+
 	<Form.TextInput
 		title={m.template_block_difficultyfrom()}
 		name="difficultyFrom"
@@ -94,6 +95,7 @@
 		bind:value={fields.difficultyTo}
 		error={errors.difficultyTo}
 	></Form.TextInput>
+
 	<Form.TextInput
 		title={m.template_block_weight()}
 		name="weight"
@@ -103,6 +105,7 @@
 		bind:value={fields.weight}
 		error={errors.weight}
 	></Form.TextInput>
+
 	<Form.TextInput
 		title={m.template_block_questioncount()}
 		name="questionCount"
@@ -122,6 +125,7 @@
 		error={errors.questionFormat}
 		options={enumToOptions(QuestionFormatEnum, m.question_format_enum)}
 	></Form.SingleSelect>
+
 	<Form.TextInput
 		title={m.template_block_answercount()}
 		name="answerCount"
@@ -142,7 +146,28 @@
 		options={enumToOptions(AnswerDistributionEnum, m.answer_distribution_enum)}
 		disabled={fields.questionFormat == QuestionFormatEnum.OPEN}
 	></Form.SingleSelect>
+
+	<Form.TextInput
+		title={m.template_block_penalisationpercentage()}
+		name="wrongAnswerPercentage"
+		id="wrongAnswerPercentage"
+		type="number"
+		class="col-span-12 sm:col-span-6"
+		bind:value={fields.wrongAnswerPercentage}
+		error={errors.wrongAnswerPercentage}
+	></Form.TextInput>
 	<Form.Checkbox
+		title={m.template_block_allowemptyanswers()}
+		tooltip={m.template_block_allowemptyanswers_tooltip()}
+		name="allowEmptyAnswers"
+		id="allowEmptyAnswers"
+		type="number"
+		class="col-span-12 sm:col-span-6"
+		bind:value={fields.allowEmptyAnswers}
+		error={errors.allowEmptyAnswers}
+	></Form.Checkbox>
+
+		<Form.Checkbox
 		title={m.template_block_mix()}
 		name="mixInsideBlock"
 		id="mixInsideBlock"
@@ -150,15 +175,6 @@
 		bind:value={fields.mixInsideBlock}
 		error={errors.mixInsideBlock}
 	></Form.Checkbox>
-	<Form.TextInput
-		title={m.template_block_penalisationpercentage()}
-		name="wrongAnswerPercentage"
-		id="wrongAnswerPercentage"
-		type="number"
-		class="col-span-12 sm:col-span-12"
-		bind:value={fields.wrongAnswerPercentage}
-		error={errors.wrongAnswerPercentage}
-	></Form.TextInput>
 </div>
 <hr class="my-2" />
 
@@ -185,5 +201,5 @@
 
 <hr class="my-2" />
 <div class="flex justify-between">
-	<Button onclick={() => addSegment()}>Add segment</Button>
+	<Button onclick={() => addSegment()}>{m.template_block_segment_add()}</Button>
 </div>

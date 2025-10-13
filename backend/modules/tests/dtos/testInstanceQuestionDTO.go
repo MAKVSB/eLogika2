@@ -11,13 +11,13 @@ type TestInstanceQuestionDTO struct {
 	ID                   uint                            `json:"id"`
 	TextAnswer           json.RawMessage                 `json:"textAnswer"`
 	TextAnswerReviewed   bool                            `json:"textAnswerReviewed,omitempty"`
-	TextAnswerPercentage uint                            `json:"textAnswerPercentage"`
+	TextAnswerPercentage float64                         `json:"textAnswerPercentage"`
 	Answers              []TestInstanceQuestionAnswerDTO `json:"answers"`
 	OpenAnswers          []TestInstanceOpenAnswerDTO     `json:"openAnswers,omitempty"`
 	BlockID              uint                            `json:"blockId"`
 	Order                uint                            `json:"order"`
-	Title                *string                         `json:"title"`
-	Content              json.RawMessage                 `json:"content"`
+	Title                *string                         `json:"title,omitempty"`
+	Content              json.RawMessage                 `json:"content,omitempty"`
 	QuestionFormat       enums.QuestionFormatEnum        `json:"questionFormat"`
 }
 

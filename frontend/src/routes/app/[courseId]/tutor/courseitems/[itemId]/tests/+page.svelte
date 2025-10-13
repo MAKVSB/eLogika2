@@ -4,7 +4,12 @@
 	import DataTable from '$lib/components/ui/data-table/data-table-component.svelte';
 	import { columns, filters } from './schema';
 	import { API, ApiError, decodeBase64UrlToJson } from '$lib/services/api.svelte';
-	import type { PrintTestRequest, TestListItemDTO } from '$lib/api_types';
+	import type {
+		PrintTestRequest,
+		TestEvaluationRequest,
+		TestEvaluationResponse,
+		TestListItemDTO
+	} from '$lib/api_types';
 	import { type InitialTableState, type TableState } from '@tanstack/table-core';
 	import { page } from '$app/state';
 	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
@@ -15,6 +20,8 @@
 	import GeneratorDialog from './GeneratorDialog/GeneratorDialog.svelte';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { invalidateAll } from '$app/navigation';
+	import { Label } from '$lib/components/ui/label';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 
 	let loading: boolean[] = $state([true, true, true]);
 	let rowItems: TestListItemDTO[] = $state([]);
@@ -31,6 +38,8 @@
 	let { data } = $props();
 
 	let dialogOpen = $state(false);
+	let printAnswerSheets = $state(true);
+	let separateAnswerSheets = $state(true);
 
 	const actionsColumn = columns.find((c) => c.uniqueId == 'actions');
 	if (actionsColumn) {
@@ -45,9 +54,9 @@
 								method: 'POST',
 								body: {
 									courseItemId: Number(page.params.itemId),
-									printInstances: otherParams.instances ?? false,
+									printAnswerSheets: printAnswerSheets,
+									separateAnswerSheets: separateAnswerSheets,
 									testId: Number(id),
-									instanceId: id
 								}
 							},
 							fetch
@@ -58,6 +67,27 @@
 							})
 							.catch(() => {});
 						break;
+					case 'reevaluate':
+						API.request<TestEvaluationRequest, TestEvaluationResponse>(
+							`/api/v2/courses/${page.params.courseId}/tests/evaluate`,
+							{
+								method: 'POST',
+								body: {
+									courseItemId: Number(page.params.itemId),
+									testId: Number(id),
+								}
+							},
+							fetch
+						)
+							.then((res) => {
+								if (res.success) {
+									toast.success('Test re-evaluated successfuly');
+								}
+								invalidateAll();
+							})
+							.catch((err) => {
+								console.log(err);
+							});
 					case 'delete':
 						if (!confirm('Test and all its instances will be deleted permanently.')) {
 							return;
@@ -137,7 +167,7 @@
 		}
 	}
 
-	function print(instances: boolean = false) {
+	function print() {
 		API.request<PrintTestRequest, Blob>(
 			`/api/v2/courses/${page.params.courseId}/print/tests`,
 			{
@@ -145,7 +175,8 @@
 				body: {
 					termId: Number(termIdFilter),
 					courseItemId: Number(page.params.itemId),
-					printInstances: instances
+					printAnswerSheets: printAnswerSheets,
+					separateAnswerSheets: separateAnswerSheets
 				}
 			},
 			fetch
@@ -155,6 +186,29 @@
 				window.open(url); // opens in new tab
 			})
 			.catch(() => {});
+	}
+
+	function reevaluate() {
+		API.request<TestEvaluationRequest, TestEvaluationResponse>(
+			`/api/v2/courses/${page.params.courseId}/tests/evaluate`,
+			{
+				method: 'POST',
+				body: {
+					termId: Number(termIdFilter),
+					courseItemId: Number(page.params.itemId)
+				}
+			},
+			fetch
+		)
+			.then((res) => {
+				if (res.success) {
+					toast.success('Test re-evaluated successfuly');
+				}
+				invalidateAll();
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}
 </script>
 
@@ -176,13 +230,34 @@
 	<div class="flex justify-end gap-4">
 		<Dialog.Root bind:open={dialogOpen}>
 			<Dialog.Trigger class={buttonVariants({ variant: 'default' })} disabled={!termIdFilter}>
-				Generate tests
+				{m.tests_generate()}
 			</Dialog.Trigger>
 			{#if dialogOpen && termIdFilter}
 				<GeneratorDialog bind:openState={dialogOpen} termId={termIdFilter}></GeneratorDialog>
 			{/if}
 		</Dialog.Root>
-		<Button onclick={() => print(true)} disabled={!termIdFilter}>Print all instances</Button>
-		<Button onclick={() => print(false)} disabled={!termIdFilter}>Print all tests</Button>
+		<Button onclick={() => reevaluate()}>{m.test_reevaluate({ type: 'multi' })}</Button>
+		<Button onclick={() => print()} disabled={!termIdFilter}>
+			{m.print_test({ type: 'multi' })}
+		</Button>
+	</div>
+	<div class="flex flex-col gap-4">
+		<h3>{m.test_print_settings()}</h3>
+		<div class="flex gap-2">
+			<Checkbox
+				class="rounded-md h-9 w-9"
+				id="printAnswerSheets"
+				bind:checked={printAnswerSheets}
+			/>
+			<Label for="printAnswerSheets">{m.print_test_printanswersheets()}</Label>
+		</div>
+		<div class="flex gap-2">
+			<Checkbox
+				class="rounded-md h-9 w-9"
+				id="separateAnswerSheets"
+				bind:checked={separateAnswerSheets}
+			/>
+			<Label for="separateAnswerSheets">{m.print_test_separateanswersheets()}</Label>
+		</div>
 	</div>
 </div>

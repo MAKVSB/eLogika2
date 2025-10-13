@@ -111,6 +111,11 @@
 		}
 		return false;
 	});
+
+	let scrollToQuestion = (id: number) => {
+		const el = document.getElementById("q" + id);
+		if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}
 </script>
 
 <div class="flex flex-col gap-4 py-4">
@@ -208,11 +213,11 @@
 			<Table.Body>
 				{#each instanceData.questions ?? [] as question}
 					<Table.Row>
-						<Table.Cell>
+						<Table.Cell onclick={() => scrollToQuestion(question.id)}>
 							{question.order + 1}
 						</Table.Cell>
 						{#if hasTitle}
-							<Table.Cell>
+							<Table.Cell onclick={() => scrollToQuestion(question.id)}>
 								{question.title}
 							</Table.Cell>
 						{/if}
@@ -234,7 +239,7 @@
 								<Table.Cell>
 									<Form.Checkbox
 										innerClass={showCorrect
-											? answer.selected == answer.correct
+											? answer.correct
 												? 'bg-green-500 data-[state=checked]:bg-green-500 dark:bg-green-500 dark:data-[state=checked]:bg-green-500'
 												: 'bg-red-500 data-[state=checked]:bg-red-500 dark:bg-red-500 dark:data-[state=checked]:bg-red-500'
 											: ''}
@@ -247,7 +252,9 @@
 								</Table.Cell>
 							{/each}
 						{:else}
+						<Table.Cell>
 							Invalid question type
+						</Table.Cell>
 						{/if}
 					</Table.Row>
 				{:else}
@@ -261,13 +268,15 @@
 	{#if instanceData.showContent}
 		<div>
 			{#each instanceData.questions ?? [] as question}
-				<div class="flex flex-col gap-4 p-4 border">
+				<div class="flex flex-col gap-4 p-4 border" id={"q" + question.id}>
 					<div>
 						<h2 class="text-xl">
 							{m.question()}
 							{question.order + 1}
 						</h2>
-						<TiptapRenderer jsonContent={question.content}></TiptapRenderer>
+						{#if question.content}
+							<TiptapRenderer jsonContent={question.content}></TiptapRenderer>
+						{/if}
 					</div>
 					{#if question.questionFormat == QuestionFormatEnum.ABCD}
 						<div>
@@ -279,7 +288,7 @@
 											<Table.Cell style="width: 60px;">
 												<Form.Checkbox
 													innerClass={showCorrect
-														? answer.selected == answer.correct
+														? answer.correct
 															? 'bg-green-500 data-[state=checked]:bg-green-500 dark:bg-green-500 dark:data-[state=checked]:bg-green-500'
 															: 'bg-red-500 data-[state=checked]:bg-red-500 dark:bg-red-500 dark:data-[state=checked]:bg-red-500'
 														: ''}

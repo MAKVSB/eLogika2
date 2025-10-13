@@ -19,6 +19,7 @@ type TemplateBlockDTO struct {
 	WrongAnswerPercentage uint                         `json:"wrongAnswerPercentage"`
 	MixInsideBlock        bool                         `json:"mixInsideBlock"`
 	Segments              []TemplateBlockSegmentDTO    `json:"segments"`
+	AllowEmptyAnswers     bool                         `json:"allowEmptyAnswers"`
 }
 
 func (TemplateBlockDTO) From(d *models.TemplateBlock) TemplateBlockDTO {
@@ -35,6 +36,7 @@ func (TemplateBlockDTO) From(d *models.TemplateBlock) TemplateBlockDTO {
 		AnswerDistribution:    d.AnswerDistribution,
 		WrongAnswerPercentage: d.WrongAnswerPercentage,
 		MixInsideBlock:        d.MixInsideBlock,
+		AllowEmptyAnswers:     d.AllowEmptyAnswers,
 		Segments:              make([]TemplateBlockSegmentDTO, len(d.Segments)),
 	}
 

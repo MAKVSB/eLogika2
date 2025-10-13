@@ -37,6 +37,7 @@ type TemplateBlockInsertRequest struct {
 	AnswerDistribution    enums.AnswerDistributionEnum `json:"answerDistribution" binding:"required"`
 	WrongAnswerPercentage uint                         `json:"wrongAnswerPercentage" binding:"required"`
 	MixInsideBlock        bool                         `json:"mixInsideBlock"`
+	AllowEmptyAnswers     bool                         `json:"allowEmptyAnswers"`
 
 	Segments []TemplateBlockSegmentInsertRequest `json:"segments" binding:"required"`
 }
@@ -156,6 +157,7 @@ func Insert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 			WrongAnswerPercentage: b.WrongAnswerPercentage,
 			MixInsideBlock:        b.MixInsideBlock,
 			TemplateID:            template.ID,
+			AllowEmptyAnswers:     b.AllowEmptyAnswers,
 		}
 		if err := transaction.Save(&template.Blocks[i]).Error; err != nil {
 			transaction.Rollback()

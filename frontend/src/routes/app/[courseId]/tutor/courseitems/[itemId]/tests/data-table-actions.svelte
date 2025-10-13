@@ -23,27 +23,17 @@
 	<Button
 		variant="outline"
 		class="relative"
-		href="{base}/app/{page.params.courseId}/tutor/courseitems/{page.params.itemId}/tests/{id}/instances"
+		href="{base}/app/{page.params.courseId}/tutor/courseitems/{page.params
+			.itemId}/tests/{id}/instances"
 	>
 		<span>{m.test_participants()}</span>
 	</Button>
-	<Button
-		variant="outline"
-		class="relative"
-		onclick={() =>
-			handleActionClick('print', {
-				instances: true
-			})}
-	>
-		<span>Print test</span>
+	<Button variant="outline" class="relative" onclick={() => handleActionClick('reevaluate')}>
+		<span>{m.test_reevaluate({ type: 'single' })}</span>
 	</Button>
-	<!-- <Button
-		variant="outline"
-		class="relative"
-		onclick={() => handleActionClick('print', { instances: true })}
-	>
-		<span>Print instances</span>
-	</Button> -->
+	<Button variant="outline" class="relative" onclick={() => handleActionClick('print')}>
+		<span>{m.print()}</span>
+	</Button>
 	<Button variant="destructive" class="relative" onclick={() => handleActionClick('delete')}>
 		<span>{m.delete()}</span>
 	</Button>

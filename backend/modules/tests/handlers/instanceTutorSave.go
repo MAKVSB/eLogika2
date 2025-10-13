@@ -201,7 +201,7 @@ func TestInstanceTutorSave(c *gin.Context, userData authdtos.LoggedUserDTO, user
 		}
 	}
 
-	err = EvaluateTestInstance(transaction, params.InstanceID, &userData)
+	err = EvaluateTestInstance(transaction, params.InstanceID, &userData, false)
 	if err != nil {
 		return &common.ErrorResponse{
 			Code:    500,

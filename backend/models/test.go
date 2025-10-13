@@ -35,4 +35,5 @@ type TestBlock struct {
 	ShowName              bool   `json:"showName"`
 	Weight                uint   `json:"weight"`
 	WrongAnswerPercentage uint   `json:"wrongAnswerPercentage"`
+	AllowEmptyAnswers     bool   `json:"allowEmptyAnswers"`
 }

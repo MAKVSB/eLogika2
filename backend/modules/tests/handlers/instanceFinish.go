@@ -186,7 +186,7 @@ func TestInstanceFinish(c *gin.Context, userData authdtos.LoggedUserDTO, userRol
 		}
 	}
 
-	err = EvaluateTestInstance(initializers.DB, params.InstanceID, nil)
+	err = EvaluateTestInstance(initializers.DB, params.InstanceID, nil, false)
 	if err != nil {
 		return &common.ErrorResponse{
 			Code:    500,

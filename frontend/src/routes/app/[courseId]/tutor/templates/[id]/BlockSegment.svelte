@@ -149,7 +149,7 @@
 		></Form.TextInput>
 
 		<Form.SingleSelect
-			title="Filtrovat podle kategorie"
+			title={m.filter_chapter()}
 			name="chapter"
 			id="chapter"
 			bind:value={fields.chapterId}
@@ -160,7 +160,7 @@
 			options={chapterOptions}
 		></Form.SingleSelect>
 		<Form.SingleSelect
-			title="Filtrovat podle kapitoly"
+			title={m.filter_category()}
 			name="chapter"
 			id="chapter"
 			bind:value={fields.categoryId}

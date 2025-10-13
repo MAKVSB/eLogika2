@@ -10,7 +10,7 @@ type TestInstanceQuestion struct {
 	TestQuestionID         uint                         ``
 	TextAnswer             json.RawMessage              ``
 	TextAnswerReviewedByID *uint                        ``
-	TextAnswerPercentage   uint                         ``
+	TextAnswerPercentage   float64                      ``
 	Answers                []TestInstanceQuestionAnswer ``
 
 	// TextAnswerReviewedBy *User         ``

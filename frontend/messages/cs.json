@@ -557,7 +557,7 @@
 			}
 		}
 	],
-	"filter_chapter": "Filtrovat podle kategorie",
+	"filter_chapter": "Filtrovat podle kapitoly",
 	"user_full_name": "Jméno studenta",
 	"no_items_found": "Nebyly nalezeny žádné položky",
 	"courseitem_group_test_show_test_tooltip": "Po ukončení testu zobrazí studentovi při revizi texty otázek a odpovědí.",
@@ -569,5 +569,41 @@
 	"courseite_group_test_show_correctness": "Zobrazit správnost odpovědí",
 	"course_points_max": "Maximum bodů",
 	"course_points_min": "Minimum bodů",
-	"menu_tutor_courseitems": "Správa testů a aktivit"
+	"menu_tutor_courseitems": "Správa testů a aktivit",
+	"print_test": [
+		{
+			"declarations": [
+				"input type"
+			],
+			"selectors": [
+				"type"
+			],
+			"match": {
+				"type=single": "Vytisknout test",
+				"type=*": "Vytisknout testy"
+			}
+		}
+	],
+	"test_reevaluate": [
+		{
+			"declarations": [
+				"input type"
+			],
+			"selectors": [
+				"type"
+			],
+			"match": {
+				"type=single": "Přehodnotit test",
+				"type=*": "Přehodnotit testy"
+			}
+		}
+	],
+	"print_test_printanswersheets": "Tisknout odpovědníky",
+	"print_test_separateanswersheets": "Odpovědník na samostatné stránce",
+	"tests_generate": "Generovat testy",
+	"test_instance_create": "Vytvořit instanci",
+	"test_generate_signed": "Pro přihlášené studenty",
+	"template_block_allowemptyanswers": "Povolit prázdné odpovědi",
+	"template_block_allowemptyanswers_tooltip": "Neaplikuje mínusové body pokud student neodpoví na otázku (všechny boxy prázdné, nebo všechny boxy plné) ",
+	"template_block_segment_add": "Přidat segment"
 }

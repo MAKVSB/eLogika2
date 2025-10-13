@@ -23,6 +23,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import * as Form from '$lib/components/ui/form';
 	import { enumToOptions } from '$lib/utils';
+	import { m } from '$lib/paraglide/messages';
 
 	let {
 		termId,
@@ -114,7 +115,7 @@
 
 <Dialog.Content class="max-h-full w-300 overflow-scroll sm:max-h-[90%] sm:max-w-[90%]">
 	<Dialog.Header>
-		<Dialog.Title>Generate tests</Dialog.Title>
+		<Dialog.Title>{m.tests_generate()}</Dialog.Title>
 	</Dialog.Header>
 
 	<Form.SingleSelect
@@ -133,7 +134,7 @@
 			id="generateSigned"
 			bind:checked={generateForSigned}
 		/>
-		<Label for="generateSigned">Generate for signed students</Label>
+		<Label for="generateSigned">{m.test_generate_signed()}</Label>
 	</div>
 	{#if generateForSigned}
 		{#if !loading}
@@ -151,16 +152,16 @@
 		{/if}
 	{:else}
 		<div class="flex flex-col gap-2">
-			<Label for="generateNumber">Number of tests to generate</Label>
+			<Label for="generateNumber">{m.test_generate_number()}</Label>
 			<Input
 				id="generateNumber"
 				bind:value={numberToGenerate}
-				placeholder={'Number of tests to generate'}
+				placeholder={m.test_generate_number()}
 				required
 				type="number"
 			/>
 		</div>
 	{/if}
 
-	<Button onclick={() => generateAndClose()}>Generate tests</Button>
+	<Button onclick={() => generateAndClose()}>{m.tests_generate()}</Button>
 </Dialog.Content>
