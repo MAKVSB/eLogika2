@@ -86,16 +86,6 @@ jobs:
           zip -r elogika2-front-${{ github.ref_name }}.zip frontend/build
           zip -r elogika2-docs-${{ github.ref_name }}.zip backend/docs
 
-      # Upload artifacts
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: elogika2-build
-          path: |
-            elogika2-server-${{ github.ref_name }}.zip
-            elogika2-front-${{ github.ref_name }}.zip
-            elogika2-docs-${{ github.ref_name }}.zip
-
       # If release is set, push also to release page
       - name: Create GitHub Release
         if: ${{ inputs.release }}
@@ -106,6 +96,14 @@ jobs:
           files: |
             elogika2-server-${{ github.ref_name }}.zip
             elogika2-front-${{ github.ref_name }}.zip
-            elogika2-docs-${{ github.ref_name }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Upload artifacts
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: elogika2-build
+          path: |
+            elogika2-server-${{ github.ref_name }}.zip
+            elogika2-front-${{ github.ref_name }}.zip
