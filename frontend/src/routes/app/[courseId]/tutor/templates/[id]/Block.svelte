@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {
-	AnswerDistributionEnum,
+		AnswerDistributionEnum,
 		CategoryFilterEnum,
 		QuestionFormatEnum,
 		StepSelectionEnum,
@@ -32,10 +32,10 @@
 			questions: [],
 			stepsMode: StepSelectionEnum.NC,
 			filterBy: CategoryFilterEnum.ALL,
-			deleted: false,
+			deleted: false
 		});
 
-		console.log(fields.segments)
+		console.log(fields.segments);
 	}
 
 	let questionCountDeriver = $derived.by(() => {
@@ -167,7 +167,7 @@
 		error={errors.allowEmptyAnswers}
 	></Form.Checkbox>
 
-		<Form.Checkbox
+	<Form.Checkbox
 		title={m.template_block_mix()}
 		name="mixInsideBlock"
 		id="mixInsideBlock"

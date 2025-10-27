@@ -33,12 +33,12 @@
 			difficultyTo: 100,
 			weight: 0,
 			questionFormat: QuestionFormatEnum.ABCD,
-			questionCount: 4,
+			questionCount: 0,
 			answerCount: 4,
-			AnswerDistribution: AnswerDistributionEnum.MINIMUM_ONE_CORRECT_ONE_INCORRECT,
+			answerDistribution: AnswerDistributionEnum.MINIMUM_ONE_CORRECT_ONE_INCORRECT,
 			wrongAnswerPercentage: 100,
+			allowEmptyAnswers: false,
 			mixInsideBlock: true,
-			chapters: [],
 			segments: []
 		});
 	}
