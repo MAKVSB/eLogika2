@@ -11,16 +11,24 @@ import (
 	"codeberg.org/go-pdf/fpdf"
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common/enums"
+	"github.com/google/uuid"
 	"github.com/skip2/go-qrcode"
 )
 
 const maxQuestionsPerSheet = 18
 const pageSpacing = float64(30)
 const headingHeight = float64(105)
-const maxHeadingLineChars = 20
+const maxHeadingLineChars = 42
+
+type SheetTypeEnum string
+
+const (
+	SheetTypeTeacher SheetTypeEnum = "T"
+	SheetTypeStudent SheetTypeEnum = "S"
+)
 
 type SheetData struct {
-	Format         enums.QuestionFormatEnum
+	Type           SheetTypeEnum
 	SheetOrder     uint
 	MaxAnswerCount int
 	Questions      []*models.TestQuestion
@@ -48,10 +56,6 @@ func (asp AnswerSheetPrinter) GenerateAnswerSheets(testData *models.Test, testIn
 		pdf.AddPage()
 		pw, ph, _ := pdf.PageSize(0)
 
-		if sheet != nil {
-
-		}
-
 		//Draw heading
 		{
 			// Draw triangle (filled)
@@ -75,14 +79,19 @@ func (asp AnswerSheetPrinter) GenerateAnswerSheets(testData *models.Test, testIn
 
 			headingLines = append(headingLines, "Datum: "+testData.Term.ActiveFrom.Format("02.01.2006"))
 			headingLines = append(headingLines, "Čas: "+testData.Term.ActiveFrom.Format("15:04")+" - "+testData.Term.ActiveTo.Format("15:04"))
-			// TODO Here maybe put allowed length of the test as the end time
 			headingLines = append(headingLines, "Test: "+testData.CourseItem.Name)
-			headingLines = append(headingLines, "Variant: "+testData.Group)
+			headingLines = append(headingLines, "Varianta: "+testData.Group)
 
 			pdf.MultiCell(220, 14, strings.Join(headingLines, "\n"), "", "L", false)
 
 			// Draw test instance ID-QR
-			DrawTestIdentifierQR(pdf, pw-pageSpacing, pageSpacing, 90, strconv.Itoa(int(testData.CourseID))+"-"+strconv.Itoa(int(testData.ID)))
+			testIdentifier := fmt.Sprintf("V1;%d;%d;%s%d",
+				testData.CourseID,
+				testData.ID,
+				sheet.Type,
+				sheet.SheetOrder,
+			)
+			DrawTestIdentifierQR(pdf, pw-pageSpacing, pageSpacing, 90, testIdentifier)
 
 			// Draw participant QR
 			DrawParticipantQR(pdf, pw-pageSpacing-100, pageSpacing, 90, testInstance)
@@ -119,7 +128,7 @@ func SplitToSheets(testData *models.Test) []*SheetData {
 		case enums.QuestionFormatOpen:
 			if lastTeacherSheet == nil {
 				newSheet := &SheetData{
-					Format:         enums.QuestionFormatOpen,
+					Type:           SheetTypeTeacher,
 					SheetOrder:     lastTeacherSheetOrder,
 					Questions:      make([]*models.TestQuestion, 0),
 					MaxAnswerCount: 11,
@@ -137,7 +146,7 @@ func SplitToSheets(testData *models.Test) []*SheetData {
 		case enums.QuestionFormatTest:
 			if lastStudentSheet == nil {
 				newSheet := &SheetData{
-					Format:     enums.QuestionFormatTest,
+					Type:       SheetTypeStudent,
 					SheetOrder: lastStudentSheetOrder,
 					Questions:  make([]*models.TestQuestion, 0),
 				}
@@ -187,27 +196,28 @@ func DrawAnswers(pdf *fpdf.Fpdf, posX float64, posY float64, w float64, h float6
 			panic(fmt.Sprintf("unexpected enums.QuestionFormatEnum: %#v", q.Question.QuestionFormat))
 		}
 
-		if i == maxQuestionsPerSheet-1 {
+		switch i {
+		case maxQuestionsPerSheet - 1:
 			offsetY += offsetYAddHeader + 5
 			DrawHeader(pdf, posX, posY+offsetY, squareSize, sheet)
-		} else if i == (maxQuestionsPerSheet/2)-1 {
+		case (maxQuestionsPerSheet / 2) - 1:
 			offsetY += offsetYAddHeader + 10
 			DrawHeader(pdf, posX, posY+offsetY, squareSize, sheet)
 			offsetY += offsetYAddHeader + 2
-		} else {
+		default:
 			offsetY += offsetYAdd
 		}
 	}
 }
 
 func DrawHeader(pdf *fpdf.Fpdf, posX float64, posY float64, squareSize float64, sheet *SheetData) {
-	switch sheet.Format {
-	case enums.QuestionFormatOpen:
+	switch sheet.Type {
+	case SheetTypeTeacher:
 		DrawHeaderPercentage(pdf, posX, posY, squareSize)
-	case enums.QuestionFormatTest:
+	case SheetTypeStudent:
 		DrawHeaderTest(pdf, posX, posY, squareSize, sheet.MaxAnswerCount)
 	default:
-		panic(fmt.Sprintf("unexpected enums.QuestionFormatEnum: %#v", sheet.Format))
+		panic(fmt.Sprintf("unexpected enums.QuestionFormatEnum: %#v", sheet.Type))
 	}
 }
 
@@ -280,7 +290,7 @@ func DrawAnswerRow(pdf *fpdf.Fpdf, posX float64, posY float64, squareSize float6
 }
 
 func DrawTestIdentifierQR(pdf *fpdf.Fpdf, toprightX float64, toprightY float64, size float64, content string) {
-	identifier := "testInstanceQR"
+	identifier := uuid.NewString()
 
 	qr, err := qrcode.Encode(content, qrcode.High, 512)
 	if err != nil {
@@ -302,14 +312,18 @@ func DrawTestIdentifierQR(pdf *fpdf.Fpdf, toprightX float64, toprightY float64, 
 }
 
 func DrawParticipantQR(pdf *fpdf.Fpdf, toprightX float64, toprightY float64, size float64, testInstance *models.TestInstance) {
-	identifier := "participantQR"
+	identifier := uuid.NewString()
 	width := float64(180)
 
 	topleftX := toprightX - width
 	topleftXQR := toprightX - size
 
 	if testInstance != nil {
-		qr, err := qrcode.Encode(strconv.Itoa(int(testInstance.ID)), qrcode.High, 512)
+		participantIdentifier := fmt.Sprintf("%s;%d",
+			testInstance.Participant.Username,
+			testInstance.ID,
+		)
+		qr, err := qrcode.Encode(participantIdentifier, qrcode.High, 512)
 		if err != nil {
 			log.Fatal(err)
 		}
