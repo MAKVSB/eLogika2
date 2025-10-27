@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { QuestionCreatedByDTO } from '$lib/api_types';
+	import type { QuestionCreatedByDTO, StringDate } from '$lib/api_types';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { displayUserName } from '$lib/utils';
@@ -9,7 +9,7 @@
 		createdAt
 	}: {
 		createdBy: QuestionCreatedByDTO;
-		createdAt: string;
+		createdAt: StringDate;
 	} = $props();
 </script>
 

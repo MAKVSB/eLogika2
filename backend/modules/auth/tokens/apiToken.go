@@ -1,6 +1,7 @@
 package tokens
 
 import (
+	"strings"
 	"time"
 
 	"elogika.vsb.cz/backend/initializers"
@@ -35,7 +36,7 @@ func (t *ApiToken) IsRevoked() bool {
 }
 
 func (t *ApiToken) Parse(tokenStr string, allowExpired bool) *common.ErrorResponse {
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(strings.TrimPrefix(tokenStr, "api_"), func(token *jwt.Token) (interface{}, error) {
 		return initializers.GlobalAppConfig.API_SECRET, nil
 	})
 	if err != nil {

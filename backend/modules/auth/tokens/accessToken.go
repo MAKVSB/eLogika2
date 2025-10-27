@@ -1,6 +1,7 @@
 package tokens
 
 import (
+	"strings"
 	"time"
 
 	"elogika.vsb.cz/backend/initializers"
@@ -32,7 +33,7 @@ func (t *AccessToken) IsRevoked() bool {
 }
 
 func (t *AccessToken) Parse(tokenStr string, allowExpired bool) *common.ErrorResponse {
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(strings.TrimPrefix(tokenStr, "at_"), func(token *jwt.Token) (interface{}, error) {
 		return initializers.GlobalAppConfig.ACCESS_SECRET, nil
 	})
 

@@ -1,6 +1,7 @@
 package tokens
 
 import (
+	"strings"
 	"time"
 
 	"elogika.vsb.cz/backend/initializers"
@@ -30,7 +31,7 @@ func (t *RefreshToken) Get(c *gin.Context, allowExpired bool) *common.ErrorRespo
 		}
 	}
 
-	return t.Parse(refreshTokenStr, allowExpired)
+	return t.Parse(strings.TrimPrefix(refreshTokenStr, "rt_"), allowExpired)
 }
 
 func (t *RefreshToken) IsRevoked() bool {
