@@ -29,8 +29,8 @@ type ListAvailableTestsResponse struct {
 // @Failure 400 {object} common.ErrorResponse "Invalid resource or patch"
 // @Failure 403 {object} common.ErrorResponse "Permission or atuhentication errors"
 // @Failure 500 {object} common.ErrorResponse "Fatal failure"
-// @Router /api/v2/courses/{courseId}/tests/active [get]
-func ListAvailable(c *gin.Context, userData authdtos.LoggedUserDTO) {
+// @Router /api/v2/courses/{courseId}/tests/available [get]
+func ListAvailable(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.CourseUserRoleEnum) *common.ErrorResponse {
 	// Load request data
 	err, params, _ := utils.GetRequestData[
 		struct {
@@ -39,19 +39,21 @@ func ListAvailable(c *gin.Context, userData authdtos.LoggedUserDTO) {
 		any,
 	](c)
 	if err != nil {
-		c.AbortWithStatusJSON(err.Code, err)
-		return
+		return err
 	}
 
 	// TODO validate from here
 
-	// check permissions
-	coursePermissions := auth.GetClaimCourse(userData.Courses, params.CourseID)
-	if coursePermissions == nil || !coursePermissions.IsStudent() {
-		c.JSON(403, common.ErrorResponse{
+	// Check role validity
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
+		return err
+	}
+
+	if userRole != enums.CourseUserRoleStudent {
+		return &common.ErrorResponse{
+			Code:    403,
 			Message: "Not enough permissions",
-		})
-		return
+		}
 	}
 
 	var terms []models.Term
@@ -63,11 +65,11 @@ func ListAvailable(c *gin.Context, userData authdtos.LoggedUserDTO) {
 		Where("active_from < ?", time.Now()).
 		Where("active_to > ?", time.Now()).
 		Find(&terms).Error; err != nil {
-		c.AbortWithStatusJSON(404, common.ErrorResponse{
+		return &common.ErrorResponse{
+			Code:    500,
 			Message: "Failed to fetch terms",
 			Details: err.Error(),
-		})
-		return
+		}
 	}
 
 	for _, t := range terms {
@@ -83,8 +85,7 @@ func ListAvailable(c *gin.Context, userData authdtos.LoggedUserDTO) {
 
 					triesLeft, err := helpers.GetTestAttemptsLeft(ci.ID, t.ID, userData.ID)
 					if err != nil {
-						c.AbortWithStatusJSON(err.Code, err)
-						return
+						return err
 					}
 
 					activeTests = append(activeTests, dtos.StudentTestDTO{
@@ -102,8 +103,7 @@ func ListAvailable(c *gin.Context, userData authdtos.LoggedUserDTO) {
 		} else if t.CourseItem.Type == enums.CourseItemTypeTest {
 			triesLeft, err := helpers.GetTestAttemptsLeft(t.CourseItemID, t.ID, userData.ID)
 			if err != nil {
-				c.AbortWithStatusJSON(err.Code, err)
-				return
+				return err
 			}
 
 			activeTests = append(activeTests, dtos.StudentTestDTO{
@@ -128,11 +128,11 @@ func ListAvailable(c *gin.Context, userData authdtos.LoggedUserDTO) {
 		Where("form = ?", enums.TestInstanceFormOnline).
 		Where("(state = ? and active_from < ? and Term.active_to > ?) or (state = ? and ends_at> ?)", enums.TestInstanceStateReady, time.Now(), time.Now(), enums.TestInstanceStateActive, time.Now()).
 		Find(&activeInstances).Error; err != nil {
-		c.AbortWithStatusJSON(404, common.ErrorResponse{
+		return &common.ErrorResponse{
+			Code:    500,
 			Message: "Failed to fetch terms",
 			Details: err.Error(),
-		})
-		return
+		}
 	}
 
 	activeInstancesDtos := make([]dtos.TestInstanceStudentListItemDTO, 0)
@@ -144,4 +144,5 @@ func ListAvailable(c *gin.Context, userData authdtos.LoggedUserDTO) {
 		Instances: activeInstancesDtos,
 		Items:     activeTests,
 	})
+	return nil
 }

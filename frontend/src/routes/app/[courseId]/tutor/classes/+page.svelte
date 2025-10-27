@@ -11,11 +11,15 @@
 	import { invalidate, invalidateAll } from '$app/navigation';
 	import Pageloader from '$lib/components/ui/loader/pageloader.svelte';
 	import { base } from '$app/paths';
+	import { toast } from 'svelte-sonner';
+	import Loader from '$lib/components/ui/loader/loader.svelte';
 
 	let loading: boolean = $state(true);
 	let rowItems: ClassListItemDTO[] = $state([]);
 	let rowCount: number = $state(0);
 	let initialState: InitialTableState = $state({});
+
+	let importRunning = $state(false)
 
 	let { data } = $props();
 
@@ -61,6 +65,7 @@
 	});
 
 	const importClasses = async () => {
+		importRunning = true
 		await API.request<null, ClassImportClassesResponse>(
 			`api/v2/courses/${page.params.courseId}/classes/import`,
 			{
@@ -71,8 +76,11 @@
 				invalidate((url) => {
 					return url.href.endsWith(`/api/v2/courses/${page.params.courseId}/classes`);
 				});
+				toast.success("Import finished")
 			})
-			.catch(() => {});
+			.catch(() => {}).finally(() => {
+				importRunning = false
+			});
 
 		return true;
 	}
@@ -83,7 +91,12 @@
 		<h1 class="mb-8 text-2xl">Class management</h1>
 		<div class="flex gap-2">
 			{#if GlobalState.activeRole && [CourseUserRoleEnum.ADMIN, CourseUserRoleEnum.GARANT].includes(GlobalState.activeRole)}
-				<!-- <Button onclick={() => importClasses()}>Import classes</Button> -->
+				<Button onclick={() => importClasses()} disabled={importRunning}>
+					{#if importRunning}
+					 	<Loader></Loader>
+					{/if}
+					Import classes
+					</Button>
 				<Button href="{base}/app/{page.params.courseId}/tutor/classes/0">{m.class_add()}</Button>
 			{/if}
 		</div>

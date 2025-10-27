@@ -8,7 +8,7 @@ import (
 
 func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.GET("courses/:courseId/classes", wrappers.WithUserDataRole(handlers.List))
-	// rg.POST("courses/:courseId/classes/import", wrappers.WithUserDataRole(handlers.ImportClasses))
+	rg.POST("courses/:courseId/classes/import", wrappers.WithUserDataRole(handlers.ImportClasses))
 	rg.POST("courses/:courseId/classes", wrappers.WithUserDataRole(handlers.ClassInsert))
 	rg.PUT("courses/:courseId/classes/:classId", wrappers.WithUserDataRole(handlers.ClassUpdate))
 	rg.GET("courses/:courseId/classes/:classId", wrappers.WithUserDataRole(handlers.ClassGetByID))

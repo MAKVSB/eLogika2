@@ -15,8 +15,8 @@
 	import { m } from '$lib/paraglide/messages';
 	import { invalidate } from '$app/navigation';
 	import UserAddDialog from './UserAddDialog/UserAddDialog.svelte';
-	// import UserAddDialog from '../UserAddDialog/UserAddDialog.svelte';
 	import GlobalState from '$lib/shared.svelte';
+	import { toast } from 'svelte-sonner';
 
 	let loading: boolean = $state(true);
 	let rowItems: CourseUserDTO[] = $state([]);
@@ -54,12 +54,48 @@
 				)
 					.then((res) => {
 						invalidate((url) => {
-							return url.href.endsWith(`courses/${page.params.courseId}/users`);
+							return url.pathname.endsWith(`courses/${page.params.courseId}/users`);
 						});
+						toast.success(m.toast_course_user_deleted())
 					})
 					.catch(() => {});
 
 				return true;
+			}
+		};
+	}
+
+	const rolesColumn = columns.find((c) => c.uniqueId == 'roles');
+	if (rolesColumn) {
+		rolesColumn.meta = {
+			...(rolesColumn.meta ?? {}),
+			clickEventHandler: async (
+				event: string,
+				id: number,
+				params: { role: CourseUserRoleEnum }
+			) => {
+				switch (event) {
+					case 'remove_role':
+						await API.request<RemoveCourseUserRequest, RemoveCourseUserResponse>(
+							`api/v2/courses/${page.params.courseId}/users`,
+							{
+								method: 'DELETE',
+								body: {
+									userId: id,
+									role: params.role
+								}
+							}
+						)
+							.then((res) => {
+								invalidate((url) => {
+									return url.pathname.endsWith(`courses/${page.params.courseId}/users`);
+								});
+								toast.success(m.toast_course_user_role_removed({role: m.course_user_role_enum({value: params.role})}))
+							})
+							.catch(() => {});
+
+						return true;
+				}
 			}
 		};
 	}
@@ -71,12 +107,12 @@
 		<div>
 			{#if GlobalState.activeRole == CourseUserRoleEnum.ADMIN}
 				<Dialog.Root bind:open={dialogOpen}>
-					<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}
-						>{m.class_student_add()}</Dialog.Trigger
-					>
+					<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>
+						{m.course_user_add()}
+					</Dialog.Trigger>
 					{#if dialogOpen}
-						<UserAddDialog endpoint={`api/v2/courses/${page.params.courseId}/users`}
-						></UserAddDialog>
+						<UserAddDialog endpoint={`api/v2/courses/${page.params.courseId}/users`}>
+					</UserAddDialog>
 					{/if}
 				</Dialog.Root>
 			{/if}

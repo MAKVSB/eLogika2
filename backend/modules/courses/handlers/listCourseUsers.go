@@ -44,7 +44,7 @@ func ListCourseUsers(c *gin.Context, userData authdtos.LoggedUserDTO, userRole e
 	// TODO validate from here
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 	// If not admin, or garant
@@ -62,7 +62,10 @@ func ListCourseUsers(c *gin.Context, userData authdtos.LoggedUserDTO, userRole e
 	}
 	innerQuery = models.User{}.ApplySorting(innerQuery, searchParams.Sorting)
 
-	query := initializers.DB.Model(models.CourseUser{})
+	query := initializers.DB.Model(models.CourseUser{}).
+		Where("course_id = ?", params.CourseID).
+		InnerJoins("User", innerQuery)
+
 	query, err = models.CourseUser{}.ApplyFilters(query, searchParams.ColumnFilters, models.CourseUser{}, map[string]interface{}{}, "")
 	if err != nil {
 		return err
@@ -73,8 +76,6 @@ func ListCourseUsers(c *gin.Context, userData authdtos.LoggedUserDTO, userRole e
 
 	var courseUsers []models.CourseUser
 	if err := query.
-		Where("course_id = ?", params.CourseID).
-		InnerJoins("User", innerQuery).
 		Find(&courseUsers).Error; err != nil {
 		return &common.ErrorResponse{
 			Code:    404,

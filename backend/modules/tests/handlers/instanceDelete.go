@@ -46,10 +46,10 @@ func TestInstanceDelete(c *gin.Context, userData authdtos.LoggedUserDTO, userRol
 	// TODO validate from here
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
-	var courseItem models.CourseItem
+	var courseItem *models.CourseItem
 	// Check if tutor/garant can view/modify courseItem
 	if userRole == enums.CourseUserRoleAdmin {
 	} else if userRole == enums.CourseUserRoleGarant {
@@ -105,7 +105,7 @@ func TestInstanceDelete(c *gin.Context, userData authdtos.LoggedUserDTO, userRol
 	modifier := func(db *gorm.DB) *gorm.DB {
 		return db.Preload("Result")
 	}
-	testInstance, err := testRepo.GetTestInstanceByID(transaction, params.InstanceID, userData.ID, &modifier, false, false, &courseItem.ID, nil)
+	testInstance, err := testRepo.GetTestInstanceByID(transaction, params.InstanceID, userData.ID, &modifier, false, false, &params.CourseItemID, nil)
 	if err != nil {
 		transaction.Rollback()
 		return err

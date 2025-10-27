@@ -41,7 +41,7 @@ func (m TestInstanceQuestionDTO) From(
 	}
 
 	for a_i, a := range d.Answers {
-		dto.Answers[a_i] = TestInstanceQuestionAnswerDTO{}.From(&a, showTest, showCorrectness)
+		dto.Answers[a_i] = TestInstanceQuestionAnswerDTO{}.From(a, showTest, showCorrectness)
 	}
 
 	if showTutor {

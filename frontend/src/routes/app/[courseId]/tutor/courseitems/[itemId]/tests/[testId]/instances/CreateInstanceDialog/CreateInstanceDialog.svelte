@@ -2,12 +2,9 @@
 	import { page } from '$app/state';
 	import {
 		CourseUserRoleEnum,
-		QuestionFormatEnum,
 		TestInstanceFormEnum,
 		type CourseUserDTO,
 		type ListCourseUsersResponse,
-		type TestGeneratorRequest,
-		type TestGeneratorResponse,
 		type TestInstanceCreateRequest,
 		type TestInstanceCreateResponse
 	} from '$lib/api_types';
@@ -17,7 +14,7 @@
 	import { onMount } from 'svelte';
 	import { columns, filters } from './schema';
 	import { DataTable } from '$lib/components/ui/data-table';
-	import type { InitialTableState, RowSelectionState } from '@tanstack/table-core';
+	import type { ColumnFiltersState, InitialTableState, PaginationState, RowSelectionState, SortingState, TableState } from '@tanstack/table-core';
 	import Loader from '$lib/components/ui/loader/loader.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
@@ -26,6 +23,12 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import { enumToOptions } from '$lib/utils';
 	import { base } from '$app/paths';
+
+	type RestRequest = {
+		pagination?: PaginationState;
+		sorting?: SortingState;
+		columnFilters?: ColumnFiltersState;
+	};
 
 	let {
 		openState = $bindable()
@@ -47,10 +50,6 @@
 				value: CourseUserRoleEnum.STUDENT
 			}
 		];
-		initialState.pagination = {
-			pageIndex: 0,
-			pageSize: 10000
-		};
 		const search = encodeJsonToBase64Url(initialState);
 
 		API.request<null, ListCourseUsersResponse>(
@@ -64,7 +63,7 @@
 		)
 			.then((res) => {
 				rowItems = res.items;
-				rowCount = res.items.length;
+				rowCount = res.itemsCount;
 			})
 			.catch(() => {});
 	};
@@ -97,6 +96,31 @@
 		};
 	}
 
+	function refetch(state: TableState) {
+		const queryParams: RestRequest = {
+			...(state.pagination ? { pagination: state.pagination } : {}),
+			...(state.sorting ? { sorting: state.sorting } : {}),
+			...(state.columnFilters ? { columnFilters: state.columnFilters } : {})
+		};
+		const search = encodeJsonToBase64Url(queryParams);
+		
+		API.request<null, ListCourseUsersResponse>(
+			`/api/v2/courses/${page.params.courseId}/users`,
+			{
+				searchParams: {
+					...(search ? { search: search } : {})
+				}
+			},
+			fetch
+		)
+			.then((res) => {
+				rowItems = res.items;
+				rowCount = res.itemsCount;
+			})
+			.catch(() => {});
+
+	}
+
 	onMount(() => {
 		loadData();
 		loading = false;
@@ -123,8 +147,8 @@
 			{columns}
 			{filters}
 			{rowCount}
-			paginationEnabled={false}
 			{initialState}
+			{refetch}
 		/>
 	{:else}
 		<Loader></Loader>

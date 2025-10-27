@@ -54,7 +54,7 @@ func QuestionToggleActive(c *gin.Context, userData authdtos.LoggedUserDTO, userR
 	query := transaction
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		transaction.Rollback()
 		return err
 	}

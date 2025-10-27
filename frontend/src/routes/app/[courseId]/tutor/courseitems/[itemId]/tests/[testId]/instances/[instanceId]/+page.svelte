@@ -32,12 +32,16 @@
 				<Tabs.Trigger value="instanceEditor">Test editor</Tabs.Trigger>
 				<Tabs.Trigger value="events">Events</Tabs.Trigger>
 			</Tabs.List>
-			<Tabs.Content value="instanceEditor">
+			<Tabs.Content value="instanceEditor" class="p-4">
 				<InstanceEditor {instanceData} editable={true}></InstanceEditor>
 			</Tabs.Content>
-			<Tabs.Content value="events">
+			<Tabs.Content value="events" class="p-4">
 				<InstanceEvents></InstanceEvents>
 			</Tabs.Content>
+			<Tabs.List direction="up">
+				<Tabs.Trigger value="instanceEditor" direction="up">Test editor</Tabs.Trigger>
+				<Tabs.Trigger value="events" direction="up">Events</Tabs.Trigger>
+			</Tabs.List>
 		</Tabs.Root>
 	{/if}
 </div>

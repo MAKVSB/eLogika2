@@ -45,7 +45,7 @@ func ListResults(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 	// TODO validate from here
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 
@@ -78,6 +78,7 @@ func ListResults(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 	if err := initializers.DB.
 		Select("users.id, username, first_name, family_name, email").
 		Where("users.id in ?", participatingUsers).
+		Order("family_name").
 		Find(&users).Error; err != nil {
 		return &common.ErrorResponse{
 			Code:    500,

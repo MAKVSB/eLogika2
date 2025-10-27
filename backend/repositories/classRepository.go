@@ -171,13 +171,17 @@ func (r *ClassRepository) ListClasses(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Class{}.ApplyFilters(query, searchParams.ColumnFilters, models.Class{}, map[string]interface{}{}, "")
-	if err != nil {
-		return nil, 0, err
+	if searchParams != nil {
+		query, err := models.Class{}.ApplyFilters(query, searchParams.ColumnFilters, models.Class{}, map[string]interface{}{}, "")
+		if err != nil {
+			return nil, 0, err
+		}
+		query = models.Class{}.ApplySorting(query, searchParams.Sorting)
 	}
-	query = models.Class{}.ApplySorting(query, searchParams.Sorting)
 	totalCount := models.Class{}.GetCount(query) // Gets count before pagination
-	query = models.Class{}.ApplyPagination(query, searchParams.Pagination)
+	if searchParams != nil {
+		query = models.Class{}.ApplyPagination(query, searchParams.Pagination)
+	}
 
 	var classs []*models.Class
 	if err := query.

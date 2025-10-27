@@ -2,17 +2,23 @@
 	import { Tabs as TabsPrimitive } from 'bits-ui';
 	import { cn } from '$lib/utils.js';
 
-	let { ref = $bindable(null), class: className, ...restProps }: TabsPrimitive.ListProps = $props();
-
-	// "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
+	let {
+		ref = $bindable(null),
+		class: className,
+		direction = "down",
+		...restProps
+	}: TabsPrimitive.ListProps & {
+		direction?: "up" | "down"
+	}= $props();
 </script>
 
 <TabsPrimitive.List
 	bind:ref
 	data-slot="tabs-list"
 	class={cn(
-		'w-full border-b',
+		'w-full',
 		'text-muted-foreground flex h-9 items-center justify-center',
+		direction == "down" ? "border-b" : "border-t",
 		className
 	)}
 	{...restProps}

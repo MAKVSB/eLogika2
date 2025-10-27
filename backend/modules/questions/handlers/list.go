@@ -49,7 +49,7 @@ func List(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Course
 
 	// TODO validate from here 2
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 	questionServ := services.NewQuestionService(repositories.NewQuestionRepository())

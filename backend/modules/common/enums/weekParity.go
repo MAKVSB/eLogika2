@@ -3,15 +3,17 @@ package enums
 type WeekParityEnum string
 
 const (
-	WeekParityBoth WeekParityEnum = "BOTH"
-	WeekParityEven WeekParityEnum = "EVEN"
-	WeekParityOdd  WeekParityEnum = "ODD"
+	WeekParityBoth   WeekParityEnum = "BOTH"
+	WeekParityEven   WeekParityEnum = "EVEN"
+	WeekParityOdd    WeekParityEnum = "ODD"
+	WeekParityCustom WeekParityEnum = "CUSTOM"
 )
 
 var WeekParityEnumAll = []WeekParityEnum{
 	WeekParityBoth,
 	WeekParityEven,
 	WeekParityOdd,
+	WeekParityCustom,
 }
 
 func (w WeekParityEnum) TSName() string {
@@ -22,6 +24,8 @@ func (w WeekParityEnum) TSName() string {
 		return "EVEN"
 	case WeekParityOdd:
 		return "ODD"
+	case WeekParityCustom:
+		return "CUSTOM"
 	default:
 		return "???"
 	}

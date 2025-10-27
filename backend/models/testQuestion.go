@@ -9,7 +9,10 @@ type TestQuestion struct {
 	QuestionID uint ``
 	Order      uint ``
 
-	Question    *Question             ``
-	Answers     []*TestQuestionAnswer ``
-	OpenAnswers []Answer              `gorm:"-"`
+	Question *Question             ``
+	Answers  []*TestQuestionAnswer ``
+
+	// Temporary helper data
+	OpenAnswers   []Answer `gorm:"-"`
+	QuestionCount int      `gorm:"-"`
 }

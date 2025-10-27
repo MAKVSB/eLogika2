@@ -21,10 +21,12 @@
 		TableState
 	} from '@tanstack/table-core';
 	import Loader from '$lib/components/ui/loader/loader.svelte';
-	import { invalidateAll } from '$app/navigation';
+	import { invalidate } from '$app/navigation';
 	import * as Form from '$lib/components/ui/form';
 	import { enumToOptions } from '$lib/utils';
 	import { m } from '$lib/paraglide/messages';
+	import { page } from '$app/state';
+	import { toast } from 'svelte-sonner';
 
 	let {
 		defaultRole,
@@ -58,7 +60,10 @@
 					}
 				})
 					.then((res) => {
-						invalidateAll();
+						invalidate((url) => {
+							return url.pathname.endsWith(`courses/${page.params.courseId}/users`);
+						});
+						toast.success(m.toast_course_user_added({role: m.course_user_role_enum({value: newUserRole})}))
 					})
 					.catch(() => {});
 

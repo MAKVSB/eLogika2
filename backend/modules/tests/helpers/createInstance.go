@@ -15,6 +15,25 @@ func CreateInstance(
 	courseItemId uint,
 	form enums.TestInstanceFormEnum,
 ) (*models.TestInstance, *common.ErrorResponse) {
+	var existingTestInstance []*models.TestInstance
+	if err := transaction.
+		Where("test_id = ?", generatedTest.ID).
+		Where("participant_id = ?", participantId).
+		Find(&existingTestInstance).Error; err != nil {
+		return nil, &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to create test instance",
+			Details: err.Error(),
+		}
+	}
+
+	if len(existingTestInstance) != 0 {
+		return existingTestInstance[0], &common.ErrorResponse{
+			Code:    409,
+			Message: "Instance already exists",
+		}
+	}
+
 	testInstance := &models.TestInstance{
 		State:         enums.TestInstanceStateReady,
 		Form:          form,
@@ -22,17 +41,17 @@ func CreateInstance(
 		TestID:        generatedTest.ID,
 		TermID:        termId,
 		CourseItemID:  courseItemId,
-		Questions:     make([]models.TestInstanceQuestion, 0),
+		Questions:     make([]*models.TestInstanceQuestion, 0),
 	}
 
 	for _, generatedTestQuestion := range generatedTest.Questions {
-		testInstanceQuestion := models.TestInstanceQuestion{
+		testInstanceQuestion := &models.TestInstanceQuestion{
 			TestQuestionID: generatedTestQuestion.ID,
-			Answers:        make([]models.TestInstanceQuestionAnswer, 0),
+			Answers:        make([]*models.TestInstanceQuestionAnswer, 0),
 		}
 
 		for _, generatedTestQuestionAnswer := range generatedTestQuestion.Answers {
-			testInstanceQuestionAnswer := models.TestInstanceQuestionAnswer{
+			testInstanceQuestionAnswer := &models.TestInstanceQuestionAnswer{
 				TestQuestionAnswerID: generatedTestQuestionAnswer.ID,
 				Selected:             false,
 			}

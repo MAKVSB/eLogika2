@@ -58,7 +58,7 @@ func TestInstanceTutorSave(c *gin.Context, userData authdtos.LoggedUserDTO, user
 	// TODO validate from here
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 	var courseItem *models.CourseItem
@@ -183,14 +183,6 @@ func TestInstanceTutorSave(c *gin.Context, userData authdtos.LoggedUserDTO, user
 			}
 		}
 	}
-	if err := transaction.Save(&testInstance).Error; err != nil {
-		transaction.Rollback()
-		return &common.ErrorResponse{
-			Code:    500,
-			Message: "Failed to save answer for question",
-			Details: err.Error(),
-		}
-	}
 
 	if err := transaction.Save(&testInstance).Error; err != nil {
 		transaction.Rollback()
@@ -236,7 +228,7 @@ func TestInstanceTutorSave(c *gin.Context, userData authdtos.LoggedUserDTO, user
 		return err
 	}
 
-	c.JSON(202, TestInstanceTutorSaveResponse{
+	c.JSON(200, TestInstanceTutorSaveResponse{
 		InstanceData: dtos.TestInstanceDTO{}.From(
 			testInstance,
 			true,

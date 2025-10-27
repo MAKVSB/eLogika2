@@ -16,15 +16,16 @@ import (
 
 // @Description Request to insert new class
 type ClassInsertRequest struct {
-	Name         string               `json:"name" binding:"required"`
-	Room         string               `json:"room" binding:"required"`
-	Type         enums.ClassTypeEnum  `json:"type" binding:"required"`
-	StudyForm    enums.StudyFormEnum  `json:"studyForm" binding:"required"`
-	TimeFrom     string               `json:"timeFrom" binding:"required"`
-	TimeTo       string               `json:"timeTo" binding:"required"`
-	Day          enums.WeekDayEnum    `json:"day" binding:"required"`
-	WeekParity   enums.WeekParityEnum `json:"weekParity" binding:"required"`
-	StudentLimit uint                 `json:"studentLimit" binding:"required"`
+	Name          string                    `json:"name" binding:"required"`
+	Room          string                    `json:"room" binding:"required"`
+	Type          enums.ClassTypeEnum       `json:"type" binding:"required"`
+	StudyForm     enums.StudyFormEnum       `json:"studyForm" binding:"required"`
+	TimeFrom      string                    `json:"timeFrom" binding:"required"`
+	TimeTo        string                    `json:"timeTo" binding:"required"`
+	Day           enums.WeekDayEnum         `json:"day" binding:"required"`
+	WeekParity    enums.WeekParityEnum      `json:"weekParity" binding:"required"`
+	StudentLimit  uint                      `json:"studentLimit" binding:"required"`
+	ImportOptions models.ClassImportOptions `json:"importOptions" binding:"required"`
 }
 
 // @Description Newly created course
@@ -73,7 +74,7 @@ func ClassInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 	}
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 	// If not admin or garant
@@ -85,18 +86,19 @@ func ClassInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 	}
 
 	class := models.Class{
-		ID:           0,
-		Version:      1,
-		CourseID:     params.CourseID,
-		Name:         reqData.Name,
-		Room:         reqData.Room,
-		Type:         reqData.Type,
-		StudyForm:    reqData.StudyForm,
-		TimeFrom:     reqData.TimeFrom,
-		TimeTo:       reqData.TimeTo,
-		Day:          reqData.Day,
-		WeekParity:   reqData.WeekParity,
-		StudentLimit: reqData.StudentLimit,
+		ID:            0,
+		Version:       1,
+		CourseID:      params.CourseID,
+		Name:          reqData.Name,
+		Room:          reqData.Room,
+		Type:          reqData.Type,
+		StudyForm:     reqData.StudyForm,
+		TimeFrom:      reqData.TimeFrom,
+		TimeTo:        reqData.TimeTo,
+		Day:           reqData.Day,
+		WeekParity:    reqData.WeekParity,
+		StudentLimit:  reqData.StudentLimit,
+		ImportOptions: reqData.ImportOptions,
 	}
 
 	transaction := initializers.DB.Begin()

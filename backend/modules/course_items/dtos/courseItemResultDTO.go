@@ -16,6 +16,7 @@ type CourseItemResultDTO struct {
 	TermName       string    `json:"termName"`
 	UpdatedBy      string    `json:"updatedBy"`
 
+	TestID             *uint `json:"testId"`
 	TestInstanceID     *uint `json:"testInstanceId"`
 	ActivityInstanceID *uint `json:"activityInstanceId"`
 
@@ -43,6 +44,7 @@ func (m CourseItemResultDTO) From(d *models.CourseItemResult) CourseItemResultDT
 
 	if d.TestInstanceID != nil {
 		dto.StartedAt = d.TestInstance.StartedAt
+		dto.TestID = &d.TestInstance.TestID
 	} else {
 		dto.StartedAt = d.ActivityInstance.CreatedAt
 	}

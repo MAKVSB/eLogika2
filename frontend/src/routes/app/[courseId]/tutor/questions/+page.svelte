@@ -15,6 +15,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { FilterTypeEnum } from '$lib/components/ui/data-table/filter';
+	import Loader from '$lib/components/ui/loader/loader.svelte';
 
 	let loading: boolean = $state(true);
 	let rowItems: QuestionListItemDTO[] = $state([]);
@@ -25,6 +26,8 @@
 			categoryId: false
 		}
 	});
+
+	let printRunning = $state(false);
 
 	let { data } = $props();
 
@@ -164,6 +167,7 @@
 	}
 
 	function print() {
+		printRunning = true;
 		const search = page.url.searchParams.get('search');
 
 		API.request<any, Blob>(
@@ -180,7 +184,10 @@
 				const url = URL.createObjectURL(res);
 				window.open(url); // opens in new tab
 			})
-			.catch(() => {});
+			.catch(() => {})
+			.finally(() => {
+				printRunning = false;
+			});
 	}
 </script>
 
@@ -202,6 +209,11 @@
 		{/if}
 	</div>
 	<div class="flex justify-end gap-4">
-		<Button onclick={() => print()}>{m.print_filtered_questions()}</Button>
+		<Button onclick={() => print()} disabled={printRunning}>
+			{#if printRunning}
+				<Loader></Loader>
+			{/if}
+			{m.print_filtered_questions()}
+		</Button>
 	</div>
 </div>

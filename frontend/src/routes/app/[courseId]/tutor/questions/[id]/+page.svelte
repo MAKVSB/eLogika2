@@ -182,7 +182,7 @@
 				{additionalButtons}
 				hideDefaultbutton
 			>
-				<Tabs.Root value="question">
+				<Tabs.Root value="question" class="mb-8">
 					<Tabs.List>
 						<Tabs.Trigger value="question">{m.question_tab_main()}</Tabs.Trigger>
 						<Tabs.Trigger value="answers">{m.question_tab_answers()}</Tabs.Trigger>
@@ -197,6 +197,11 @@
 					<Tabs.Content value="steps">
 						<TabSteps bind:form {courseId}></TabSteps>
 					</Tabs.Content>
+					<Tabs.List direction="up">
+						<Tabs.Trigger direction="up" value="question">{m.question_tab_main()}</Tabs.Trigger>
+						<Tabs.Trigger direction="up" value="answers">{m.question_tab_answers()}</Tabs.Trigger>
+						<Tabs.Trigger direction="up" value="steps">{m.question_tab_steps()}</Tabs.Trigger>
+					</Tabs.List>
 				</Tabs.Root>
 			</Form.Root>
 

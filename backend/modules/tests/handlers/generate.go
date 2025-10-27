@@ -61,7 +61,7 @@ func Generate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Co
 	// TODO validate from here
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 	var courseItem *models.CourseItem
@@ -137,7 +137,7 @@ func Generate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Co
 				params.CourseItemID,
 				params.TermID,
 				&userData,
-				userData.Username,
+				userData.FamilyName+" "+userData.FirstName,
 				GetVariantLabel(var_i),
 			)
 			if err != nil {
@@ -221,7 +221,7 @@ func Generate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Co
 				params.CourseItemID,
 				params.TermID,
 				&userData,
-				ju.User.Username,
+				ju.User.FamilyName+" "+ju.User.FirstName,
 				"",
 			)
 			if err != nil {
@@ -392,7 +392,7 @@ func GenerateTest(
 
 		variant := models.Test{
 			CourseID:     courseId,
-			Name:         generatingForUser + "-" + strconv.FormatInt(time.Now().UnixMicro(), 10),
+			Name:         generatingForUser + " (" + strconv.FormatInt(time.Now().UnixMicro(), 10) + ")",
 			CreatedByID:  generatingByUser.ID,
 			Blocks:       make([]models.TestBlock, len(template.Blocks)),
 			Questions:    testQuestions,

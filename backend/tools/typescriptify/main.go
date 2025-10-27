@@ -52,7 +52,7 @@ func main() {
 
 	converter.AddImport("import type { JSONContent } from '@tiptap/core';")
 	converter.AddImport("import type { ZonedDateTime } from '@internationalized/date';")
-	converter.AddImport("export type StringDate = string")
+	converter.AddImport("export type StringDate = string | Date")
 
 	converter.ManageType(time.Time{}, typescriptify.TypeOptions{TSType: "StringDate"})
 
@@ -100,6 +100,8 @@ func main() {
 		Add(userHandlers.UserUpdateResponse{}).
 		Add(userHandlers.UserGetByIdResponse{}).
 		Add(userHandlers.UserChangePassRequest{}).
+		Add(userHandlers.TokenCreateRequest{}).
+		Add(userHandlers.TokenCreateResponse{}).
 		Add(categoryHandlers.CategoryListRequest{}).
 		Add(categoryHandlers.CategoryListResponse{}).
 		Add(categoryHandlers.CategoryInsertRequest{}).
@@ -154,6 +156,7 @@ func main() {
 		Add(testHandlers.TestInstanceTutorGetResponse{}).
 		Add(testHandlers.TestEvaluationRequest{}).
 		Add(testHandlers.TestEvaluationResponse{}).
+		Add(classHandlers.ClassImportClassesResponse{}).
 		Add(classHandlers.ClassUpdateRequest{}).
 		Add(classHandlers.ClassUpdateResponse{}).
 		Add(classHandlers.ClassInsertRequest{}).
@@ -245,6 +248,7 @@ func main() {
 
 	c.AddType(userHandlers.UserInsertRequest{})
 	c.AddType(userHandlers.UserUpdateRequest{})
+	c.AddType(userHandlers.TokenCreateRequest{})
 
 	c.AddType(categoryHandlers.CategoryListResponse{})
 

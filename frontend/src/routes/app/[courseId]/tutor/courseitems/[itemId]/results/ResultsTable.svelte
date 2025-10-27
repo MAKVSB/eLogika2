@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import type { CourseItemResultDTO, CourseItemSelectResultResponse } from '$lib/api_types';
 	import { Button } from '$lib/components/ui/button';
@@ -48,7 +49,7 @@
 	<Table.Body>
 		{#if results.length === 0}
 			<Table.Row>
-				<Table.Cell colspan={7}>No items found</Table.Cell>
+				<Table.Cell colspan={7}>{m.no_items_found()}</Table.Cell>
 			</Table.Row>
 		{:else}
 			{#each results as result}
@@ -67,15 +68,26 @@
 					<!-- <Table.Cell>{m.yes_no({ value: String(result.passed) })}</Table.Cell> -->
 					<Table.Cell>{m.yes_no({ value: String(result.selected) })}</Table.Cell>
 					<Table.Cell>
+						<Button
+							href="{base}/app/{page.params
+								.courseId}/tutor/courseitems/{result.courseItemId}/tests/{result.testId}/instances/{result.testInstanceId}/"
+						>
+							{m.view()}
+						</Button>
 						{#if result.selected}
 							<Button
 								variant="destructive"
 								onclick={() => toggleSelect(result.courseItemId, result.id)}
 							>
-								Unselect
+								{m.result_unselect()}
 							</Button>
 						{:else}
-							<Button onclick={() => toggleSelect(result.courseItemId, result.id)}>Select</Button>
+							<Button
+								variant="success"
+								onclick={() => toggleSelect(result.courseItemId, result.id)}
+							>
+								{m.result_select()}
+							</Button>
 						{/if}
 					</Table.Cell>
 				</Table.Row>

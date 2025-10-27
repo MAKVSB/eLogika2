@@ -19,8 +19,8 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.GET("courses/:courseId/tests/:courseItemId/instance/:instanceId/telemetry", wrappers.WithUserDataRole(handlers.TestInstanceGetTelemetry))
 	rg.DELETE("courses/:courseId/tests/:courseItemId/instance/:instanceId", wrappers.WithUserDataRole(handlers.TestInstanceDelete))
 
-	rg.GET("courses/:courseId/tests/available", wrappers.WithUserData(handlers.ListAvailable))
-	rg.POST("courses/:courseId/tests/prepare", wrappers.WithUserData(handlers.TestInstancePrepare))
+	rg.GET("courses/:courseId/tests/available", wrappers.WithUserDataRole(handlers.ListAvailable))
+	rg.POST("courses/:courseId/tests/prepare", wrappers.WithUserDataRole(handlers.TestInstancePrepare))
 	rg.POST("courses/:courseId/tests/evaluate", wrappers.WithUserDataRole(handlers.TestEvaluate))
 
 	rg.GET("tests/:instanceId", wrappers.WithUserDataRole(handlers.TestInstanceGet))

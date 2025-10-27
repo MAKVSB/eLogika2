@@ -44,7 +44,7 @@ func TemplateDelete(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 	// TODO validate from here
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 

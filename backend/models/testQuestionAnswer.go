@@ -8,5 +8,5 @@ type TestQuestionAnswer struct {
 	AnswerID       uint ``
 	Order          uint ``
 
-	Answer Answer ``
+	Answer *Answer ``
 }

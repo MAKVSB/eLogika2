@@ -1,8 +1,6 @@
 package tokens
 
 import (
-	"errors"
-	"fmt"
 	"time"
 
 	"elogika.vsb.cz/backend/initializers"
@@ -13,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type RefreshToken struct {
@@ -41,11 +38,6 @@ func (t *RefreshToken) IsRevoked() bool {
 	if err := initializers.DB.
 		Where("token_id = ? AND token_type = ? AND revoked_at IS NULL AND expires_at > ?", t.TokenID, t.TokenType, time.Now()).
 		First(&dbToken).Error; err != nil {
-
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return false
-		}
-		fmt.Println("database error")
 		return true
 	}
 
@@ -117,20 +109,34 @@ func (t *RefreshToken) Parse(tokenStr string, allowExpired bool) *common.ErrorRe
 	return nil
 }
 
-func (t *RefreshToken) Invalidate() error {
-	result := initializers.DB.Model(&models.AuthToken{}).
-		Where("token_id = ? AND token_type = ? AND revoked_at IS NULL", t.TokenID, t.TokenType).
-		Update("revoked_at", time.Now())
+func (t *RefreshToken) Invalidate() *common.ErrorResponse {
+	if err := initializers.DB.
+		Model(&models.AuthToken{}).
+		Where("token_id = ?", t.TokenID).
+		Update("revoked_at", time.Now()).
+		Update("revoked_for", enums.RevokedForToken).Error; err != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to invalidate token",
+		}
+	}
 
-	return result.Error
+	return nil
 }
 
-func (t *RefreshToken) InvalidateByUser() error {
-	result := initializers.DB.Model(&models.AuthToken{}).
-		Where("user_id = ? AND token_type = ? AND revoked_at IS NULL", t.UserID, t.TokenType).
-		Update("revoked_at", time.Now())
+func (t *RefreshToken) InvalidateByUser() *common.ErrorResponse {
+	if err := initializers.DB.
+		Model(&models.AuthToken{}).
+		Where("user_id = ?, token_type = ?", t.UserID, t.TokenType).
+		Update("revoked_at", time.Now()).
+		Update("revoked_for", enums.RevokedForUser).Error; err != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to invalidate token",
+		}
+	}
 
-	return result.Error
+	return nil
 }
 
 func (t *RefreshToken) New(user dtos.LoggedUserDTO) (string, error) {
@@ -141,9 +147,11 @@ func (t *RefreshToken) New(user dtos.LoggedUserDTO) (string, error) {
 	t.Issuer = "core.api.elogika.vsb.cz"
 	t.IssuedAt = timeFreeze
 	t.ExpiresAt = timeFreeze.Add(initializers.GlobalAppConfig.REFRESH_LENGTH)
-	t.TokenType = enums.JWTTokenTypeAccess
+	t.TokenType = enums.JWTTokenTypeRefresh
 
-	initializers.DB.Create(&t.AuthToken)
+	if err := initializers.DB.Create(&t.AuthToken).Error; err != nil {
+		return "", err
+	}
 
 	claims := jwt.MapClaims{
 		"iss":  t.Issuer,
@@ -155,6 +163,6 @@ func (t *RefreshToken) New(user dtos.LoggedUserDTO) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	return token.SignedString(initializers.GlobalAppConfig.REFRESH_SECRET)
+	tokenString, err := token.SignedString(initializers.GlobalAppConfig.REFRESH_SECRET)
+	return "rt_" + tokenString, err
 }

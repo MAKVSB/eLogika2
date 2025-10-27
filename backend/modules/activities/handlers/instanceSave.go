@@ -74,7 +74,7 @@ func ActivityInstanceSave(c *gin.Context, userData authdtos.LoggedUserDTO, userR
 	editable := false
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		transaction.Rollback()
 		return err
 	}

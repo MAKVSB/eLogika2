@@ -39,11 +39,18 @@ export function deepMerge(target: any, source: any) {
 	return target;
 }
 
-export function displayUserName(pud: {
-	degreeBefore: string;
-	firstName: string;
-	familyName: string;
-	degreeAfter: string;
-}) {
+export function displayUserName(
+	pud: {
+		degreeBefore: string;
+		firstName: string;
+		familyName: string;
+		degreeAfter: string;
+	},
+	listing = false
+) {
+	if (listing) {
+		return `${pud.familyName} ${pud.firstName} ${pud.degreeBefore && pud.degreeBefore != '' ? ', ' + pud.degreeBefore : ''} ${pud.degreeAfter && pud.degreeAfter != '' ? ', ' + pud.degreeAfter : ''}`;
+	}
+
 	return `${pud.degreeBefore} ${pud.firstName} ${pud.familyName}${pud.degreeAfter && pud.degreeAfter != '' ? ', ' + pud.degreeAfter : ''}`;
 }

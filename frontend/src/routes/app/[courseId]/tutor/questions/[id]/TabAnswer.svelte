@@ -58,24 +58,24 @@
 
 <div class="flex flex-col gap-4 p-2 my-4">
 	<div class="flex items-center gap-4 pb-4">
-		<h1 class="text-xl text-nowrap">Number of answers</h1>
+		<h1 class="text-xl text-nowrap">{m.question_answer_count()}</h1>
 		<Input type="number" bind:value={answerCount}></Input>
 		<Button
 			variant="outline"
 			onclick={() => {
 				setAnswerCount(answerCount);
-			}}>Set</Button
+			}}>{m.question_answer_count_set()}</Button
 		>
 	</div>
 
 	<Table.Root>
 		<Table.Header>
 			<Table.Row>
-				<Table.Head class="w-[10px]">Id</Table.Head>
-				<Table.Head class="w-[100px]">Correct</Table.Head>
-				<Table.Head>Answer and explanation</Table.Head>
-				<Table.Head class="w-[100px]">Advanced</Table.Head>
-				<Table.Head class="w-[10px]">Id</Table.Head>
+				<Table.Head class="w-[10px]">{m.question_answer_order()}</Table.Head>
+				<Table.Head class="w-[100px]">{m.question_answer_correctness()}</Table.Head>
+				<Table.Head>{m.question_answer_answer()}</Table.Head>
+				<Table.Head class="w-[100px]">{m.question_answer_advanced()}</Table.Head>
+				<Table.Head class="w-[10px]">{m.question_answer_order()}</Table.Head>
 			</Table.Row>
 		</Table.Header>
 		<Table.Body>
@@ -123,14 +123,6 @@
 							<div class="table h-full">
 								<div class="table-cell h-full">
 									<div class="flex flex-col items-center justify-between h-full gap-4 lg:flex-row">
-										<!-- <Form.Checkbox
-											title="Active"
-											name="active"
-											id="active"
-											class="w-full h-8"
-											bind:value={answer.active}
-											error={error.active}
-										></Form.Checkbox> -->
 										<Form.TextInput
 											title="Time to solve (s)"
 											name="timeToSolve"

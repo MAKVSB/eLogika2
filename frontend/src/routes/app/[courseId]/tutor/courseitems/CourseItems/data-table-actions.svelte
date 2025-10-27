@@ -35,13 +35,9 @@
 		</Button>
 	{/if}
 
-	{#if editable}
-		<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/courseitems/{id}/results">
-			<span>Výsledky</span>
-		</Button>
-	{:else}
-		<div></div>
-	{/if}
+	<Button variant="outline" class="relative" href="{base}/app/{page.params.courseId}/tutor/courseitems/{id}/results">
+		<span>{m.course_item_results()}</span>
+	</Button>
 
 	{#if type == CourseItemTypeEnum.TEST}
 		<Button

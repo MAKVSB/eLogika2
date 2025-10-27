@@ -75,18 +75,32 @@ func UserInsert(c *gin.Context, userData authdtos.LoggedUserDTO) {
 		Email:            reqData.Email,
 		Type:             reqData.Type,
 		IdentityProvider: enums.IdentityProviderInternal,
+		Notification: models.UserNotification{
+			Discord: models.NotificationDiscord{
+				Level: models.NotificationLevel{
+					Results:  reqData.Notification.Discord.Level.Results,
+					Messages: reqData.Notification.Discord.Level.Messages,
+					Terms:    reqData.Notification.Discord.Level.Terms,
+				},
+				UserID: reqData.Notification.Discord.UserID,
+			},
+			Email: models.NotificationEmail{
+				Level: models.NotificationLevel{
+					Results:  reqData.Notification.Email.Level.Results,
+					Messages: reqData.Notification.Email.Level.Messages,
+					Terms:    reqData.Notification.Email.Level.Terms,
+				},
+			},
+			Push: models.NotificationPush{
+				Level: models.NotificationLevel{
+					Results:  reqData.Notification.Push.Level.Results,
+					Messages: reqData.Notification.Push.Level.Messages,
+					Terms:    reqData.Notification.Push.Level.Terms,
+				},
+				Token: "",
+			},
+		},
 	}
-
-	user.Notification.Discord.Level.Messages = reqData.Notification.Discord.Level.Messages
-	user.Notification.Discord.Level.Results = reqData.Notification.Discord.Level.Results
-	user.Notification.Discord.Level.Terms = reqData.Notification.Discord.Level.Terms
-	user.Notification.Discord.UserID = reqData.Notification.Discord.UserID
-	user.Notification.Email.Level.Messages = reqData.Notification.Email.Level.Messages
-	user.Notification.Email.Level.Results = reqData.Notification.Email.Level.Results
-	user.Notification.Email.Level.Terms = reqData.Notification.Email.Level.Terms
-	user.Notification.Push.Level.Messages = reqData.Notification.Push.Level.Messages
-	user.Notification.Push.Level.Results = reqData.Notification.Push.Level.Results
-	user.Notification.Push.Level.Terms = reqData.Notification.Push.Level.Terms
 
 	// TODO Generate random password and send it to email
 

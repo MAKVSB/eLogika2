@@ -10,10 +10,9 @@
 	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import Label from '$lib/components/ui/label/label.svelte';
+	import { m } from '$lib/paraglide/messages';
 	import { API } from '$lib/services/api.svelte';
-	import { getFilteredRowModel } from '@tanstack/table-core';
 	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
 
 	let {
 		form = $bindable(),
@@ -120,7 +119,7 @@
 <div class="flex flex-col gap-4 p-2 my-4">
 	<div class="grid grid-cols-12 gap-4">
 		<Form.SingleSelect
-			title="Chapter"
+			title={m.question_grouping_chapter()}
 			name="chapter"
 			id="chapter"
 			placeholder="Select chapter"
@@ -131,7 +130,7 @@
 			error={form.errors.chapterId}
 		></Form.SingleSelect>
 		<Form.SingleSelect
-			title="Category"
+			title={m.question_grouping_category()}
 			name="category"
 			id="category"
 			placeholder="Select category"
@@ -144,7 +143,7 @@
 			loading={chapterLoading}
 		></Form.SingleSelect>
 
-		<h1 class="col-span-12 text-xl">Steps</h1>
+		<h1 class="col-span-12 text-xl">{m.question_grouping_steps()}</h1>
 		{#if category?.steps}
 			<ul class="flex flex-col w-full col-span-12 gap-2">
 				{#each category.steps as step}
@@ -163,7 +162,7 @@
 				{/each}
 			</ul>
 		{:else}
-			<p class="col-span-12">No steps available</p>
+			<p class="col-span-12">{m.question_grouping_steps_missing()}</p>
 		{/if}
 	</div>
 </div>

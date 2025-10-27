@@ -5,6 +5,7 @@ import (
 
 	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
+	"elogika.vsb.cz/backend/models"
 	authdtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	"elogika.vsb.cz/backend/modules/classes/dtos"
 	"elogika.vsb.cz/backend/modules/common"
@@ -16,16 +17,17 @@ import (
 
 // @Description Request to insert new course
 type ClassUpdateRequest struct {
-	Name         string               `json:"name" binding:"required"`
-	Room         string               `json:"room" binding:"required"`
-	Type         enums.ClassTypeEnum  `json:"type" binding:"required"`
-	StudyForm    enums.StudyFormEnum  `json:"studyForm" binding:"required"`
-	TimeFrom     string               `json:"timeFrom" binding:"required"`
-	TimeTo       string               `json:"timeTo" binding:"required"`
-	Day          enums.WeekDayEnum    `json:"day" binding:"required"`
-	WeekParity   enums.WeekParityEnum `json:"weekParity" binding:"required"`
-	StudentLimit uint                 `json:"studentLimit" binding:"required"`
-	Version      uint                 `json:"version" binding:"required"` // Version signature to prevent concurrency problems
+	Name          string                    `json:"name" binding:"required"`
+	Room          string                    `json:"room" binding:"required"`
+	Type          enums.ClassTypeEnum       `json:"type" binding:"required"`
+	StudyForm     enums.StudyFormEnum       `json:"studyForm" binding:"required"`
+	TimeFrom      string                    `json:"timeFrom" binding:"required"`
+	TimeTo        string                    `json:"timeTo" binding:"required"`
+	Day           enums.WeekDayEnum         `json:"day" binding:"required"`
+	WeekParity    enums.WeekParityEnum      `json:"weekParity" binding:"required"`
+	StudentLimit  uint                      `json:"studentLimit" binding:"required"`
+	Version       uint                      `json:"version" binding:"required"` // Version signature to prevent concurrency problems
+	ImportOptions models.ClassImportOptions `json:"importOptions" binding:"required"`
 }
 
 // @Description Newly created course
@@ -76,7 +78,7 @@ func ClassUpdate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 	}
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 	// If not admin or garant
@@ -107,6 +109,7 @@ func ClassUpdate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 	class.Day = reqData.Day
 	class.WeekParity = reqData.WeekParity
 	class.StudentLimit = reqData.StudentLimit
+	class.ImportOptions = reqData.ImportOptions
 
 	if err := transaction.Save(&class).Error; err != nil {
 		transaction.Rollback()

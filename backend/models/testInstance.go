@@ -29,12 +29,11 @@ type TestInstance struct {
 	Term        *Term       ``
 	CourseItem  *CourseItem ``
 
-	Questions         []TestInstanceQuestion ``
-	Result            *CourseItemResult      ``
-	BonusPoints       float64                ``
-	BonusPointsReason string                 ``
-	RecognizerImageID *uint                  ``
-	RecognizerImage   *File                  ``
+	Questions         []*TestInstanceQuestion ``
+	Result            *CourseItemResult       ``
+	BonusPoints       float64                 ``
+	BonusPointsReason string                  ``
+	RecognizerFiles   []*RecognizerFile       ``
 }
 
 func (ti TestInstance) IsExpired(timeNow time.Time) bool {

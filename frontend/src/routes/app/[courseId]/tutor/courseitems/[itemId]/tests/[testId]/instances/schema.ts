@@ -55,7 +55,7 @@ export const columns: (ColumnDef<TestInstanceListItemDTO> & { uniqueId?: string 
 		accessorKey: 'state',
 		header: ({ column }) =>
 			renderComponent(SortButton, {
-				name: 'State',
+				name: m.test_instance_state(),
 				sorted: column.getIsSorted(),
 				onclick: column.getToggleSortingHandler()
 			}),
@@ -67,19 +67,18 @@ export const columns: (ColumnDef<TestInstanceListItemDTO> & { uniqueId?: string 
 		accessorKey: 'form',
 		header: ({ column }) =>
 			renderComponent(SortButton, {
-				name: 'Form',
+				name: m.test_instance_form(),
 				sorted: column.getIsSorted(),
 				onclick: column.getToggleSortingHandler()
 			})
 	},
 	{
+		accessorKey: 'points',
+		header: m.test_instance_points()
+	},
+	{
 		accessorKey: 'startedAt',
-		header: ({ column }) =>
-			renderComponent(SortButton, {
-				name: 'Time',
-				sorted: column.getIsSorted(),
-				onclick: column.getToggleSortingHandler()
-			}),
+		header: m.test_instance_time(),
 		cell: ({ row }) => {
 			return renderComponent(DataTableDateRange, {
 				start: row.original.startedAt,

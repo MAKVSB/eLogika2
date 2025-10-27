@@ -17,6 +17,7 @@
 		error = '',
 		disabled = false,
 		class: className,
+		innerClass,
 		...restProps
 	}: {
 		title?: string;
@@ -28,6 +29,7 @@
 		value: string | number | null;
 		error: string | ErrorObject;
 		disabled?: boolean;
+		innerClass?: string;
 	} & WithElementRef<HTMLAttributes<HTMLElement>> = $props();
 </script>
 
@@ -35,7 +37,7 @@
 	{#if title}
 		<Label for={id}>{title} {required ? '*' : ''}</Label>
 	{/if}
-	<Input {id} bind:value {placeholder} {required} {type} {...restProps} {disabled}/>
+	<Input {id} bind:value {placeholder} class={innerClass} {required} {type} {...restProps} {disabled}/>
 	{#if error}
 		<p class="text-sm text-red-500">{error}</p>
 	{/if}

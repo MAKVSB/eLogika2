@@ -35,7 +35,7 @@
 	</Table.Cell>
 	<Table.Cell>{userData.username}</Table.Cell>
 	<Table.Cell>
-		{displayUserName(userData)}
+		{displayUserName(userData, true)}
 	</Table.Cell>
 	<Table.Cell>
 		{userData.points}

@@ -33,7 +33,7 @@ type TestInstancePrepareResponse struct {
 // @Failure 403 {object} common.ErrorResponse "Permission or atuhentication errors"
 // @Failure 500 {object} common.ErrorResponse "Fatal failure"
 // @Router /api/v2/courses/{courseId}/tests/instance/start [post]
-func TestInstancePrepare(c *gin.Context, userData authdtos.LoggedUserDTO) {
+func TestInstancePrepare(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.CourseUserRoleEnum) *common.ErrorResponse {
 	// Load request data
 	err, params, reqData := utils.GetRequestData[
 		struct {
@@ -42,19 +42,21 @@ func TestInstancePrepare(c *gin.Context, userData authdtos.LoggedUserDTO) {
 		TestInstancePrepareRequest,
 	](c)
 	if err != nil {
-		c.AbortWithStatusJSON(err.Code, err)
-		return
+		return err
 	}
 
 	// TODO validate from here
 
-	// check permissions
-	coursePermissions := auth.GetClaimCourse(userData.Courses, params.CourseID)
-	if coursePermissions == nil || !coursePermissions.IsStudent() {
-		c.JSON(403, common.ErrorResponse{
+	// Check role validity
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
+		return err
+	}
+
+	if userRole != enums.CourseUserRoleStudent {
+		return &common.ErrorResponse{
+			Code:    403,
 			Message: "Not enough permissions",
-		})
-		return
+		}
 	}
 
 	transaction := initializers.DB.Begin()
@@ -65,11 +67,11 @@ func TestInstancePrepare(c *gin.Context, userData authdtos.LoggedUserDTO) {
 		Joins("JOIN user_terms ON user_terms.term_id = terms.id AND user_terms.user_id = ?", userData.ID).
 		First(&term, reqData.TermID).Error; err != nil {
 		transaction.Rollback()
-		c.AbortWithStatusJSON(404, common.ErrorResponse{
+		return &common.ErrorResponse{
+			Code:    500,
 			Message: "Failed to fetch term",
 			Details: err.Error(),
-		})
-		return
+		}
 	}
 
 	courseItemQuery := `
@@ -95,11 +97,11 @@ func TestInstancePrepare(c *gin.Context, userData authdtos.LoggedUserDTO) {
 		Preload("TestDetail").
 		First(&courseItem).Error; err != nil {
 		transaction.Rollback()
-		c.AbortWithStatusJSON(404, common.ErrorResponse{
+		return &common.ErrorResponse{
+			Code:    404,
 			Message: "Failed to fetch term",
 			Details: err.Error(),
-		})
-		return
+		}
 	}
 
 	// TODO Check user still has attempts left on term/courseItem/childs/parents/whatever
@@ -118,8 +120,7 @@ func TestInstancePrepare(c *gin.Context, userData authdtos.LoggedUserDTO) {
 
 	if err != nil {
 		transaction.Rollback()
-		c.AbortWithStatusJSON(err.Code, err)
-		return
+		return err
 	}
 
 	testInstance, err := helpers.CreateInstance(
@@ -132,8 +133,7 @@ func TestInstancePrepare(c *gin.Context, userData authdtos.LoggedUserDTO) {
 	)
 	if err != nil {
 		transaction.Rollback()
-		c.AbortWithStatusJSON(err.Code, err)
-		return
+		return err
 	}
 
 	// TODO check that user has permission
@@ -141,13 +141,14 @@ func TestInstancePrepare(c *gin.Context, userData authdtos.LoggedUserDTO) {
 
 	if err := transaction.Commit().Error; err != nil {
 		transaction.Rollback()
-		c.AbortWithStatusJSON(500, common.ErrorResponse{
+		return &common.ErrorResponse{
+			Code:    500,
 			Message: "Failed to commit changes",
-		})
-		return
+		}
 	}
 
 	c.JSON(200, TestInstancePrepareResponse{
 		InstanceID: testInstance.ID,
 	})
+	return nil
 }

@@ -1,5 +1,12 @@
 package inbus
 
+import (
+	"fmt"
+	"strings"
+
+	"elogika.vsb.cz/backend/modules/common/enums"
+)
+
 type TokenResponse struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
@@ -95,9 +102,9 @@ type StudyRelation struct {
 }
 
 type ConcreteActivity struct {
-	ConcreteActivityId uint `json:"concreteActivityId"`
-	// Template                   string `json:"template"`
-	// Order                      uint   `json:"order"`
+	ConcreteActivityId uint   `json:"concreteActivityId"`
+	Template           string `json:"template"`
+	Order              uint   `json:"order"`
 	// SubjectVersionId           uint   `json:"subjectVersionId"`
 	// SubjectVersionCompleteCode string `json:"subjectVersionCompleteCode"`
 	// SubjectId                  uint   `json:"subjectId"`
@@ -137,4 +144,60 @@ type ConcreteActivity struct {
 	// RoomIds           []uint `json:"roomIds"`
 	TeacherIds    []uint `json:"teacherIds"`
 	StudyGroupIds []uint `json:"studyGroupIds"`
+}
+
+func (c *ConcreteActivity) ImportCode() string {
+	return fmt.Sprintf("%s/%02d", c.Template, c.Order)
+}
+
+func (c *ConcreteActivity) ClassName() string {
+	_, dayName := c.Day()
+	return dayName + "-" + c.BeginTime[:5] + "-" + c.RoomName()
+}
+
+func (c *ConcreteActivity) RoomName() string {
+	return strings.Split(c.RoomFullcodes, ",")[0]
+}
+
+func (c *ConcreteActivity) Day() (enums.WeekDayEnum, string) {
+	switch c.WeekDayId % 7 {
+	case 1:
+		return enums.WeekDayMonday, "PO"
+	case 2:
+		return enums.WeekDayTuesday, "ÚT"
+	case 3:
+		return enums.WeekDayWednesday, "ST"
+	case 4:
+		return enums.WeekDayThursday, "ČT"
+	case 5:
+		return enums.WeekDayFriday, "PÁ"
+	case 6:
+		return enums.WeekDaySaturday, "SO"
+	default:
+		return enums.WeekDaySunday, "NE"
+	}
+}
+
+func (c *ConcreteActivity) WeekParity() enums.WeekParityEnum {
+	switch c.EducationWeekTitle {
+	case "Každý":
+		return enums.WeekParityBoth
+	case "Sudý":
+		return enums.WeekParityEven
+	case "Lichý":
+		return enums.WeekParityOdd
+	default:
+		return enums.WeekParityCustom
+	}
+}
+
+func (c *ConcreteActivity) ClassType() (enums.ClassTypeEnum, enums.StudyFormEnum) {
+	switch c.EducationTypeAbbrev {
+	case "C":
+		return enums.ClassTypeC, enums.StudyFormFulltime
+	case "P":
+		return enums.ClassTypeP, enums.StudyFormFulltime
+	default:
+		return enums.ClassTypeT, enums.StudyFormCombined
+	}
 }

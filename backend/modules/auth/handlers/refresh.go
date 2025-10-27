@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strings"
+
 	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/auth/dtos"
@@ -41,12 +43,36 @@ func Refresh(c *gin.Context) {
 
 	// Parse access token
 	accessToken := tokens.AccessToken{}
-	err = accessToken.Get(c, true)
-	if err != nil {
-		c.AbortWithStatusJSON(401, err)
+
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.AbortWithStatusJSON(500, gin.H{
+			"code":    500,
+			"message": "Missing token header",
+		})
 		return
 	}
-	// I dont particulary caare if access token is expired here
+
+	if strings.HasPrefix(authHeader, "Bearer at_") {
+		// I dont particulary caare if access token is expired here
+		err := accessToken.Parse(strings.TrimPrefix(authHeader, "Bearer at_"), true)
+		if err != nil {
+			c.AbortWithStatusJSON(401, err)
+			return
+		}
+		if accessToken.IsRevoked() {
+			c.AbortWithStatusJSON(401, common.ErrorResponse{
+				Message: "Token revoked",
+			})
+			return
+		}
+	} else {
+		c.AbortWithStatusJSON(500, gin.H{
+			"code":    500,
+			"message": "Invalid token format",
+		})
+		return
+	}
 
 	// Get updated user state and permissions
 	var user models.User

@@ -51,7 +51,7 @@ func ImportStudents(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 	// TODO validate from here
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 	if userRole != enums.CourseUserRoleAdmin && userRole != enums.CourseUserRoleGarant {
@@ -73,20 +73,31 @@ func ImportStudents(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 		return err
 	}
 
-	switch class.StudyForm {
+	transaction := initializers.DB.Begin()
 
+	switch class.StudyForm {
 	case enums.StudyFormFulltime:
-		err = ImportByConcreteActivity(course, userRole, class)
+		err = ImportByConcreteActivity(transaction, course, userRole, class)
 		if err != nil {
+			transaction.Rollback()
 			return err
 		}
 	case enums.StudyFormCombined:
-		err = ImportPartTimeStudents(course, userRole, class)
+		err = ImportPartTimeStudents(transaction, course, userRole, class)
 		if err != nil {
+			transaction.Rollback()
 			return err
 		}
 	default:
 		panic(fmt.Sprintf("unexpected enums.ClassTypeEnum: %#v", class.Type))
+	}
+
+	if err := transaction.Commit().Error; err != nil {
+		transaction.Rollback()
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to remove student from class",
+		}
 	}
 
 	c.JSON(200, ClassImportStudentsResponse{
@@ -95,9 +106,9 @@ func ImportStudents(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 	return nil
 }
 
-func ImportByConcreteActivity(course *models.Course, userRole enums.CourseUserRoleEnum, class *models.Class) *common.ErrorResponse {
+func ImportByConcreteActivity(dbRef *gorm.DB, course *models.Course, userRole enums.CourseUserRoleEnum, class *models.Class) *common.ErrorResponse {
 	var courseClasses []*models.Class
-	if err := initializers.DB.
+	if err := dbRef.
 		Where("course_id = ?", course.ID).
 		Where("type != ?", enums.ClassTypeP).
 		Where("id != ?", class.ID).
@@ -145,11 +156,9 @@ func ImportByConcreteActivity(course *models.Course, userRole enums.CourseUserRo
 		return err
 	}
 
-	transaction := initializers.DB.Begin()
-
 	concreteActivityStudents, err := inbusClient.GetConcreteActivityStudents(concreteActivity.ConcreteActivityId)
 	if err != nil {
-		transaction.Rollback()
+		dbRef.Rollback()
 		return &common.ErrorResponse{
 			Code:    409,
 			Message: "Failed to get students assignned to schedule item",
@@ -158,40 +167,29 @@ func ImportByConcreteActivity(course *models.Course, userRole enums.CourseUserRo
 
 	for _, activityStudent := range *concreteActivityStudents {
 		// If user does in exist in entire system, create. If does, update
-		user, err := UpsertUser(transaction, activityStudent)
+		user, err := UpsertUser(dbRef, activityStudent)
 		if err != nil {
-			transaction.Rollback()
 			return err
 		}
 
 		// Check if user in course. If not add
-		_, err = UpsertCourseUser(transaction, course.ID, user.ID, activityStudent.StudyFormCode)
+		_, err = UpsertCourseUser(dbRef, course.ID, user.ID, activityStudent.StudyFormCode)
 		if err != nil {
-			transaction.Rollback()
 			return err
 		}
 
 		// Check if user in class. If already is. Return error. If not add him to this one
-		_, err = UpsertClassUser(transaction, user, courseClassesIDs, class)
+		_, err = UpsertClassUser(dbRef, user, courseClassesIDs, class)
 		if err != nil {
-			transaction.Rollback()
 			return err
-		}
-	}
-
-	if err := transaction.Commit().Error; err != nil {
-		transaction.Rollback()
-		return &common.ErrorResponse{
-			Code:    500,
-			Message: "Failed to remove student from class",
 		}
 	}
 	return nil
 }
 
-func ImportPartTimeStudents(course *models.Course, userRole enums.CourseUserRoleEnum, class *models.Class) *common.ErrorResponse {
+func ImportPartTimeStudents(dbRef *gorm.DB, course *models.Course, userRole enums.CourseUserRoleEnum, class *models.Class) *common.ErrorResponse {
 	var courseClasses []*models.Class
-	if err := initializers.DB.
+	if err := dbRef.
 		Where("course_id = ?", course.ID).
 		Where("type != ?", enums.ClassTypeP).
 		Where("id != ?", class.ID).
@@ -227,38 +225,26 @@ func ImportPartTimeStudents(course *models.Course, userRole enums.CourseUserRole
 		return err
 	}
 
-	transaction := initializers.DB.Begin()
-
 	for _, courseStudent := range *subjectVersionStudents {
 		if courseStudent.StudyFormCode != "K" {
 			continue
 		}
 		// If user does in exist in entire system, create. If does, update
-		user, err := UpsertUser(transaction, courseStudent)
+		user, err := UpsertUser(dbRef, courseStudent)
 		if err != nil {
-			transaction.Rollback()
 			return err
 		}
 
 		// Check if user in course. If not add
-		_, err = UpsertCourseUser(transaction, course.ID, user.ID, courseStudent.StudyFormCode)
+		_, err = UpsertCourseUser(dbRef, course.ID, user.ID, courseStudent.StudyFormCode)
 		if err != nil {
-			transaction.Rollback()
 			return err
 		}
 
 		// Check if user in class. If already is. Return error. If not add him to this one
-		_, err = UpsertClassUser(transaction, user, courseClassesIDs, class)
+		_, err = UpsertClassUser(dbRef, user, courseClassesIDs, class)
 		if err != nil {
 			return err
-		}
-	}
-
-	if err := transaction.Commit().Error; err != nil {
-		transaction.Rollback()
-		return &common.ErrorResponse{
-			Code:    500,
-			Message: "Failed to remove student from class",
 		}
 	}
 
@@ -379,6 +365,7 @@ func UpsertClassUser(dbRef *gorm.DB, user *models.User, courseClassIDs []uint, c
 		if err := dbRef.
 			Where("user_id = ?", user.ID).
 			Where("class_id in ?", courseClassIDs).
+			Where("class_id != ?", currentClass.ID).
 			Find(&userClasses).Error; err != nil {
 			return nil, &common.ErrorResponse{
 				Code:    500,
@@ -405,7 +392,7 @@ func UpsertClassUser(dbRef *gorm.DB, user *models.User, courseClassIDs []uint, c
 		return nil, &common.ErrorResponse{
 			Code:      409,
 			Message:   "Failed to assign user to class",
-			Details:   "User is already member of another class",
+			Details:   "User is already member of another class" + strconv.Itoa(int(currentClass.ID)),
 			Resources: res,
 		}
 	}

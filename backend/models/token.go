@@ -24,6 +24,7 @@ type AuthToken struct {
 	RevokedFor enums.RevokedForEnum   ``
 	ExpiresAt  time.Time              ``
 	TokenType  enums.JWTTokenTypeEnum ``
+	Name       string                 ``
 }
 
 func (AuthToken) TableName() string {

@@ -143,6 +143,9 @@ func (r *TestRepository) GetTestInstanceByID(
 					Joins("TestQuestionAnswer", initializers.DB.Unscoped()).
 					Joins("TestQuestionAnswer.Answer", initializers.DB.Unscoped()).
 					Order("TestQuestionAnswer__order ASC")
+			}).
+			Preload("RecognizerFiles", func(db *gorm.DB) *gorm.DB {
+				return db.InnerJoins("File")
 			})
 	}
 
@@ -274,8 +277,9 @@ func (r *TestRepository) ListTestInstances(
 ) ([]*models.TestInstance, int64, *common.ErrorResponse) {
 	query := dbRef.
 		Model(&models.TestInstance{}).
-		Preload("Participant").
-		Where("course_item_id = ?", courseItemID).
+		InnerJoins("Participant").
+		InnerJoins("Result").
+		Where("test_instances.course_item_id = ?", courseItemID).
 		Where("test_id = ?", testID)
 
 	if termID != nil && *termID != 0 {

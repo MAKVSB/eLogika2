@@ -22,6 +22,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { Label } from '$lib/components/ui/label';
 	import { Checkbox } from '$lib/components/ui/checkbox';
+	import Loader from '$lib/components/ui/loader/loader.svelte';
 
 	let loading: boolean[] = $state([true, true, true]);
 	let rowItems: TestListItemDTO[] = $state([]);
@@ -35,11 +36,13 @@
 
 	let termIdFilter: number | undefined = $state(undefined);
 
+	let printRunning = $state(false)
+
 	let { data } = $props();
 
 	let dialogOpen = $state(false);
 	let printAnswerSheets = $state(true);
-	let separateAnswerSheets = $state(true);
+	let separateAnswerSheets = $state(false);
 
 	const actionsColumn = columns.find((c) => c.uniqueId == 'actions');
 	if (actionsColumn) {
@@ -168,6 +171,7 @@
 	}
 
 	function print() {
+		printRunning = true
 		API.request<PrintTestRequest, Blob>(
 			`/api/v2/courses/${page.params.courseId}/print/tests`,
 			{
@@ -185,7 +189,10 @@
 				const url = URL.createObjectURL(res);
 				window.open(url); // opens in new tab
 			})
-			.catch(() => {});
+			.catch(() => {})
+			.finally(() => {
+				printRunning = false
+			});
 	}
 
 	function reevaluate() {
@@ -237,27 +244,30 @@
 			{/if}
 		</Dialog.Root>
 		<Button onclick={() => reevaluate()}>{m.test_reevaluate({ type: 'multi' })}</Button>
-		<Button onclick={() => print()} disabled={!termIdFilter}>
+		<Button onclick={() => print()} disabled={!termIdFilter || printRunning}>
+			{#if printRunning}
+				<Loader></Loader>
+			{/if}
 			{m.print_test({ type: 'multi' })}
 		</Button>
 	</div>
-	<div class="flex flex-col gap-4">
-		<h3>{m.test_print_settings()}</h3>
+	<div class="flex flex-col items-end gap-4">
+		<h3 class="text-xl">{m.test_print_settings()}</h3>
 		<div class="flex gap-2">
+			<Label for="printAnswerSheets">{m.print_test_printanswersheets()}</Label>
 			<Checkbox
 				class="rounded-md h-9 w-9"
 				id="printAnswerSheets"
 				bind:checked={printAnswerSheets}
 			/>
-			<Label for="printAnswerSheets">{m.print_test_printanswersheets()}</Label>
 		</div>
 		<div class="flex gap-2">
+			<Label for="separateAnswerSheets">{m.print_test_separateanswersheets()}</Label>
 			<Checkbox
 				class="rounded-md h-9 w-9"
 				id="separateAnswerSheets"
 				bind:checked={separateAnswerSheets}
 			/>
-			<Label for="separateAnswerSheets">{m.print_test_separateanswersheets()}</Label>
 		</div>
 	</div>
 </div>

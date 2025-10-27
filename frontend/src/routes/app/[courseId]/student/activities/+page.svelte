@@ -92,7 +92,7 @@
 					{@const filtered = lastData.instances}
 					{#if filtered.length === 0}
 						<Table.Row>
-							<Table.Cell colspan={7}>No items found</Table.Cell>
+							<Table.Cell colspan={7}>{m.no_items_found()}</Table.Cell>
 						</Table.Row>
 					{:else}
 						{#each filtered as item}
@@ -132,7 +132,7 @@
 					{@const filtered = lastData.items.filter((i) => true)}
 					{#if filtered.length === 0}
 						<Table.Row>
-							<Table.Cell colspan={7}>No items found</Table.Cell>
+							<Table.Cell colspan={7}>{m.no_items_found()}</Table.Cell>
 						</Table.Row>
 					{:else}
 						{#each filtered as item}

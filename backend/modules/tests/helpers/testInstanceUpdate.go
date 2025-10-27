@@ -129,7 +129,7 @@ func UpdateTestQuestion(ti_q *models.TestInstanceQuestion, rd_q *TestInstanceQue
 func FindAnswer(ti_q *models.TestInstanceQuestion, a_id uint) *models.TestInstanceQuestionAnswer {
 	for _, ti_a := range ti_q.Answers {
 		if ti_a.ID == a_id {
-			return &ti_a
+			return ti_a
 		}
 	}
 
@@ -139,7 +139,7 @@ func FindAnswer(ti_q *models.TestInstanceQuestion, a_id uint) *models.TestInstan
 func FindQuestion(ti *models.TestInstance, q_id uint) *models.TestInstanceQuestion {
 	for _, ti_a := range ti.Questions {
 		if ti_a.ID == q_id {
-			return &ti_a
+			return ti_a
 		}
 	}
 

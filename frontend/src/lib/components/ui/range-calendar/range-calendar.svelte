@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { RangeCalendar as RangeCalendarPrimitive } from "bits-ui";
-	import * as RangeCalendar from "./index.js";
-	import { cn, type WithoutChildrenOrChild } from "$lib/utils.js";
-	import type { ButtonVariant } from "$lib/components/ui/button/index.js";
-	import type { Snippet } from "svelte";
-	import { isEqualMonth, type DateValue, ZonedDateTime } from "@internationalized/date";
-	import RangeCalendarTime from "./range-calendar-time.svelte";
+	import { RangeCalendar as RangeCalendarPrimitive } from 'bits-ui';
+	import * as RangeCalendar from './index.js';
+	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import type { ButtonVariant } from '$lib/components/ui/button/index.js';
+	import type { Snippet } from 'svelte';
+	import { isEqualMonth, type DateValue, ZonedDateTime } from '@internationalized/date';
+	import RangeCalendarTime from './range-calendar-time.svelte';
 
 	export type Granularity = 'day' | 'hour' | 'minute' | 'second';
 
@@ -13,42 +13,42 @@
 		ref = $bindable(null),
 		value = $bindable(),
 		placeholder = $bindable(),
-		weekdayFormat = "short",
+		weekdayFormat = 'short',
 		class: className,
-		buttonVariant = "ghost",
-		captionLayout = "label",
-		locale = "en-US",
+		buttonVariant = 'ghost',
+		captionLayout = 'label',
+		locale = 'en-US',
 		months: monthsProp,
 		years,
 		monthFormat: monthFormatProp,
-		yearFormat = "numeric",
+		yearFormat = 'numeric',
 		day,
 		disableDaysOutsideMonth = false,
-		granularity = "day",
+		granularity = 'day',
 		hideTimeZone = false,
 		disabled,
 		onValueChange,
 		...restProps
 	}: WithoutChildrenOrChild<RangeCalendarPrimitive.RootProps> & {
 		value: {
-			start: ZonedDateTime,
-			end: ZonedDateTime
+			start: ZonedDateTime;
+			end: ZonedDateTime;
 		};
 		buttonVariant?: ButtonVariant;
-		captionLayout?: "dropdown" | "dropdown-months" | "dropdown-years" | "label";
-		months?: RangeCalendarPrimitive.MonthSelectProps["months"];
-		years?: RangeCalendarPrimitive.YearSelectProps["years"];
-		monthFormat?: RangeCalendarPrimitive.MonthSelectProps["monthFormat"];
-		yearFormat?: RangeCalendarPrimitive.YearSelectProps["yearFormat"];
-		granularity?: Granularity
+		captionLayout?: 'dropdown' | 'dropdown-months' | 'dropdown-years' | 'label';
+		months?: RangeCalendarPrimitive.MonthSelectProps['months'];
+		years?: RangeCalendarPrimitive.YearSelectProps['years'];
+		monthFormat?: RangeCalendarPrimitive.MonthSelectProps['monthFormat'];
+		yearFormat?: RangeCalendarPrimitive.YearSelectProps['yearFormat'];
+		granularity?: Granularity;
 		hideTimeZone?: boolean;
 		day?: Snippet<[{ day: DateValue; outsideMonth: boolean }]>;
 	} = $props();
 
 	const monthFormat = $derived.by(() => {
 		if (monthFormatProp) return monthFormatProp;
-		if (captionLayout.startsWith("dropdown")) return "long";
-		return "long";
+		if (captionLayout.startsWith('dropdown')) return 'long';
+		return 'long';
 	});
 </script>
 
@@ -59,7 +59,7 @@
 	{weekdayFormat}
 	{disableDaysOutsideMonth}
 	class={cn(
-		"bg-background group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
+		'bg-background group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent',
 		className
 	)}
 	{locale}
@@ -109,7 +109,7 @@
 											{#if day}
 												{@render day({
 													day: date,
-													outsideMonth: !isEqualMonth(date, month.value),
+													outsideMonth: !isEqualMonth(date, month.value)
 												})}
 											{:else}
 												<RangeCalendar.Day />
@@ -123,8 +123,9 @@
 				</RangeCalendar.Month>
 			{/each}
 		</RangeCalendar.Months>
-		{#if granularity != "day"}
-			<RangeCalendarTime {disabled} bind:value {locale} {hideTimeZone} {onValueChange}></RangeCalendarTime>
+		{#if granularity != 'day'}
+			<RangeCalendarTime {disabled} bind:value {locale} {hideTimeZone} {onValueChange}
+			></RangeCalendarTime>
 		{/if}
 	{/snippet}
 </RangeCalendarPrimitive.Root>

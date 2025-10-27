@@ -51,7 +51,10 @@
 		day: WeekDayEnum.MONDAY,
 		weekParity: WeekParityEnum.BOTH,
 		studentLimit: 0,
-		tutors: []
+		tutors: [],
+		importOptions: {
+			code: "",
+		},
 	};
 	let form = $state(Form.createForm(ClassInsertRequestSchema, defaultFormData));
 
@@ -179,6 +182,18 @@
 					bind:value={form.fields.timeTo}
 					error={form.errors.timeTo ?? ''}
 				></Form.TextInput>
+			</div>
+			<div class="flex flex-col gap-4">
+				<h3>{m.import_options()}:</h3>
+				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+					<Form.TextInput
+						title={m.class_import_code()}
+						name="import_code"
+						id="impot_code"
+						bind:value={form.fields.importOptions.code}
+						error={((form.errors.importOptions as Form.ErrorObject) ?? {}).code ?? ''}
+					></Form.TextInput>
+				</div>
 			</div>
 		</Form.Root>
 

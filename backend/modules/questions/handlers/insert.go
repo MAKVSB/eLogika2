@@ -68,7 +68,7 @@ func QuestionInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 	questionRepo := repositories.QuestionRepository{}
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 	// If not admin, garant, or tutor

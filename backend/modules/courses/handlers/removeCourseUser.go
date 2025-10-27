@@ -10,13 +10,15 @@ import (
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/utils"
+	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 )
 
 // @Description Request to insert user into class as tutor
 type RemoveCourseUserRequest struct {
-	UserID uint `json:"userId" binding:"required"`
+	UserID uint                      `json:"userId" binding:"required"`
+	Role   *enums.CourseUserRoleEnum `json:"role"`
 }
 
 // @Description Updated list of students
@@ -51,7 +53,7 @@ func RemoveCourseUser(c *gin.Context, userData authdtos.LoggedUserDTO, userRole 
 	// TODO validate from here
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 	// If not admin, garant, or tutor
@@ -73,18 +75,76 @@ func RemoveCourseUser(c *gin.Context, userData authdtos.LoggedUserDTO, userRole 
 		}
 	}
 
-	if err := initializers.DB.
-		Where("user_id = ?", reqData.UserID).
-		Where("course_id = ?", params.CourseID).
-		Delete(&models.CourseUser{}).Error; err != nil {
-		return &common.ErrorResponse{
-			Code:    500,
-			Message: "Failed to remove course user",
-			Details: err.Error(),
+	if reqData.Role != nil {
+		var newRoles []enums.CourseUserRoleEnum
+
+		switch *reqData.Role {
+		case enums.CourseUserRoleStudent:
+			err := checkStudentNoClasses(initializers.DB, reqData.UserID, params.CourseID)
+			if err != nil {
+				return err
+			}
+		case enums.CourseUserRoleTutor:
+			err := checkTutorNoClasses(initializers.DB, reqData.UserID, params.CourseID)
+			if err != nil {
+				return err
+			}
+		}
+
+		for _, role := range courseUser.Roles {
+			if role != *reqData.Role {
+				newRoles = append(newRoles, role)
+			}
+		}
+
+		if len(newRoles) == 0 {
+			if err := initializers.DB.
+				Where("user_id = ?", reqData.UserID).
+				Where("course_id = ?", params.CourseID).
+				Delete(&models.CourseUser{}).Error; err != nil {
+				return &common.ErrorResponse{
+					Code:    500,
+					Message: "Failed to remove course user",
+					Details: err.Error(),
+				}
+			}
+		} else {
+			courseUser.Roles = newRoles
+			if err := initializers.DB.
+				Save(&courseUser).Error; err != nil {
+				return &common.ErrorResponse{
+					Code:    500,
+					Message: "Failed to update course user",
+					Details: err.Error(),
+				}
+			}
+		}
+	} else {
+		// Called API to remove whole user
+
+		// Check if user is not in class as student
+		err := checkStudentNoClasses(initializers.DB, reqData.UserID, params.CourseID)
+		if err != nil {
+			return err
+		}
+
+		// Check if user is not in class as tutor
+		err = checkTutorNoClasses(initializers.DB, reqData.UserID, params.CourseID)
+		if err != nil {
+			return err
+		}
+
+		if err := initializers.DB.
+			Where("user_id = ?", reqData.UserID).
+			Where("course_id = ?", params.CourseID).
+			Delete(&models.CourseUser{}).Error; err != nil {
+			return &common.ErrorResponse{
+				Code:    500,
+				Message: "Failed to remove course user",
+				Details: err.Error(),
+			}
 		}
 	}
-
-	// TODO TODO TODO invalidate user token so i can make sure that user will loose access
 
 	accessToken := tokens.AccessToken{}
 	accessToken.UserID = reqData.UserID
@@ -95,5 +155,69 @@ func RemoveCourseUser(c *gin.Context, userData authdtos.LoggedUserDTO, userRole 
 		Success: true,
 	})
 
+	return nil
+}
+
+func checkTutorNoClasses(dbRef *gorm.DB, userId uint, courseId uint) *common.ErrorResponse {
+	var tutorClasses []*models.ClassTutor
+	if err := dbRef.
+		Where("user_id = ?", userId).
+		InnerJoins("Class", initializers.DB.Where("course_id = ?", courseId)).
+		Find(&tutorClasses).Error; err != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to get user classes",
+			Details: err.Error(),
+		}
+	}
+
+	if len(tutorClasses) != 0 {
+		errResources := make([]common.ErrorResources, len(tutorClasses))
+		for i, studentClasses := range tutorClasses {
+			errResources[i] = common.ErrorResources{
+				ResourceType: "class",
+				ResourceID:   studentClasses.ClassID,
+			}
+		}
+
+		return &common.ErrorResponse{
+			Code:      409,
+			Message:   "Failed to remove user from course",
+			Details:   "User is in class",
+			Resources: errResources,
+		}
+	}
+	return nil
+}
+
+func checkStudentNoClasses(dbRef *gorm.DB, userId uint, courseId uint) *common.ErrorResponse {
+	var tutorClasses []*models.ClassStudent
+	if err := dbRef.
+		Where("user_id = ?", userId).
+		InnerJoins("Class", initializers.DB.Where("course_id = ?", courseId)).
+		Find(&tutorClasses).Error; err != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to get user classes",
+			Details: err.Error(),
+		}
+	}
+
+	if len(tutorClasses) != 0 {
+		errResources := make([]common.ErrorResources, len(tutorClasses))
+		for i, studentClasses := range tutorClasses {
+			errResources[i] = common.ErrorResources{
+				ResourceType: "class",
+				ResourceID:   studentClasses.ClassID,
+			}
+		}
+
+		return &common.ErrorResponse{
+			Code:      409,
+			Message:   "Failed to remove user from course",
+			Details:   "User is in class",
+			Resources: errResources,
+		}
+	}
 	return nil
 }

@@ -24,11 +24,15 @@ type TestInstanceDTO struct {
 	Participant       TestParticipantDTO `json:"participant"`
 	Points            float64            `json:"points"`
 	PointsFinal       bool               `json:"pointsFinal"`
+	PointsMin         float64            `json:"pointsMin"`
+	PointsMax         float64            `json:"pointsMax"`
 	BonusPoints       float64            `json:"bonusPoints"`
 	BonusPointsReason string             `json:"bonusPointsReason"`
 
 	ShowContent     bool `json:"showContent"`
 	ShowCorrectness bool `json:"showCorrectness"`
+
+	RecognizerFiles []FileDTO
 }
 
 func (m TestInstanceDTO) From(
@@ -78,15 +82,22 @@ func (m TestInstanceDTO) From(
 	if showLayout || showTestContent {
 		dto.Questions = make([]TestInstanceQuestionDTO, len(d.Questions))
 		for q_i, q := range d.Questions {
-			dto.Questions[q_i] = TestInstanceQuestionDTO{}.From(&q, isTutor, showTestContent, showCorrectness)
+			dto.Questions[q_i] = TestInstanceQuestionDTO{}.From(q, isTutor, showTestContent, showCorrectness)
 		}
 	}
 
 	if showResults {
 		dto.Points = d.Result.Points
+		dto.PointsMax = float64(d.CourseItem.PointsMax)
+		dto.PointsMin = float64(d.CourseItem.PointsMin)
 		dto.PointsFinal = d.Result.Final
 		dto.BonusPoints = d.BonusPoints
 		dto.BonusPointsReason = d.BonusPointsReason
+		dto.RecognizerFiles = make([]FileDTO, len(d.RecognizerFiles))
+
+		for i_i, image := range d.RecognizerFiles {
+			dto.RecognizerFiles[i_i] = FileDTO{}.From(image.File)
+		}
 	}
 
 	dto.ShowContent = showTestContent

@@ -30,7 +30,7 @@ type Question struct {
 	Active          bool                     `` // If the question can be picked during test generation
 	AnswerCount     uint                     ``
 
-	QuestionGroup QuestionGroup    ``
+	QuestionGroup *QuestionGroup   ``
 	Answers       []QuestionAnswer ``
 	CheckedBy     []QuestionCheck  `gorm:"foreignKey:QuestionID"`
 	CreatedBy     *User            ``

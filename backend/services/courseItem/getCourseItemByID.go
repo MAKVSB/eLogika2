@@ -17,25 +17,26 @@ func (r *CourseItemService) GetCourseItemByID(
 	full bool,
 	version *uint,
 ) (*models.CourseItem, *common.ErrorResponse) {
-	if userRole == enums.CourseUserRoleAdmin {
+	switch userRole {
+	case enums.CourseUserRoleAdmin:
 		item, err := r.courseItemRepo.GetCourseItemByIDAdmin(dbRef, courseID, courseItemID, userID, full, version)
 		if err != nil {
 			item.Editable = true
 		}
 		return item, err
-	} else if userRole == enums.CourseUserRoleGarant {
+	case enums.CourseUserRoleGarant:
 		item, err := r.courseItemRepo.GetCourseItemByIDGarant(dbRef, courseID, courseItemID, userID, full, version)
 		if err == nil {
 			item.Editable = item.ManagedBy == enums.CourseUserRoleGarant
 		}
 		return item, err
-	} else if userRole == enums.CourseUserRoleTutor {
+	case enums.CourseUserRoleTutor:
 		item, err := r.courseItemRepo.GetCourseItemByIDTutor(dbRef, courseID, courseItemID, userID, full, version)
 		if err == nil {
 			item.Editable = item.ManagedBy == enums.CourseUserRoleTutor
 		}
 		return item, err
-	} else {
+	default:
 		return nil, &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",

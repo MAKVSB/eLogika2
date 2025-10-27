@@ -5,6 +5,7 @@ import { CourseUserRoleEnum, type CourseUserDTO } from '$lib/api_types';
 import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
 import { enumToOptions } from '$lib/utils';
+import DataTableRoles from './data-table-roles.svelte';
 
 export const filters: Filter[] = [
 	{
@@ -93,9 +94,14 @@ export const columns: (ColumnDef<CourseUserDTO> & { uniqueId?: string })[] = [
 	{
 		accessorKey: 'roles',
 		header: m.user_roles(),
-		cell: ({ row }) => {
-			return row.original.roles.map((role) => m.course_user_role_enum({ value: role })).join(', ');
-		}
+		cell: ({ row, column }) => {
+			return renderComponent(DataTableRoles, {
+				id: row.original.id,
+				meta: column.columnDef.meta,
+				roles: row.original.roles
+			});
+		},
+		uniqueId: 'roles'
 	},
 	{
 		accessorKey: 'studyForm',

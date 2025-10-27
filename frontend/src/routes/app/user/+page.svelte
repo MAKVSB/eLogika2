@@ -17,6 +17,7 @@
 	import type { ErrorObject } from '$lib/components/ui/form/types';
 	import { UserInsertRequestSchema } from '$lib/schemas.js';
 	import PasswordChange from '$lib/components/user/passwordChange.svelte';
+	import Tokens from './tokens/Tokens.svelte';
 
 	let { data } = $props();
 
@@ -31,10 +32,10 @@
 	const defaultFormData: UserDTO = {
 		id: 0,
 		version: 0,
-		degreeBefore: "",
+		degreeBefore: '',
 		firstName: '',
 		familyName: '',
-		degreeAfter: "",
+		degreeAfter: '',
 		username: '',
 		email: '',
 		notification: {
@@ -63,7 +64,8 @@
 		},
 		type: UserTypeEnum.NORMAL,
 		identityProvider: IdentityProviderEnum.INT,
-		courses: []
+		courses: [],
+		apiTokens: []
 	};
 	let form = $state(Form.createForm(UserInsertRequestSchema, defaultFormData));
 
@@ -96,9 +98,7 @@
 			</div>
 			<Form.Root bind:form onsubmit={handleSubmit} isCreating={false}>
 				<div class="flex flex-col gap-4 p-2">
-					<div
-						class="grid grid-cols-2 gap-4 lg:grid-cols-4"
-					>
+					<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
 						<Form.TextInput
 							title={m.user_degree_before()}
 							name="degreeBefore"
@@ -167,6 +167,8 @@
 								GlobalState.activeRole != CourseUserRoleEnum.ADMIN}
 						></Form.TextInput>
 					</div>
+				</div>
+				<div class="flex flex-col gap-4 p-2">
 					<div class="grid grid-cols-1 gap-4">
 						<h3 class="text-xl">Notification settings:</h3>
 
@@ -288,6 +290,9 @@
 					</div>
 				</div>
 			</Form.Root>
+			<div class="flex flex-col gap-4 p-2">
+				<Tokens tokens={staticResourceData?.data.apiTokens}></Tokens>
+			</div>
 		</div>
 		<PasswordChange {...staticResourceData.data}></PasswordChange>
 	{/await}

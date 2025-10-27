@@ -90,11 +90,11 @@
 		<Pageloader></Pageloader>
 	{:else}
 		<div class="flex flex-row justify-between">
-			<h1 class="text-2xl">Testy k vypracování:</h1>
+			<h1 class="text-2xl">Tests to be completed:</h1>
 		</div>
 
 		<div class="flex flex-col gap-4">
-			<h2 class="text-xl">Running tests</h2>
+			<h2 class="text-xl">{m.tests_running()}</h2>
 			<Table.Root>
 				<Table.Header class="font-medium border-t bg-muted/50">
 					{@render TableHeaderRunning()}
@@ -103,7 +103,7 @@
 					{@const filtered = lastData.instances}
 					{#if filtered.length === 0}
 						<Table.Row>
-							<Table.Cell colspan={7}>No items found</Table.Cell>
+							<Table.Cell colspan={7}>{m.no_items_found()}</Table.Cell>
 						</Table.Row>
 					{:else}
 						{#each filtered as item}
@@ -134,7 +134,7 @@
 									{/if}
 								</Table.Cell>
 								<Table.Cell>
-									<Button onclick={() => openInstance(item.id)}>Continue test</Button>
+									<Button onclick={() => openInstance(item.id)}>{m.test_instance_continue()}</Button>
 								</Table.Cell>
 							</Table.Row>
 						{/each}
@@ -149,7 +149,7 @@
 		</div>
 
 		<div class="flex flex-col gap-4">
-			<h2 class="text-xl">Tests to start</h2>
+			<h2 class="text-xl">{m.tests_ready_to_start()}</h2>
 			<Table.Root>
 				<Table.Header class="font-medium border-t bg-muted/50">
 					{@render TableHeader()}
@@ -158,7 +158,7 @@
 					{@const filtered = lastData.items}
 					{#if filtered.length === 0}
 						<Table.Row>
-							<Table.Cell colspan={7}>No items found</Table.Cell>
+							<Table.Cell colspan={7}>{m.no_items_found()}</Table.Cell>
 						</Table.Row>
 					{:else}
 						{#each filtered as item}
@@ -172,7 +172,7 @@
 								</Table.Cell>
 								<Table.Cell>
 									<Button disabled={!item.canStart} onclick={() => startInstance(item)}
-										>Start test</Button
+										>{m.test_instance_start()}</Button
 									>
 								</Table.Cell>
 							</Table.Row>

@@ -155,6 +155,7 @@
 				id="points"
 				name="points"
 				type="number"
+				innerClass="text-4xl sm:text-4xl md:text-4xl lg:text-4xl xl:text-4xl {instanceData.points + instanceData.bonusPoints >= instanceData.pointsMin ? "text-green-500 disabled:opacity-100" : "text-red-500 disabled:opacity-100"}"
 				value={instanceData.points + instanceData.bonusPoints}
 				disabled
 				error=""
@@ -168,6 +169,7 @@
 			id="bonusPoints"
 			name="bonusPoints"
 			type="number"
+			innerClass="text-4xl sm:text-4xl md:text-4xl lg:text-4xl xl:text-4xl {instanceData.points + instanceData.bonusPoints >= instanceData.pointsMin ? "text-green-500 disabled:opacity-100" : "text-red-500 disabled:opacity-100"}"
 			bind:value={instanceData.bonusPoints}
 			disabled={!editable}
 			error=""

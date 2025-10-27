@@ -1,9 +1,27 @@
 package dtos
 
 import (
+	"time"
+
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common/enums"
 )
+
+type UserAPiTokenDTO struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	IssuedAt  time.Time `json:"issuedAt"`
+	ExpiresAt time.Time `json:"expiresAt"`
+}
+
+func (m UserAPiTokenDTO) From(d *models.AuthToken) UserAPiTokenDTO {
+	return UserAPiTokenDTO{
+		ID:        d.TokenID,
+		Name:      d.Name,
+		IssuedAt:  d.IssuedAt,
+		ExpiresAt: d.ExpiresAt,
+	}
+}
 
 type UserDTO struct {
 	ID               uint                       `json:"id"`
@@ -18,6 +36,7 @@ type UserDTO struct {
 	Type             enums.UserTypeEnum         `json:"type"`
 	IdentityProvider enums.IdentityProviderEnum `json:"identityProvider"`
 	Courses          []UserCourseDTO            `json:"courses"`
+	ApiTokens        []UserAPiTokenDTO          `json:"apiTokens"`
 }
 
 func (m UserDTO) From(d *models.User) UserDTO {
@@ -34,10 +53,15 @@ func (m UserDTO) From(d *models.User) UserDTO {
 		IdentityProvider: d.IdentityProvider,
 		Version:          d.Version,
 		Courses:          make([]UserCourseDTO, len(d.UserCourses)),
+		ApiTokens:        make([]UserAPiTokenDTO, len(d.ApiTokens)),
 	}
 
 	for i, course := range d.UserCourses {
 		dto.Courses[i] = UserCourseDTO{}.From(course)
+	}
+
+	for i, token := range d.ApiTokens {
+		dto.ApiTokens[i] = UserAPiTokenDTO{}.From(token)
 	}
 
 	return dto

@@ -15,6 +15,7 @@ type TestInstanceListItemDTO struct {
 	StartedAt   time.Time                   `json:"startedAt"`
 	EndedAt     time.Time                   `json:"endedAt"`
 	Participant TestParticipantDTO          `json:"participant"`
+	Points      float64                     `json:"points"`
 }
 
 func (m TestInstanceListItemDTO) From(d *models.TestInstance) TestInstanceListItemDTO {
@@ -26,6 +27,7 @@ func (m TestInstanceListItemDTO) From(d *models.TestInstance) TestInstanceListIt
 		StartedAt:   d.StartedAt,
 		EndedAt:     d.EndedAt,
 		Participant: TestParticipantDTO{}.From(d.Participant),
+		Points:      d.Result.Points,
 	}
 
 	return dto

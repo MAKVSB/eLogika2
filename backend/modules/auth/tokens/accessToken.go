@@ -1,7 +1,6 @@
 package tokens
 
 import (
-	"strings"
 	"time"
 
 	"elogika.vsb.cz/backend/initializers"
@@ -10,7 +9,6 @@ import (
 	"elogika.vsb.cz/backend/modules/auth/enums"
 	"elogika.vsb.cz/backend/modules/auth/helpers"
 	"elogika.vsb.cz/backend/modules/common"
-	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 )
@@ -23,24 +21,6 @@ type AccessToken struct {
 
 func (t *AccessToken) GetInnerToken() models.AuthToken {
 	return t.AuthToken
-}
-
-func (t *AccessToken) Get(c *gin.Context, allowExpired bool) *common.ErrorResponse {
-	authHeader := c.GetHeader("Authorization")
-
-	if authHeader == "" {
-		return &common.ErrorResponse{
-			Message: "Missing token header",
-		}
-	}
-
-	if !strings.HasPrefix(authHeader, "Bearer ") {
-		return &common.ErrorResponse{
-			Message: "Invalid token format",
-		}
-	}
-
-	return t.Parse(strings.TrimPrefix(authHeader, "Bearer "), allowExpired)
 }
 
 func (t *AccessToken) IsRevoked() bool {
@@ -137,24 +117,46 @@ func (t *AccessToken) Parse(tokenStr string, allowExpired bool) *common.ErrorRes
 	return nil
 }
 
-func (t *AccessToken) Invalidate() error {
-	result := initializers.DB.Model(&models.AuthToken{}).
-		Where("token_id = ? AND token_type = ? AND revoked_at IS NULL", t.TokenID, t.TokenType).
-		Update("revoked_at", time.Now())
+func (t *AccessToken) Invalidate() *common.ErrorResponse {
+	if err := initializers.DB.
+		Model(&models.AuthToken{}).
+		Where("token_id = ?", t.TokenID).
+		Update("revoked_at", time.Now()).
+		Update("revoked_for", enums.RevokedForToken).Error; err != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to invalidate token",
+		}
+	}
+
+	t.RevokedAt.Time = time.Now()
+	t.RevokedAt.Valid = true
+	t.RevokedFor = enums.RevokedForToken
 
 	helpers.GetInmemoryRevokeStore().Add(t.AuthToken)
 
-	return result.Error
+	return nil
 }
 
-func (t *AccessToken) InvalidateByUser() error {
-	result := initializers.DB.Model(&models.AuthToken{}).
-		Where("user_id = ? AND token_type = ? AND revoked_at IS NULL", t.UserID, t.TokenType).
-		Update("revoked_at", time.Now())
+func (t *AccessToken) InvalidateByUser() *common.ErrorResponse {
+	if err := initializers.DB.
+		Model(&models.AuthToken{}).
+		Where("user_id = ?, token_type = ?", t.UserID, t.TokenType).
+		Update("revoked_at", time.Now()).
+		Update("revoked_for", enums.RevokedForUser).Error; err != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to invalidate token",
+		}
+	}
+
+	t.RevokedAt.Time = time.Now()
+	t.RevokedAt.Valid = true
+	t.RevokedFor = enums.RevokedForUser
 
 	helpers.GetInmemoryRevokeStore().Add(t.AuthToken)
 
-	return result.Error
+	return nil
 }
 
 func (t *AccessToken) New(user dtos.LoggedUserDTO) (string, error) {
@@ -167,6 +169,10 @@ func (t *AccessToken) New(user dtos.LoggedUserDTO) (string, error) {
 	t.ExpiresAt = timeFreeze.Add(initializers.GlobalAppConfig.ACCESS_LENGTH)
 	t.TokenType = enums.JWTTokenTypeAccess
 
+	if err := initializers.DB.Create(&t.AuthToken).Error; err != nil {
+		return "", err
+	}
+
 	claims := jwt.MapClaims{
 		"iss":  t.Issuer,
 		"sub":  t.UserID,
@@ -178,6 +184,6 @@ func (t *AccessToken) New(user dtos.LoggedUserDTO) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	return token.SignedString(initializers.GlobalAppConfig.ACCESS_SECRET)
+	tokenString, err := token.SignedString(initializers.GlobalAppConfig.ACCESS_SECRET)
+	return "at_" + tokenString, err
 }

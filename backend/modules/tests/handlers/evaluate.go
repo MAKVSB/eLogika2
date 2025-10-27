@@ -55,7 +55,7 @@ func TestEvaluate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enum
 	// TODO validate from here
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 
@@ -190,6 +190,7 @@ func EvaluateTestInstance(dbRef *gorm.DB, instanceID uint, userData *authdtos.Lo
 			block.TotalQuestions++
 			block.TextAnswerPercentageSum += float64(q.TextAnswerPercentage)
 			block.TextAnswerReviewed = block.TextAnswerReviewed && q.TextAnswerReviewedByID != nil
+			block.QuestionFormat = q.TestQuestion.Question.QuestionFormat
 		case enums.QuestionFormatTest:
 			total, correct, incorrect := QuestionAnswersScore(q.Answers, block.AllowEmptyAnswers)
 			block.TotalAnswers += total
@@ -223,6 +224,7 @@ func EvaluateTestInstance(dbRef *gorm.DB, instanceID uint, userData *authdtos.Lo
 			ratio := (block.CorrectlyAnswered - wrongAnswerPercentage*block.IncorrectlyAnswered) / block.TotalAnswers
 			points += ratio * (testPointsMax * blockWeight)
 		default:
+			utils.DebugPrintJSON(evaluationMap)
 			panic(fmt.Sprintf("unexpected enums.QuestionFormatEnum: %#v", block.QuestionFormat))
 		}
 	}
@@ -247,7 +249,7 @@ func EvaluateTestInstance(dbRef *gorm.DB, instanceID uint, userData *authdtos.Lo
 	return nil
 }
 
-func QuestionAnswersScore(answers []models.TestInstanceQuestionAnswer, allowEmptyAnswers bool) (float64, float64, float64) {
+func QuestionAnswersScore(answers []*models.TestInstanceQuestionAnswer, allowEmptyAnswers bool) (float64, float64, float64) {
 	var numAnswers = float64(0)
 	var numChecked = float64(0)
 	var numCorrect = float64(0)

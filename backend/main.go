@@ -27,6 +27,7 @@ import (
 	"elogika.vsb.cz/backend/modules/print"
 	printCrons "elogika.vsb.cz/backend/modules/print/crons"
 	"elogika.vsb.cz/backend/modules/questions"
+	"elogika.vsb.cz/backend/modules/recognizer"
 	"elogika.vsb.cz/backend/modules/templates"
 	"elogika.vsb.cz/backend/modules/tests"
 	testCrons "elogika.vsb.cz/backend/modules/tests/crons"
@@ -150,6 +151,7 @@ func main() {
 			print.RegisterRoutes(private)
 			classes.RegisterRoutes(private)
 			activities.RegisterRoutes(private)
+			recognizer.RegisterRoutes(private)
 		}
 	}
 

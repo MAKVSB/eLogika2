@@ -8,7 +8,7 @@
 		PrintTestRequest,
 		TestEvaluationRequest,
 		TestEvaluationResponse,
-		TestInstanceListItemDTO,
+		TestInstanceListItemDTO
 	} from '$lib/api_types';
 	import { type InitialTableState } from '@tanstack/table-core';
 	import { page } from '$app/state';
@@ -30,7 +30,7 @@
 
 	let dialogOpen = $state(false);
 	let printAnswerSheets = $state(true);
-	let separateAnswerSheets = $state(true);
+	let separateAnswerSheets = $state(false);
 
 	$effect(() => {
 		data.tests
@@ -186,23 +186,23 @@
 		<Button onclick={() => reevaluate()}>{m.test_reevaluate({ type: 'multi' })}</Button>
 		<Button onclick={() => print()}>{m.print_test({ type: 'multi' })}</Button>
 	</div>
-	<div class="flex flex-col gap-4">
-		<h3>{m.test_print_settings()}</h3>
+	<div class="flex flex-col items-end gap-4">
+				<h3 class="text-xl">{m.test_print_settings()}</h3>
 		<div class="flex gap-2">
+			<Label for="printAnswerSheets">{m.print_test_printanswersheets()}</Label>
 			<Checkbox
 				class="rounded-md h-9 w-9"
 				id="printAnswerSheets"
 				bind:checked={printAnswerSheets}
 			/>
-			<Label for="printAnswerSheets">{m.print_test_printanswersheets()}</Label>
 		</div>
 		<div class="flex gap-2">
+			<Label for="separateAnswerSheets">{m.print_test_separateanswersheets()}</Label>
 			<Checkbox
 				class="rounded-md h-9 w-9"
 				id="separateAnswerSheets"
 				bind:checked={separateAnswerSheets}
 			/>
-			<Label for="separateAnswerSheets">{m.print_test_separateanswersheets()}</Label>
 		</div>
 	</div>
 </div>

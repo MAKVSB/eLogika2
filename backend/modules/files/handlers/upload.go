@@ -11,7 +11,6 @@ import (
 	"elogika.vsb.cz/backend/models"
 	authdtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	"elogika.vsb.cz/backend/modules/common"
-	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -42,16 +41,6 @@ type FileUploadResponse struct {
 // @Failure 500 {object} common.ErrorResponse "Fatal failure"
 // @Router /api/v2/files [post]
 func FileUpload(c *gin.Context, userData authdtos.LoggedUserDTO) {
-	// Load request data
-	err, _, _ := utils.GetRequestData[
-		any,
-		any,
-	](c)
-	if err != nil {
-		c.AbortWithStatusJSON(err.Code, err)
-		return
-	}
-
 	// TODO validate from here
 
 	// TODO Figure out if it is good idea to allow everyone upload everything without any checks

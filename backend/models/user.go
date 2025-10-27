@@ -56,7 +56,8 @@ type User struct {
 	UserCourses []*CourseUser ``
 
 	// Temp helper data
-	Results []*CourseItemResult `gorm:"foreignKey:StudentID"`
+	Results   []*CourseItemResult `gorm:"foreignKey:StudentID"`
+	ApiTokens []*AuthToken        `gorm:"foreignKey:UserID"`
 }
 
 func (user User) FullName() string {

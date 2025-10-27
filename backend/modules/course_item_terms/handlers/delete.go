@@ -47,7 +47,7 @@ func Delete(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 	// TODO validate from here
 
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 

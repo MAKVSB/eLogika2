@@ -19,6 +19,15 @@
 	import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 	import TextAlign from '@tiptap/extension-text-align';
 	import { toast } from 'svelte-sonner';
+	import { cn, type WithElementRef, type WithoutChildren } from '$lib/utils.js';
+	import type { ChangeEventHandler, FullAutoFill, HTMLAttributes } from 'svelte/elements';
+	import type { Readable } from 'svelte/store';
+	import Menu from './menu/menu.svelte';
+	import { TipTapDefaultContent } from '$lib/constants';
+	import { API } from '$lib/services/api.svelte';
+	import type { FileUploadResponse } from '$lib/api_types';
+	import { m } from '$lib/paraglide/messages';
+
 
 	import MathReplacer from './plugins/MathReplacer';
 	import CharsReplacer from './plugins/CharsReplacer';
@@ -125,7 +134,7 @@
 
 				CustomInlineMath.configure({
 					onClick: (node, pos) => {
-						const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
+						const newCalculation = prompt(m.tiptap_enter_equation(), node.attrs.latex);
 						if (newCalculation) {
 							editor;
 							$editor
@@ -134,14 +143,14 @@
 								.updateInlineMath({ latex: newCalculation })
 								.focus()
 								.run();
-						} else {
+						} else if (newCalculation == "") {
 							$editor.chain().deleteInlineMath().focus().run();
 						}
 					}
 				}),
 				CustomBlockMath.configure({
 					onClick: (node, pos) => {
-						const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
+						const newCalculation = prompt(m.tiptap_enter_equation(), node.attrs.latex);
 						if (newCalculation) {
 							$editor
 								.chain()
@@ -149,7 +158,7 @@
 								.updateBlockMath({ latex: newCalculation })
 								.focus()
 								.run();
-						} else {
+						} else if (newCalculation == "") {
 							$editor.chain().deleteBlockMath().focus().run();
 						}
 					}
@@ -242,14 +251,6 @@
 		}
 	});
 
-	// Shadcn
-	import { cn, type WithElementRef, type WithoutChildren } from '$lib/utils.js';
-	import type { ChangeEventHandler, FullAutoFill, HTMLAttributes } from 'svelte/elements';
-	import type { Readable } from 'svelte/store';
-	import Menu from './menu/menu.svelte';
-	import { TipTapDefaultContent } from '$lib/constants';
-	import { API } from '$lib/services/api.svelte';
-	import type { FileUploadResponse } from '$lib/api_types';
 </script>
 
 <div>

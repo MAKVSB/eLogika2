@@ -54,6 +54,7 @@ func main() {
 		&models.TestInstanceEvent{},
 		&models.ActivityInstance{},
 		&models.Email{},
+		&models.RecognizerFile{},
 	)
 	fmt.Println(err)
 }

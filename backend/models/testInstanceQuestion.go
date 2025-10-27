@@ -7,11 +7,11 @@ type TestInstanceQuestion struct {
 	ID             uint
 	TestInstanceID uint
 
-	TestQuestionID         uint                         ``
-	TextAnswer             json.RawMessage              ``
-	TextAnswerReviewedByID *uint                        ``
-	TextAnswerPercentage   float64                      ``
-	Answers                []TestInstanceQuestionAnswer ``
+	TestQuestionID         uint                          ``
+	TextAnswer             json.RawMessage               ``
+	TextAnswerReviewedByID *uint                         ``
+	TextAnswerPercentage   float64                       ``
+	Answers                []*TestInstanceQuestionAnswer ``
 
 	// TextAnswerReviewedBy *User         ``
 	TestInstance *TestInstance ``

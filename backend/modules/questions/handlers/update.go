@@ -82,7 +82,7 @@ func asNewVersion(c *gin.Context, userData authdtos.LoggedUserDTO, reqData *Ques
 	questionService := services.QuestionService{}
 	questionRepo := repositories.QuestionRepository{}
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 
@@ -212,7 +212,7 @@ func updateExisting(c *gin.Context, userData authdtos.LoggedUserDTO, reqData *Qu
 	questionService := services.QuestionService{}
 	questionRepo := repositories.QuestionRepository{}
 	// Check role validity
-	if err := auth.GetClaimCourseRole(userData.Courses, params.CourseID, userRole); err != nil {
+	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 

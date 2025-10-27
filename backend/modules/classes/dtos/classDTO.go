@@ -9,16 +9,17 @@ type ClassDTO struct {
 	ID      uint `json:"id"`
 	Version uint `json:"version"`
 
-	Name         string               `json:"name"`
-	Room         string               `json:"room"`
-	Type         enums.ClassTypeEnum  `json:"type"`
-	StudyForm    enums.StudyFormEnum  `json:"studyForm"`
-	TimeFrom     string               `json:"timeFrom"`
-	TimeTo       string               `json:"timeTo"`
-	Day          enums.WeekDayEnum    `json:"day"`
-	WeekParity   enums.WeekParityEnum `json:"weekParity"`
-	StudentLimit uint                 `json:"studentLimit"`
-	Tutors       []ClassUserDTO       `json:"tutors"`
+	Name          string                    `json:"name"`
+	Room          string                    `json:"room"`
+	Type          enums.ClassTypeEnum       `json:"type"`
+	StudyForm     enums.StudyFormEnum       `json:"studyForm"`
+	TimeFrom      string                    `json:"timeFrom"`
+	TimeTo        string                    `json:"timeTo"`
+	Day           enums.WeekDayEnum         `json:"day"`
+	WeekParity    enums.WeekParityEnum      `json:"weekParity"`
+	StudentLimit  uint                      `json:"studentLimit"`
+	Tutors        []ClassUserDTO            `json:"tutors"`
+	ImportOptions models.ClassImportOptions `json:"importOptions"`
 }
 
 func (m ClassDTO) From(d *models.Class) ClassDTO {
