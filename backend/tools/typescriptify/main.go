@@ -145,6 +145,8 @@ func main() {
 		Add(testHandlers.TestInstanceStartResponse{}).
 		Add(testHandlers.TestInstanceGetResponse{}).
 		Add(testHandlers.TestInstanceSaveResponse{}).
+		Add(testHandlers.TestInstanceTutorSaveRequest{}).
+		Add(testHandlers.TestInstanceTutorSaveResponse{}).
 		Add(testHandlers.TestListResponse{}).
 		Add(testHandlers.TestInstanceListResponse{}).
 		Add(testHandlers.TestInstanceGetTelemetryResponse{}).

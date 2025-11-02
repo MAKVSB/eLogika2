@@ -495,7 +495,7 @@
 	"testinstance_activetime": "Aktivní v čase",
 	"testinstance_tutor_answer_percentage": "Správnost odpovědi",
 	"testinstance_participants": "Řešitel",
-	"testinstance_points": "Body\n\n",
+	"testinstance_points": "Body celkem\n\n",
 	"testinstance_bonuspoints": "Bonusové body",
 	"course_item_tries": "Počet pokusů",
 	"yes_no": [
@@ -561,10 +561,10 @@
 	"user_full_name": "Jméno studenta",
 	"no_items_found": "Nebyly nalezeny žádné položky",
 	"courseitem_group_test_show_test_tooltip": "Po ukončení testu zobrazí studentovi při revizi texty otázek a odpovědí.",
-	"courseitem_group_test_show_correctness_tooltip": "Po ukončení testu ukáže studentovi správné odpovědi. Nemá žádný efekt, pokud není zapnuto \"Zobrazení testu\".",
+	"courseitem_group_test_show_correctness_tooltip": "Po ukončení testu ukáže studentovi správné odpovědi. Nemá žádný efekt, pokud není zapnuto \"Zobrazit obsah testu\".",
 	"courseitem_group_test_offline_tooltip": "Povolí studentům předem stáhnout test a vyplnit jej bez nutnosti připojení k internetu. (Neimplementováno).",
-	"courseitem_group_test_ispaper_tooltip": "Vypne možnost generovat test po zapnutí studentem. Také zobrazí naskenovaný obzázek testu a extrahované data.",
-	"courseitem_group_test_show_results_tooltip": "Zobrazí výsledky testu už během aktivního termínu. Studenti tak nemusí čekat na konec aktivního termínu pro zjištění výsledků.",
+	"courseitem_group_test_ispaper_tooltip": "Vypne možnost generovat test studentem. Také zobrazí naskenovaný obrázek testu a extrahované data.",
+	"courseitem_group_test_show_results_tooltip": "Zobrazí výsledky testu již během aktivního termínu. Studenti nemusí čekat na konec aktivního termínu pro zjištění výsledků.",
 	"filter_category": "Filtrovat podle kategorie",
 	"courseite_group_test_show_correctness": "Zobrazit správnost odpovědí",
 	"course_points_max": "Maximum bodů",
@@ -638,5 +638,28 @@
 	"test_instance_start": "Sputit test",
 	"tests_ready_to_start": "Testy připravené ke spuštění",
 	"tests_running": "Spuštěné testy",
-	"test_instance_continue": "Pokračovat v pokusu"
+	"test_instance_continue": "Pokračovat v pokusu",
+	"testinstance_editor_recognizer_toggle": [
+		{
+			"declarations": [
+				"input open"
+			],
+			"selectors": [
+				"open"
+			],
+			"match": {
+				"open=true": "Skrýt skenované dokumenty",
+				"open=false": "Zobrazit skenované dokumenty"
+			}
+		}
+	],
+	"testinstance_editor_answers_correct": "Správné odpovědi",
+	"testinstance_editor_answers_incorrect": "Nesprávné odpovědi",
+	"testinstance_editor_question_type_invalid": "Neznámý typ otázky",
+	"testinstance_points_not_final": "Body jsou označeny jako skryté, nebo dočasné",
+	"class_students_import": "Importovat studenty",
+	"course_user_add_modal_settings_role": "Role uživatele",
+	"course_user_add_modal_settings_studyform": "Studijní forma studenta",
+	"course_user_add_modal_userselect": "Vyberte uživatele k přidání",
+	"course_user_add_modal_settings": "Nastavení přidávaného uživatele"
 }

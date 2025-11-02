@@ -18,7 +18,7 @@
 
 <Tooltip.Provider>
 	<Tooltip.Root>
-		<Tooltip.Trigger class="w-full text-left">
+		<Tooltip.Trigger class="text-left">
 			<p> {showLabel ? "From" : ""}
 				{new Date(start).toLocaleString('cs', {
 					dateStyle: 'short',

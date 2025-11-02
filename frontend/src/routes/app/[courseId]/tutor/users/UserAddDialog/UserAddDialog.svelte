@@ -4,8 +4,6 @@
 		StudyFormEnum,
 		type AddCourseUserRequest,
 		type AddCourseUserResponse,
-		type AddStudentRequest,
-		type AddStudentResponse,
 		type CourseUserDTO,
 		type ListCourseUsersResponse
 	} from '$lib/api_types';
@@ -84,7 +82,7 @@
 		)
 			.then((res) => {
 				rowItems = res.items;
-				rowCount = res.items.length;
+				rowCount = res.itemsCount;
 			})
 			.catch(() => {});
 	};
@@ -112,14 +110,13 @@
 
 <Dialog.Content class="max-h-full w-300 overflow-scroll sm:max-h-[90%] sm:max-w-[90%]">
 	<Dialog.Header>
-		<Dialog.Title>Select role of the user</Dialog.Title>
+		<Dialog.Title>{m.course_user_add_modal_settings()}</Dialog.Title>
 	</Dialog.Header>
 	<div class="grid grid-cols-2 gap-4">
 		<Form.SingleSelect
+			title={m.course_user_add_modal_settings_role()}
 			name="newUserRole"
-			title="User role"
 			id="newUserRole"
-			placeholder="Select new user role"
 			bind:value={newUserRole}
 			required={true}
 			error=""
@@ -127,10 +124,9 @@
 			options={enumToOptions(CourseUserRoleEnum, m.course_user_role_enum)}
 		></Form.SingleSelect>
 		<Form.SingleSelect
+			title={m.course_user_add_modal_settings_studyform()}
 			name="newUserStudyForm"
-			title="Student study form"
 			id="newUserStudyForm"
-			placeholder="Select new study form"
 			bind:value={newUserStudyForm}
 			required={newUserRole == CourseUserRoleEnum.STUDENT}
 			error=""
@@ -140,7 +136,7 @@
 		></Form.SingleSelect>
 	</div>
 	<Dialog.Header>
-		<Dialog.Title>Select user to add</Dialog.Title>
+		<Dialog.Title>{m.course_user_add_modal_userselect()}</Dialog.Title>
 	</Dialog.Header>
 	{#if !loading}
 		<DataTable

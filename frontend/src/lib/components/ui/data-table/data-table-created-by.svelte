@@ -15,7 +15,7 @@
 
 <Tooltip.Provider>
 	<Tooltip.Root>
-		<Tooltip.Trigger class="w-full">
+		<Tooltip.Trigger>
 			{displayUserName(createdBy)}
 		</Tooltip.Trigger>
 		<Tooltip.Content class="grid grid-cols-2">

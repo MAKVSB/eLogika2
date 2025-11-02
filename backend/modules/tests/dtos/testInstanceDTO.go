@@ -32,7 +32,7 @@ type TestInstanceDTO struct {
 	ShowContent     bool `json:"showContent"`
 	ShowCorrectness bool `json:"showCorrectness"`
 
-	RecognizerFiles []FileDTO
+	RecognizerFiles []FileDTO `json:"recognizerFiles"`
 }
 
 func (m TestInstanceDTO) From(

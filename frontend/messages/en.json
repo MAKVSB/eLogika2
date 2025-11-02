@@ -542,7 +542,6 @@
 	"term_signin_range": "Sign in range",
 	"term_signout_range": "Sign out range",
 	"term_allowed_tries": "Number of allowed tries",
-	"evaluate_by_attempt_menu": "test",
 	"evaluate_by_attempt_enum": [
 		{
 			"declarations": [
@@ -639,5 +638,28 @@
 	"test_instance_start": "Start test",
 	"tests_ready_to_start": "Tests to start",
 	"tests_running": "Running tests",
-	"test_instance_continue": "Continue test"
+	"test_instance_continue": "Continue test",
+	"course_user_add_modal_settings": "Options to add user",
+	"course_user_add_modal_settings_role": "User role",
+	"course_user_add_modal_settings_studyform": "Student study form",
+	"course_user_add_modal_userselect": "Select user to add",
+	"class_students_import": "Import students",
+	"testinstance_editor_question_type_invalid": "Invalid question type",
+	"testinstance_editor_answers_incorrect": "Incorrect questions",
+	"testinstance_editor_answers_correct": "Correct answers",
+	"testinstance_editor_recognizer_toggle": [
+		{
+			"declarations": [
+				"input open"
+			],
+			"selectors": [
+				"open"
+			],
+			"match": {
+				"open=true": "Hide answer sheets",
+				"open=false": "Show answer sheets"
+			}
+		}
+	],
+	"testinstance_points_not_final": "Points are marked as hidden or not final"
 }

@@ -5,6 +5,8 @@
 	import { API } from '$lib/services/api.svelte';
 	import {
 		type TestInstanceDTO,
+		type TestInstanceTutorSaveRequest,
+		type TestInstanceTutorSaveResponse,
 		CourseUserRoleEnum,
 		QuestionFormatEnum,
 		TestInstanceStateEnum
@@ -18,6 +20,10 @@
 	import { m } from '$lib/paraglide/messages';
 	import { parseAbsoluteToLocal } from '@internationalized/date';
 	import GlobalState from '$lib/shared.svelte';
+	import * as Collapsible from '$lib/components/ui/collapsible';
+	import { Button } from '$lib/components/ui/button';
+	import { ChevronsDownIcon, ChevronsRightIcon } from '@lucide/svelte';
+	import { invalidateAll } from '$app/navigation';
 
 	let {
 		instanceData,
@@ -45,12 +51,11 @@
 		}
 		// TODO validation
 
-		await API.request<any, any>(
+		await API.request<TestInstanceTutorSaveRequest, TestInstanceTutorSaveResponse>(
 			`/api/v2/courses/${page.params.courseId}/tests/${page.params.itemId}/instance/${instanceData.id}/tutorsave`,
 			{
 				method: 'PUT',
 				body: {
-					id: instanceData.id,
 					questions: (instanceData.questions ?? []).map((q) => {
 						return {
 							id: q.id,
@@ -70,7 +75,9 @@
 				}
 			}
 		)
-			.then((res) => {})
+			.then(() => {
+				invalidateAll();
+			})
 			.catch(() => {});
 	}
 
@@ -84,6 +91,7 @@
 	};
 
 	let showCorrect = $state(false);
+	let showRecogniserFiles = $state(false);
 
 	let timeRange = $derived({
 		start: parseAbsoluteToLocal(instanceData.startedAt),
@@ -113,88 +121,117 @@
 	});
 
 	let scrollToQuestion = (id: number) => {
-		const el = document.getElementById("q" + id);
+		const el = document.getElementById('q' + id);
 		if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-	}
+	};
 </script>
 
-<div class="flex flex-col gap-4 py-4">
-	<Form.TextInput
-		title={m.testinstance_participants()}
-		id="participant"
-		name="participant"
-		value="{displayUserName(instanceData.participant)} ({instanceData.participant.username})"
-		disabled
-		error=""
-	></Form.TextInput>
-	<div class="flex flex-col gap-2">
-		<Label>{m.testinstance_activetime()}</Label>
-		<DateRangeField value={timeRange} granularity="minute" disabled></DateRangeField>
-	</div>
-	<Form.SingleSelect
-		title={m.testinstance_status()}
-		id="state"
-		name="state"
-		bind:value={instanceData.state}
-		options={enumToOptions(TestInstanceStateEnum, m.test_instance_state_enum)}
-		error=""
-		disabled
-	></Form.SingleSelect>
-	<Form.TextInput
-		title={m.testinstance_variant()}
-		id="group"
-		name="group"
-		bind:value={instanceData.group}
-		disabled
-		error=""
-	></Form.TextInput>
-	<div class="grid gap-4 sm:grid-cols-2">
-		<div class="flex flex-col">
+<Form.Root onsubmit={handleSubmitCutomValidation} class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4">
+		<Form.TextInput
+			title={m.testinstance_participants()}
+			id="participant"
+			name="participant"
+			value="{displayUserName(instanceData.participant)} ({instanceData.participant.username})"
+			disabled
+			error=""
+		></Form.TextInput>
+		<div class="flex flex-col gap-2">
+			<Label>{m.testinstance_activetime()}</Label>
+			<DateRangeField value={timeRange} granularity="minute" disabled></DateRangeField>
+		</div>
+		<Form.SingleSelect
+			title={m.testinstance_status()}
+			id="state"
+			name="state"
+			bind:value={instanceData.state}
+			options={enumToOptions(TestInstanceStateEnum, m.test_instance_state_enum)}
+			error=""
+			disabled
+		></Form.SingleSelect>
+		<Form.TextInput
+			title={m.testinstance_variant()}
+			id="group"
+			name="group"
+			bind:value={instanceData.group}
+			disabled
+			error=""
+		></Form.TextInput>
+		<div class="grid gap-4 sm:grid-cols-2">
 			<Form.TextInput
 				title={m.testinstance_points()}
 				id="points"
 				name="points"
 				type="number"
-				innerClass="text-4xl sm:text-4xl md:text-4xl lg:text-4xl xl:text-4xl {instanceData.points + instanceData.bonusPoints >= instanceData.pointsMin ? "text-green-500 disabled:opacity-100" : "text-red-500 disabled:opacity-100"}"
+				innerClass="text-4xl sm:text-4xl md:text-4xl lg:text-4xl xl:text-4xl {instanceData.points +
+					instanceData.bonusPoints >=
+				instanceData.pointsMin
+					? 'text-green-500 disabled:opacity-100'
+					: 'text-red-500 disabled:opacity-100'}"
 				value={instanceData.points + instanceData.bonusPoints}
 				disabled
+				error={!instanceData.pointsFinal ? m.testinstance_points_not_final() : ''}
+			></Form.TextInput>
+			<Form.TextInput
+				title={m.testinstance_bonuspoints()}
+				id="bonusPoints"
+				name="bonusPoints"
+				type="number"
+				innerClass="text-4xl sm:text-4xl md:text-4xl lg:text-4xl xl:text-4xl {instanceData.points +
+					instanceData.bonusPoints >=
+				instanceData.pointsMin
+					? 'text-green-500 disabled:opacity-100'
+					: 'text-red-500 disabled:opacity-100'}"
+				bind:value={instanceData.bonusPoints}
+				disabled={!editable}
 				error=""
 			></Form.TextInput>
-			{#if !instanceData.pointsFinal}
-				<span class="text-red-500">Points are marked as hidden or not final</span>
-			{/if}
+			<Form.TextArea
+				title={m.testinstance_bonuspoints_reason()}
+				id="bonusPointsReason"
+				name="bonusPointsReason"
+				class="sm:col-span-2"
+				bind:value={instanceData.bonusPointsReason}
+				disabled={!editable}
+				error=""
+			></Form.TextArea>
 		</div>
-		<Form.TextInput
-			title={m.testinstance_bonuspoints()}
-			id="bonusPoints"
-			name="bonusPoints"
-			type="number"
-			innerClass="text-4xl sm:text-4xl md:text-4xl lg:text-4xl xl:text-4xl {instanceData.points + instanceData.bonusPoints >= instanceData.pointsMin ? "text-green-500 disabled:opacity-100" : "text-red-500 disabled:opacity-100"}"
-			bind:value={instanceData.bonusPoints}
-			disabled={!editable}
-			error=""
-		></Form.TextInput>
-		<Form.TextArea
-			title={m.testinstance_bonuspoints_reason()}
-			id="bonusPointsReason"
-			name="bonusPointsReason"
-			class="sm:col-span-2"
-			bind:value={instanceData.bonusPointsReason}
-			disabled={!editable}
-			error=""
-		></Form.TextArea>
+		{#if instanceData.showCorrectness}
+			<Form.Checkbox
+				title={m.correctanswers_show()}
+				name="showcorrect"
+				id="showcorrect"
+				bind:value={showCorrect}
+				error=""
+			></Form.Checkbox>
+		{/if}
 	</div>
-	{#if instanceData.showCorrectness}
-		<Form.Checkbox
-			title={m.correctanswers_show()}
-			name="showcorrect"
-			id="showcorrect"
-			bind:value={showCorrect}
-			error=""
-		></Form.Checkbox>
+	{#if instanceData.recognizerFiles.length != 0}
+		<Collapsible.Root class="gap-1 p-2 border" bind:open={showRecogniserFiles}>
+			<Collapsible.Trigger>
+				<Button class="" variant="outline">
+					{#if showRecogniserFiles}
+						<ChevronsDownIcon />
+					{:else}
+						<ChevronsRightIcon />
+					{/if}
+					{m.testinstance_editor_recognizer_toggle({ open: String(showRecogniserFiles) })}
+				</Button>
+			</Collapsible.Trigger>
+			<Collapsible.Content class="pt-4 ml-4">
+				<div class="flex gap-4 overflow-x-scroll">
+					{#each instanceData.recognizerFiles as recognizerFile}
+						<img
+							src={import.meta.env.VITE_API_URL + '/api/v2/files/' + recognizerFile.storedName}
+							alt="Test answer sheet"
+							style="height: 40rem"
+							class="my-4 max-h-[40rem]"
+						/>
+					{/each}
+				</div>
+			</Collapsible.Content>
+		</Collapsible.Root>
 	{/if}
-</div>
-<Form.Root onsubmit={handleSubmitCutomValidation}>
 	{#if instanceData.questions}
 		<Table.Root>
 			<Table.Header>
@@ -254,9 +291,9 @@
 								</Table.Cell>
 							{/each}
 						{:else}
-						<Table.Cell>
-							Invalid question type
-						</Table.Cell>
+							<Table.Cell>
+								{m.testinstance_editor_question_type_invalid()}
+							</Table.Cell>
 						{/if}
 					</Table.Row>
 				{:else}
@@ -270,7 +307,7 @@
 	{#if instanceData.showContent}
 		<div>
 			{#each instanceData.questions ?? [] as question}
-				<div class="flex flex-col gap-4 p-4 border" id={"q" + question.id}>
+				<div class="flex flex-col gap-4 p-4 border" id={'q' + question.id}>
 					<div>
 						<h2 class="text-xl">
 							{m.question()}
@@ -329,13 +366,13 @@
 						</div>
 						{#if showCorrect}
 							<div>
-								<h2 class="text-xl">Correct answers</h2>
+								<h2 class="text-xl">{m.testinstance_editor_answers_correct()}</h2>
 								{#each question.openAnswers?.filter((a) => a.correct) ?? [] as correctAnswer}
 									<Tiptap value={correctAnswer.content} disabled></Tiptap>
 								{/each}
 							</div>
 							<div>
-								<h2 class="text-xl">Incorrect answers</h2>
+								<h2 class="text-xl">{m.testinstance_editor_answers_incorrect()}</h2>
 								{#each question.openAnswers?.filter((a) => !a.correct) ?? [] as correctAnswer}
 									<Tiptap value={correctAnswer.content} disabled></Tiptap>
 								{/each}

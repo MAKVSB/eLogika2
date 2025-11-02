@@ -149,7 +149,7 @@
 									<Button
 										variant="default"
 										href="{base}/app/{page.params
-											.courseId}/student/tests/{result.activityInstanceId}"
+											.courseId}/student/tests/{result.testInstanceId}"
 									>
 										{m.view()}
 									</Button>

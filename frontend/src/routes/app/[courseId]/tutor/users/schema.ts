@@ -5,7 +5,8 @@ import { CourseUserRoleEnum, type CourseUserDTO } from '$lib/api_types';
 import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
 import { enumToOptions } from '$lib/utils';
-import DataTableRoles from './data-table-roles.svelte';
+import DataTableRoles from '$lib/components/ui/data-table/data-table-roles.svelte';
+import GlobalState from '$lib/shared.svelte';
 
 export const filters: Filter[] = [
 	{
@@ -98,7 +99,8 @@ export const columns: (ColumnDef<CourseUserDTO> & { uniqueId?: string })[] = [
 			return renderComponent(DataTableRoles, {
 				id: row.original.id,
 				meta: column.columnDef.meta,
-				roles: row.original.roles
+				roles: row.original.roles,
+				showButtons: GlobalState.activeRole == CourseUserRoleEnum.ADMIN
 			});
 		},
 		uniqueId: 'roles'

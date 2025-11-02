@@ -77,7 +77,7 @@
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Class students</h1>
 		<div class="flex gap-2">
-			<Button variant="outline" onclick={() => importStudents()}>Import students</Button>
+			<Button variant="outline" onclick={() => importStudents()}>{m.class_students_import()}</Button>
 			<Dialog.Root bind:open={dialogOpen}>
 				<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>{m.class_student_add()}</Dialog.Trigger>
 				{#if dialogOpen}
