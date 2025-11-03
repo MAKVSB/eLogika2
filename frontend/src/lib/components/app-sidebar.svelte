@@ -128,6 +128,23 @@
 			},
 			{
 				type: MenuTreeType.CATEGORY,
+				name: "Rozpoznávač",
+				items: [
+					{
+						title: "Stažení windows",
+						url: base+`/eLogikaScanner.exe`,
+						icon: NotebookPenIcon //TODO
+					},
+					{
+						title: "Stažení linux",
+						url: base+`/eLogikaScanner`,
+						icon: AudioWaveformIcon //TODO
+					},
+				],
+				requiredRoles: [CourseUserRoleEnum.GARANT, CourseUserRoleEnum.TUTOR]
+			},
+			{
+				type: MenuTreeType.CATEGORY,
 				name: ``,
 				items: [
 					{

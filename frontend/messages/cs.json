@@ -661,5 +661,7 @@
 	"course_user_add_modal_settings_role": "Role uživatele",
 	"course_user_add_modal_settings_studyform": "Studijní forma studenta",
 	"course_user_add_modal_userselect": "Vyberte uživatele k přidání",
-	"course_user_add_modal_settings": "Nastavení přidávaného uživatele"
+	"course_user_add_modal_settings": "Nastavení přidávaného uživatele",
+	"date_range_from": "Od",
+	"date_range_to": "Do"
 }

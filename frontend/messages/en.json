@@ -661,5 +661,7 @@
 			}
 		}
 	],
-	"testinstance_points_not_final": "Points are marked as hidden or not final"
+	"testinstance_points_not_final": "Points are marked as hidden or not final",
+	"date_range_from": "From",
+	"date_range_to": "To"
 }

@@ -151,15 +151,15 @@
 								<Table.Cell>{item.name}</Table.Cell>
 								<Table.Cell>{item.courseItemName}</Table.Cell>
 								<Table.Cell>
-									<DateRange start={item.activeFrom} end={item.activeTo} showTime={true}
+									<DateRange start={item.activeFrom} end={item.activeTo}
 									></DateRange>
 								</Table.Cell>
 								<Table.Cell>
-									<DateRange start={item.signInFrom} end={item.signInTo} showTime={true}
+									<DateRange start={item.signInFrom} end={item.signInTo}
 									></DateRange>
 								</Table.Cell>
 								<Table.Cell>
-									<DateRange start={item.signOutFrom} end={item.signOutTo} showTime={true}
+									<DateRange start={item.signOutFrom} end={item.signOutTo}
 									></DateRange>
 								</Table.Cell>
 								<Table.Cell>{item.classroom}</Table.Cell>
