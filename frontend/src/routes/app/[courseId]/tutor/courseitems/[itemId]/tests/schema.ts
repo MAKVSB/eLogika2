@@ -4,10 +4,18 @@ import DataTableActions from './data-table-actions.svelte';
 import DataTableCreatedBy from '$lib/components/ui/data-table/data-table-created-by.svelte';
 import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 import type { TestListItemDTO } from '$lib/api_types';
-import { type Filter } from '$lib/components/ui/data-table/filter';
+import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
 
-export const filters: Filter[] = [];
+export const filters: Filter[] = [
+	{
+		type: FilterTypeEnum.SELECT,
+		accessorKey: 'termId',
+		values: [], //Fill from page
+		placeholder: m.filter_term(),
+		emptyValue: 'No filter'
+	}
+];
 
 export const columns: (ColumnDef<TestListItemDTO> & { uniqueId?: string })[] = [
 	{

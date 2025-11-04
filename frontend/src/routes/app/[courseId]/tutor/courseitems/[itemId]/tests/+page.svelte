@@ -126,6 +126,7 @@
 
 		data.terms
 			.then((res) => {
+				loading[1] = true;
 				const termOptions: SelectOptions = res.items.map((term) => {
 					return {
 						value: term.id,
@@ -133,16 +134,12 @@
 					};
 				});
 
-				if (!filters.find((f) => f.accessorKey == 'termId')) {
-					filters.push({
-						type: FilterTypeEnum.SELECT,
-						accessorKey: 'termId',
-						values: termOptions,
-						placeholder: m.filter_term(),
-						emptyValue: 'No filter'
-					});
+				const existingFilter = filters.find((f) => f.accessorKey == 'termId')
+				if (existingFilter) {
+					if (existingFilter.type == FilterTypeEnum.SELECT) {
+						existingFilter.values = termOptions
+					}
 				}
-
 				loading[1] = false;
 			})
 			.catch(() => {});

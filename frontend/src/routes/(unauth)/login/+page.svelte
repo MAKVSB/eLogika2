@@ -55,7 +55,13 @@
 	<Card.Root class="w-full max-w-md mx-auto bg-red-500 dark:bg-red-900">
 		<Card.Content>
 			<Card.Title class="flex text-2xl">Warning</Card.Title>
-			To use eLogika 2.0, you must be connected to university eduroam, or VPN.
+			To use eLogika 2.0, you must be connected to the university eduroam, or VPN.
+		</Card.Content>
+	</Card.Root>
+	<Card.Root class="w-full max-w-md mx-auto bg-blue-500 dark:bg-blue-900">
+		<Card.Content>
+			<Card.Title class="flex text-2xl">Plánovaná odstávka</Card.Title>
+			Večer z 8. 11. na 9. 11. proběhne údržba systému. Služby nebudou v provozu od 22:00 do 4:00.
 		</Card.Content>
 	</Card.Root>
 	<Card.Root class="w-full max-w-md mx-auto">
@@ -85,9 +91,9 @@
 				<hr class="my-2" />
 				<div class="grid gap-4">
 					{#if !emailLoginOpen}
-						<Button variant="outline" onclick={() => (emailLoginOpen = !emailLoginOpen)}
-							>Přihlásit emailem a heslem</Button
-						>
+						<Button variant="outline" onclick={() => (emailLoginOpen = !emailLoginOpen)}>
+							Přihlásit emailem a heslem
+						</Button>
 					{:else}
 						<Form.TextInput
 							title={m.user_email()}

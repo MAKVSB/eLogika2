@@ -7,6 +7,7 @@
 	import { type ErrorObject } from '$lib/components/ui/form/types';
 	import { Label } from '$lib/components/ui/label';
 	import { m } from '$lib/paraglide/messages';
+	import { intToLabel } from '$lib/utils';
 
 	let {
 		form = $bindable()
@@ -86,7 +87,7 @@
 					{@const error =
 						String(index) in answersErrors ? (answersErrors[String(index)] as ErrorObject) : {}}
 					<Table.Row>
-						<Table.Cell class="font-bold">{index + 1}</Table.Cell>
+						<Table.Cell class="font-bold">{intToLabel(index)}</Table.Cell>
 						<Table.Cell>
 							<Form.Checkbox
 								name="correct"
@@ -146,7 +147,7 @@
 								</div>
 							</div>
 						</Table.Cell>
-						<Table.Cell class="font-bold">{index + 1}</Table.Cell>
+						<Table.Cell class="font-bold">{intToLabel(index)}</Table.Cell>
 					</Table.Row>
 					{/if}
 			{/each}

@@ -14,7 +14,7 @@
 	import { page } from '$app/state';
 	import { Label } from '$lib/components/ui/label';
 	import DateRangeField from '$lib/components/ui/date-range-field/date-range-field.svelte';
-	import { displayUserName, enumToOptions } from '$lib/utils';
+	import { displayUserName, enumToOptions, intToLabel } from '$lib/utils';
 	import TiptapRenderer from '$lib/components/tiptap-renderer/tiptap-renderer.svelte';
 	import Tiptap from '$lib/components/tiptap/Tiptap.svelte';
 	import { m } from '$lib/paraglide/messages';
@@ -80,15 +80,6 @@
 			})
 			.catch(() => {});
 	}
-
-	const getVariantLabel = (n: number) => {
-		let label = '';
-		while (n >= 0) {
-			label = String.fromCharCode('a'.charCodeAt(0) + (n % 26)) + label;
-			n = Math.floor(n / 26) - 1;
-		}
-		return label;
-	};
 
 	let showCorrect = $state(false);
 	let showRecogniserFiles = $state(false);
@@ -244,7 +235,7 @@
 					{/if}
 					{#each { length: maxAnswerCount } as _, i}
 						<Table.Cell>
-							{getVariantLabel(i)}
+							{intToLabel(i)}
 						</Table.Cell>
 					{/each}
 				</Table.Row>

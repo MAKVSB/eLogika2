@@ -138,7 +138,7 @@ func Generate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Co
 				params.TermID,
 				&userData,
 				userData.FamilyName+" "+userData.FirstName,
-				GetVariantLabel(var_i),
+				IntToLabel(var_i),
 			)
 			if err != nil {
 				transaction.Rollback()
@@ -594,7 +594,7 @@ func SortQuestionCandidates(arr []*helpers.TMPQ) []*helpers.TMPQ {
 	return arr
 }
 
-func GetVariantLabel(n int) string {
+func IntToLabel(n int) string {
 	label := ""
 	for n >= 0 {
 		label = string(rune('A'+(n%26))) + label

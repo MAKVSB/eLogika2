@@ -54,3 +54,12 @@ export function displayUserName(
 
 	return `${pud.degreeBefore} ${pud.firstName} ${pud.familyName}${pud.degreeAfter && pud.degreeAfter != '' ? ', ' + pud.degreeAfter : ''}`;
 }
+
+export function intToLabel(n: number) {
+	let label = '';
+	while (n >= 0) {
+		label = String.fromCharCode('a'.charCodeAt(0) + (n % 26)) + label;
+		n = Math.floor(n / 26) - 1;
+	}
+	return label;
+}
