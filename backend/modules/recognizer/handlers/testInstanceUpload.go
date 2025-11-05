@@ -18,7 +18,8 @@ import (
 	"elogika.vsb.cz/backend/modules/recognizer/helpers"
 	testHandlers "elogika.vsb.cz/backend/modules/tests/handlers"
 	testHelpers "elogika.vsb.cz/backend/modules/tests/helpers"
-	"elogika.vsb.cz/backend/utils"
+	"elogika.vsb.cz/backend/repositories"
+	services_course_item "elogika.vsb.cz/backend/services/courseItem"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -259,13 +260,6 @@ func RecognizerTestSave(c *gin.Context, userData authdtos.LoggedUserDTO, userRol
 			}
 		}
 
-		fmt.Println(instanceData.ID)
-		fmt.Println(instanceData.ID)
-		fmt.Println(instanceData.ID)
-		fmt.Println(instanceData.ID)
-		fmt.Println(instanceData.ID)
-		fmt.Println(instanceData.ID)
-		fmt.Println(instanceData.ID)
 		err = testHandlers.EvaluateTestInstance(transaction, instanceData.ID, &userData, false)
 		if err != nil {
 			transaction.Rollback()
@@ -276,17 +270,17 @@ func RecognizerTestSave(c *gin.Context, userData authdtos.LoggedUserDTO, userRol
 			}
 		}
 
-		// rootCoureItem := testData.CourseItem.ID
-		// if testData.CourseItem.ParentID != nil {
-		// 	rootCoureItem = *testData.CourseItem.ParentID
-		// }
+		rootCoureItem := testData.CourseItem.ID
+		if testData.CourseItem.ParentID != nil {
+			rootCoureItem = *testData.CourseItem.ParentID
+		}
 
-		// services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
-		// err = services_course_item.UpdateSelectedResults(transaction, testIdentifierData.CourseID, rootCoureItem, instanceData.ParticipantID)
-		// if err != nil {
-		// 	transaction.Rollback()
-		// 	return err
-		// }
+		services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
+		err = services_course_item.UpdateSelectedResults(transaction, testIdentifierData.CourseID, rootCoureItem, instanceData.ParticipantID)
+		if err != nil {
+			transaction.Rollback()
+			return err
+		}
 
 		if len(events) != 0 {
 			if err := transaction.Save(&events).Error; err != nil {
@@ -470,9 +464,6 @@ func CreateOrVerifyInstance(dbRef *gorm.DB, courseId uint, testId uint, username
 				Message: "User not found in course",
 			}
 		}
-
-		utils.DebugPrintJSON("HELLO")
-		utils.DebugPrintJSON(courseUserId)
 
 		// Get test data
 		var test *models.Test

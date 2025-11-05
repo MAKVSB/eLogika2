@@ -9,6 +9,7 @@ import (
 	authdtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
+	"elogika.vsb.cz/backend/repositories"
 	services_course_item "elogika.vsb.cz/backend/services/courseItem"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
@@ -73,6 +74,28 @@ func TestEvaluate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enum
 		if err != nil {
 			return err
 		}
+
+		var instanceData models.TestInstance
+		if err := transaction.Find(&instanceData, reqData.InstanceID).Error; err != nil {
+			return &common.ErrorResponse{
+				Code:    500,
+				Message: "Failed to load instance data",
+				Details: err.Error(),
+			}
+		}
+
+		rootCoureItem := courseItem.ID
+		if courseItem.ParentID != nil {
+			rootCoureItem = *courseItem.ParentID
+		}
+
+		services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
+		err = services_course_item.UpdateSelectedResults(transaction, params.CourseID, rootCoureItem, instanceData.ParticipantID)
+		if err != nil {
+			transaction.Rollback()
+			return err
+		}
+
 	} else {
 		var instanceIDs []uint
 		query := transaction.
@@ -96,8 +119,30 @@ func TestEvaluate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enum
 		}
 
 		for _, instanceID := range instanceIDs {
+
+			var instanceData models.TestInstance
+			if err := transaction.Find(&instanceData, instanceID).Error; err != nil {
+				return &common.ErrorResponse{
+					Code:    500,
+					Message: "Failed to load instance data",
+					Details: err.Error(),
+				}
+			}
+
 			err = EvaluateTestInstance(transaction, instanceID, &userData, true)
 			if err != nil {
+				return err
+			}
+
+			rootCoureItem := courseItem.ID
+			if courseItem.ParentID != nil {
+				rootCoureItem = *courseItem.ParentID
+			}
+
+			services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
+			err = services_course_item.UpdateSelectedResults(transaction, params.CourseID, rootCoureItem, instanceData.ParticipantID)
+			if err != nil {
+				transaction.Rollback()
 				return err
 			}
 		}

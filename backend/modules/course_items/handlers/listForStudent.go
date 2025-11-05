@@ -255,6 +255,7 @@ func CalculateItemResult(ci *models.CourseItem, studentId uint, allResults *[]*m
 		panic(fmt.Sprintf("unexpected enums.CourseItemTypeEnum: %#v", ci.Type))
 	}
 
+	points = utils.RoundToEven(points, 2)
 	dto.Passed = passed
 	dto.Points = points
 	dto.Results = resultDtos
