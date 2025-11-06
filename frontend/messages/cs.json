@@ -663,5 +663,11 @@
 	"course_user_add_modal_userselect": "Vyberte uživatele k přidání",
 	"course_user_add_modal_settings": "Nastavení přidávaného uživatele",
 	"date_range_from": "Od",
-	"date_range_to": "Do"
+	"date_range_to": "Do",
+	"recognizer_download_description": "Stáhnout zkompilovanou aplikaci pro {os}",
+	"download": "Stáhnout",
+	"menu_recognizer": "Rozpoznávač",
+	"recognizer": "Rozpoznávač",
+	"recognizer_source": "Zdrojový kód",
+	"recognizer_source_description": "Zobrazit zdrojový kód, nebo zkompilovat s úpravami."
 }

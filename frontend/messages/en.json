@@ -663,5 +663,11 @@
 	],
 	"testinstance_points_not_final": "Points are marked as hidden or not final",
 	"date_range_from": "From",
-	"date_range_to": "To"
+	"date_range_to": "To",
+	"menu_recognizer": "Recognizer",
+	"recognizer_download_description": "Download compiled {os} binary.",
+	"download": "Download",
+	"recognizer_source_description": "View source code or build with custom settings.",
+	"recognizer_source": "Source code",
+	"recognizer": "Recognizer"
 }

@@ -4,7 +4,7 @@
 	import PenLineIcon from '@lucide/svelte/icons/pen-line';
 	import NotebookPenIcon from '@lucide/svelte/icons/notebook-pen';
 	import CalendarIcon from '@lucide/svelte/icons/calendar-check';
-	import LifeBuoyIcon from '@lucide/svelte/icons/life-buoy';
+	import QrCodeIcon from '@lucide/svelte/icons/qr-code';
 	import GalleryVerticalEndIcon from '@lucide/svelte/icons/gallery-vertical-end';
 	import AudioWaveformIcon from '@lucide/svelte/icons/audio-waveform';
 	import GlobalState from '$lib/shared.svelte';
@@ -128,29 +128,12 @@
 			},
 			{
 				type: MenuTreeType.CATEGORY,
-				name: "Rozpoznávač",
-				items: [
-					{
-						title: "Stažení windows",
-						url: base+`/eLogikaScanner.exe`,
-						icon: NotebookPenIcon //TODO
-					},
-					{
-						title: "Stažení linux",
-						url: base+`/eLogikaScanner`,
-						icon: AudioWaveformIcon //TODO
-					},
-				],
-				requiredRoles: [CourseUserRoleEnum.GARANT, CourseUserRoleEnum.TUTOR]
-			},
-			{
-				type: MenuTreeType.CATEGORY,
 				name: ``,
 				items: [
 					{
-						title: m.menu_support(),
-						url: base+`/app/support`,
-						icon: LifeBuoyIcon
+						title: m.menu_recognizer(),
+						url: base+`/app/recognizer`,
+						icon: QrCodeIcon
 					}
 				],
 				requiredRoles: []
