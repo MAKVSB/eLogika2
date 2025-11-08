@@ -520,6 +520,33 @@
 					disabled: !enableFileLink
 				}
 			]
+		},
+		{
+			type: TiptapMenuItemType.GROUP,
+			items: [
+				// {
+				// 	type: TiptapMenuItemType.TOGGLE,
+				// 	title: 'Code block',
+				// 	icon: ImageIcon,
+				// 	command: () => {
+				// 		$editor.chain().focus().toggleCodeBlock().run();
+				// 	},
+				// 	tooltip: 'Add code',
+				// 	disabled: !enableFileLink,
+				// 	active: isActive('codeBlock') && !isActive('codeBlock', {language: "latex"})
+				// },
+				{
+					type: TiptapMenuItemType.TOGGLE,
+					title: 'Latex block',
+					icon: ImageIcon,
+					command: () => {
+						$editor.chain().focus().toggleCodeBlock({language: "latex"}).run();
+					},
+					tooltip: 'Add latex block',
+					disabled: !enableFileLink,
+					active: isActive('codeBlock', {language: "latex"})
+				}
+			]
 		}
 	]);
 </script>

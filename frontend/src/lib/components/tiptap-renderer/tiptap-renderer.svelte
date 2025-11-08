@@ -4,12 +4,20 @@
 	import { cn } from '$lib/utils';
 	import TiptapRendererDetail from './tiptap-renderer-detail.svelte';
 	import katex from 'katex';
+	import CodeBlock from '../ui/code-block/code-block.svelte';
 
 	let {
 		jsonContent
 	}: {
 		jsonContent: JSONContent;
 	} = $props();
+
+	function isVisiblyEmpty(str?: string) {
+		if (!str) return true;
+
+		const cleaned = str.replace(/[\s\u200B-\u200D\uFEFF]/g, '');
+		return cleaned.length === 0;
+	}
 </script>
 
 {#if jsonContent.type == 'text'}
@@ -59,6 +67,8 @@
 		{:else}
 			<span class="text-red-500">{JSON.stringify(mark)}</span>
 		{/if}
+	{:else if isVisiblyEmpty(jsonContent.text)}
+		<br />
 	{:else}
 		{jsonContent.text}
 	{/if}
@@ -89,6 +99,8 @@
 	>
 		{#each jsonContent.content ?? [] as innerContent}
 			<TiptapRenderer jsonContent={innerContent}></TiptapRenderer>
+		{:else}
+			<br />
 		{/each}
 	</p>
 {:else if jsonContent.type == 'custom-image'}
@@ -167,6 +179,18 @@
 	</div>
 {:else if jsonContent.type == 'details'}
 	<TiptapRendererDetail {jsonContent}></TiptapRendererDetail>
+{:else if jsonContent.type == 'codeBlock'}
+	{#if jsonContent.attrs?.filename}
+		<img
+			src={import.meta.env.VITE_API_URL + '/api/v2/files/' + jsonContent.attrs?.filename}
+			alt={jsonContent.attrs?.alt}
+			style="width: {jsonContent.attrs?.width}px"
+			height="auto"
+			class="my-4 bg-white"
+		/>
+	{:else if jsonContent.content?.length == 1}
+		<CodeBlock code={jsonContent.content[0].text ?? ''}></CodeBlock>
+	{/if}
 {:else if jsonContent.type == 'doc'}
 	{#each jsonContent.content ?? [] as innerContent}
 		<TiptapRenderer jsonContent={innerContent}></TiptapRenderer>

@@ -1,7 +1,6 @@
 package seed
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"elogika.vsb.cz/backend/initializers"
@@ -19,7 +18,7 @@ func CreateCourses() []models.Course {
 		Public:    true,
 		Year:      2025,
 		Semester:  "SUMMER",
-		Content:   json.RawMessage{},
+		Content:   consts.DefaultContent,
 	})
 
 	courses = append(courses, models.Course{

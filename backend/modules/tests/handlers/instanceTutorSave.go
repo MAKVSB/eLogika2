@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"elogika.vsb.cz/backend/auth"
@@ -170,7 +169,11 @@ func TestInstanceTutorSave(c *gin.Context, userData authdtos.LoggedUserDTO, user
 				return err
 			}
 		default:
-			panic(fmt.Sprintf("unexpected enums.QuestionFormatEnum: %#v", ti_q.TestQuestion.Question.QuestionFormat))
+			return &common.ErrorResponse{
+				Code:    500,
+				Message: "Invalid question format",
+				Details: ti_q.TestQuestion.Question.QuestionFormat,
+			}
 		}
 	}
 	if len(events) != 0 {

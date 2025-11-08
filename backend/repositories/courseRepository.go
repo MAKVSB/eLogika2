@@ -1,13 +1,11 @@
 package repositories
 
 import (
-	"encoding/json"
 	"strconv"
 
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
-	"elogika.vsb.cz/backend/utils"
 	"gorm.io/gorm"
 )
 
@@ -116,28 +114,4 @@ func (r *CourseRepository) GetCourseGarantsIds(
 		}
 	}
 	return garantIDs, nil
-}
-
-func (r *CourseRepository) SyncFiles(
-	dbRef *gorm.DB,
-	content json.RawMessage,
-	course *models.Course,
-) *common.ErrorResponse {
-	var files []*models.File
-	if err := dbRef.Where("id IN ?", utils.GetFilesInsideContent(content)).Find(&files).Error; err != nil {
-		return &common.ErrorResponse{
-			Code:    500,
-			Message: "Failed to load files",
-		}
-	}
-
-	course.ContentFiles = files
-
-	if err := dbRef.Model(&course).Association("ContentFiles").Replace(&course.ContentFiles); err != nil {
-		return &common.ErrorResponse{
-			Code:    500,
-			Message: "Failed to update files",
-		}
-	}
-	return nil
 }

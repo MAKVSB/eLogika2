@@ -1,8 +1,6 @@
 package dtos
 
 import (
-	"encoding/json"
-
 	"elogika.vsb.cz/backend/models"
 )
 
@@ -10,10 +8,10 @@ type QuestionAnswerAdminDTO struct {
 	ID      uint `json:"id"`
 	Version uint `json:"version"`
 
-	Content     json.RawMessage `json:"content" ts_type:"JSONContent"`
-	Explanation json.RawMessage `json:"explanation" ts_type:"JSONContent"`
-	TimeToSolve int             `json:"timeToSolve"`
-	Correct     bool            `json:"correct"`
+	Content     *models.TipTapContent `json:"content" ts_type:"JSONContent"`
+	Explanation *models.TipTapContent `json:"explanation" ts_type:"JSONContent"`
+	TimeToSolve int                   `json:"timeToSolve"`
+	Correct     bool                  `json:"correct"`
 }
 
 func (m QuestionAnswerAdminDTO) From(d *models.Answer) QuestionAnswerAdminDTO {

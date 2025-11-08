@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -84,24 +83,48 @@ func PrintQuestion(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 
 	workDir, err2 := os.Getwd()
 	if err2 != nil {
-		panic(err2)
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to print questions",
+			Details: err2.Error(),
+		}
 	}
 
-	tmpFolder := utils.CreateTmpFolder(workDir)
-	testOutputDir := utils.CreateFolder(
-		filepath.Join(tmpFolder),
-	)
-
-	questionPrinter := helpers.QuestionPrinter{
-		WorkDir: workDir,
-		AssetDir: utils.CreateFolder(
-			filepath.Join(tmpFolder, "assets"),
-		),
-		Outputdir: testOutputDir,
+	tmpFolder, err2 := utils.CreateTmpFolder(workDir)
+	if err2 != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to print questions",
+			Details: err2.Error(),
+		}
 	}
 
-	filepath := questionPrinter.PrintQuestions(questions)
-	fmt.Println(filepath)
+	testOutputDir, err2 := utils.CreateFolder(tmpFolder)
+	if err2 != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to print questions",
+			Details: err2.Error(),
+		}
+	}
+
+	assetDir, err2 := utils.CreateFolder(filepath.Join(tmpFolder, "assets"))
+	if err2 != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to print questions",
+			Details: err2.Error(),
+		}
+	}
+
+	filepath, err2 := helpers.PrintQuestions(questions, workDir, assetDir, testOutputDir)
+	if err2 != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to print questions",
+			Details: err2.Error(),
+		}
+	}
 	c.FileAttachment(filepath, uuid.NewString())
 
 	return nil

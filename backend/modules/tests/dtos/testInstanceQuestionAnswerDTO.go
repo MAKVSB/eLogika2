@@ -1,17 +1,15 @@
 package dtos
 
 import (
-	"encoding/json"
-
 	"elogika.vsb.cz/backend/models"
 )
 
 type TestInstanceQuestionAnswerDTO struct {
-	ID       uint            `json:"id"`
-	Selected bool            `json:"selected"`
-	Order    uint            `json:"order"`
-	Content  json.RawMessage `json:"content"`
-	Correct  *bool           `json:"correct,omitempty"`
+	ID       uint                  `json:"id"`
+	Selected bool                  `json:"selected"`
+	Order    uint                  `json:"order"`
+	Content  *models.TipTapContent `json:"content"`
+	Correct  *bool                 `json:"correct,omitempty"`
 }
 
 func (m TestInstanceQuestionAnswerDTO) From(

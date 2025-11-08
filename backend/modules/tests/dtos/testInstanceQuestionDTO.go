@@ -1,15 +1,13 @@
 package dtos
 
 import (
-	"encoding/json"
-
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common/enums"
 )
 
 type TestInstanceQuestionDTO struct {
 	ID                   uint                            `json:"id"`
-	TextAnswer           json.RawMessage                 `json:"textAnswer"`
+	TextAnswer           *models.TipTapContent           `json:"textAnswer"`
 	TextAnswerReviewed   bool                            `json:"textAnswerReviewed,omitempty"`
 	TextAnswerPercentage float64                         `json:"textAnswerPercentage"`
 	Answers              []TestInstanceQuestionAnswerDTO `json:"answers"`
@@ -17,7 +15,7 @@ type TestInstanceQuestionDTO struct {
 	BlockID              uint                            `json:"blockId"`
 	Order                uint                            `json:"order"`
 	Title                *string                         `json:"title,omitempty"`
-	Content              json.RawMessage                 `json:"content,omitempty"`
+	Content              *models.TipTapContent           `json:"content,omitempty"`
 	QuestionFormat       enums.QuestionFormatEnum        `json:"questionFormat"`
 }
 

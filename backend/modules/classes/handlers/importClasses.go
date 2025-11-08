@@ -147,8 +147,7 @@ func ImportClasses(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 		return err
 	}
 
-	for i, class := range existingClasses {
-		fmt.Println(i)
+	for _, class := range existingClasses {
 		switch class.StudyForm {
 		case enums.StudyFormFulltime:
 			err = ImportByConcreteActivity(transaction, course, userRole, class)

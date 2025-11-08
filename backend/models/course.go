@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"time"
 
 	"elogika.vsb.cz/backend/modules/common/enums"
@@ -22,7 +21,7 @@ type Course struct {
 	Version   uint           ``
 
 	Name          string              ``
-	Content       json.RawMessage     ``
+	Content       *TipTapContent      `gorm:"serializer:json;type:varbinary"`
 	ContentFiles  []*File             `gorm:"many2many:course_content_files;"`
 	Shortname     string              ``
 	Public        bool                ``

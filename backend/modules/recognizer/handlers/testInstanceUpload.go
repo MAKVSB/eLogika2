@@ -20,8 +20,8 @@ import (
 	testHelpers "elogika.vsb.cz/backend/modules/tests/helpers"
 	"elogika.vsb.cz/backend/repositories"
 	services_course_item "elogika.vsb.cz/backend/services/courseItem"
+	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -308,24 +308,11 @@ func RecognizerTestSave(c *gin.Context, userData authdtos.LoggedUserDTO, userRol
 			}
 
 			// Generate a random UUID filename
-			newFileName := uuid.New().String() + ext
-			for i := 0; i > 0; i++ {
-				candidate := uuid.New().String() + ext
-
-				var count int64
-				if err := transaction.Model(&models.File{}).
-					Where("stored_name = ?", candidate).
-					Count(&count).Error; err != nil {
-					transaction.Rollback()
-					return &common.ErrorResponse{
-						Code:    500,
-						Message: "DB error during UUID check",
-					}
-				}
-
-				if count == 0 {
-					newFileName = candidate
-					break
+			newFileName, err := utils.GenerateFileName(transaction, ext)
+			if err != nil {
+				return &common.ErrorResponse{
+					Code:    500,
+					Message: err.Error(),
 				}
 			}
 

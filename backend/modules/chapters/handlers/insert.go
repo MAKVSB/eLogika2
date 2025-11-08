@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
-
 	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/models"
@@ -12,14 +10,15 @@ import (
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/repositories"
 	"elogika.vsb.cz/backend/utils"
+	"elogika.vsb.cz/backend/utils/tiptap"
 	"github.com/gin-gonic/gin"
 )
 
 // @Description Request to insert new chapter
 type ChapterInsertRequest struct {
-	Name    string          `json:"name" binding:"required"`                          // Name of the chapter
-	Content json.RawMessage `json:"content" binding:"required" ts_type:"JSONContent"` // Content of chapter
-	Visible bool            `json:"visible"`                                          // Should chapter be visible to students
+	Name    string                `json:"name" binding:"required"`                          // Name of the chapter
+	Content *models.TipTapContent `json:"content" binding:"required" ts_type:"JSONContent"` // Content of chapter
+	Visible bool                  `json:"visible"`                                          // Should chapter be visible to students
 }
 
 // @Description Newly created chapter
@@ -85,19 +84,16 @@ func ChapterInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 		Order:    lastOrder + 1,
 	}
 
+	err = tiptap.FindAndSaveRelations(transaction, userData.ID, reqData.Content, &chapter, "ContentFiles")
+	if err != nil {
+		return err
+	}
 	if err := transaction.Save(&chapter).Error; err != nil {
 		transaction.Rollback()
 		return &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to update chapter",
 		}
-	}
-
-	// Sync files
-	err = chapterRepo.SyncFiles(transaction, reqData.Content, chapter)
-	if err != nil {
-		transaction.Rollback()
-		return err
 	}
 
 	if err := transaction.Commit().Error; err != nil {

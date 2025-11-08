@@ -1,14 +1,13 @@
 package models
 
-import "encoding/json"
-
 type CourseItemActivity struct {
 	CommonModel
 	ID uint `gorm:"primarykey"`
 
-	Description    json.RawMessage ``
-	ExpectedResult json.RawMessage ``
-	ContentFiles   []File          `gorm:"many2many:course_item_activity_files;"`
+	Description         *TipTapContent `gorm:"serializer:json;type:varbinary"`
+	ExpectedResult      *TipTapContent `gorm:"serializer:json;type:varbinary"`
+	DescriptionFiles    []*File        `gorm:"many2many:course_item_activity_files_description;"`
+	ExpectedResultFiles []*File        `gorm:"many2many:course_item_activity_files_result;"`
 }
 
 func (CourseItemActivity) TableName() string {

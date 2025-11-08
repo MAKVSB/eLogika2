@@ -6,7 +6,7 @@ import (
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/modules/questions/dtos"
 	"elogika.vsb.cz/backend/repositories"
-	"elogika.vsb.cz/backend/utils"
+	"elogika.vsb.cz/backend/utils/tiptap"
 	"gorm.io/gorm"
 )
 
@@ -67,6 +67,7 @@ func (r *QuestionService) ListQuestions(
 
 func (r *QuestionService) SyncAnswers(
 	dbRef *gorm.DB,
+	userId uint,
 	question *models.Question,
 	answers []dtos.QuestionAnswerAdminDTO,
 ) *common.ErrorResponse {
@@ -88,6 +89,10 @@ func (r *QuestionService) SyncAnswers(
 			answerData.Version = answer.Version + 1
 		}
 
+		err := tiptap.FindAndSaveRelations(dbRef, userId, answer.Content, &answerData, "ContentFiles")
+		if err != nil {
+			return err
+		}
 		answerData.Content = answer.Content
 		answerData.Explanation = answer.Explanation
 		answerData.TimeToSolve = answer.TimeToSolve
@@ -98,26 +103,6 @@ func (r *QuestionService) SyncAnswers(
 				Code:    500,
 				Message: "Failed to create or update answer",
 				Details: answer,
-			}
-		}
-
-		// Sync content answerFiles
-		var answerFiles []models.File
-		if err := dbRef.Where("id IN ?", utils.GetFilesInsideContent(answer.Content)).Find(&answerFiles).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    500,
-				Message: "Failed to load files",
-				Details: err.Error(),
-			}
-		}
-
-		answerData.ContentFiles = answerFiles
-
-		if err := dbRef.Model(&answerData).Association("ContentFiles").Replace(&answerData.ContentFiles); err != nil {
-			return &common.ErrorResponse{
-				Code:    500,
-				Message: "Failed to update files",
-				Details: err.Error(),
 			}
 		}
 

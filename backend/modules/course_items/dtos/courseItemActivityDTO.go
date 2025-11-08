@@ -1,24 +1,18 @@
 package dtos
 
 import (
-	"encoding/json"
-
 	"elogika.vsb.cz/backend/models"
 )
 
 type CourseItemActivityDTO struct {
-	Description json.RawMessage `json:"description" ts_type:"JSONContent"`
-	// DescriptionFile    []File                     ``
-	ExpectedResult json.RawMessage `json:"expectedResult" ts_type:"JSONContent"`
-	// ExpectedResultFiles []File                     ``
+	Description    *models.TipTapContent `json:"description" ts_type:"JSONContent"`
+	ExpectedResult *models.TipTapContent `json:"expectedResult" ts_type:"JSONContent"`
 }
 
 func (m CourseItemActivityDTO) From(d *models.CourseItemActivity) CourseItemActivityDTO {
 	dto := CourseItemActivityDTO{
-		Description: d.Description,
-		// DescriptionFile    []File                     ``
+		Description:    d.Description,
 		ExpectedResult: d.ExpectedResult,
-		// ExpectedResultFiles []File                     ``
 	}
 
 	return dto

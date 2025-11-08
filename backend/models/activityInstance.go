@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"time"
 
 	"gorm.io/gorm"
@@ -18,8 +17,8 @@ type ActivityInstance struct {
 	TermID        uint ``
 	CourseItemID  uint ``
 
-	Content      json.RawMessage ``
-	ContentFiles []File          `gorm:"many2many:activity_instance_content_files;"`
+	Content      *TipTapContent `gorm:"serializer:json;type:varbinary"`
+	ContentFiles []*File        `gorm:"many2many:activity_instance_content_files;"`
 
 	Participant *User       ``
 	Term        *Term       ``

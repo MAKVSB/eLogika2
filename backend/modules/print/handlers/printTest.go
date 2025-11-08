@@ -109,7 +109,14 @@ func PrintTest(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.C
 		}
 	}
 
-	filepath := helpers.PrintTests(printData, courseItem, reqData.PrintAnswerSheets, reqData.SeparateAnswerSheets)
+	filepath, err2 := helpers.PrintTests(printData, courseItem, reqData.PrintAnswerSheets, reqData.SeparateAnswerSheets)
+	if err2 != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to generate PDF file",
+			Details: err2.Error(),
+		}
+	}
 	c.FileAttachment(filepath, uuid.NewString())
 
 	return nil

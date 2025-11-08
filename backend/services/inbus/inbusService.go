@@ -54,14 +54,14 @@ type TokenData struct {
 	Scope       string `json:"scope"`
 }
 
-func (api *InbusClient) getToken() string {
+func (api *InbusClient) getToken() (string, error) {
 	if api.token == nil || api.token.ExpiresIn < int(time.Now().Unix()) {
 		err := api.updateToken()
 		if err != nil {
-			panic(err)
+			return "", err
 		}
 	}
-	return api.token.AccessToken
+	return api.token.AccessToken, nil
 }
 
 func (api *InbusClient) updateToken() error {
@@ -90,7 +90,7 @@ func (api *InbusClient) updateToken() error {
 
 	var token TokenData
 	if err := json.NewDecoder(resp.Body).Decode(&token); err != nil {
-		panic(err)
+		return err
 	}
 
 	api.token = &token
@@ -103,7 +103,10 @@ func (api *InbusClient) DoRequest(endpoint string, params url.Values, result int
 }
 
 func (api *InbusClient) doRequestWithRetry(endpoint string, params url.Values, result interface{}, allowRetry bool) error {
-	token := api.getToken()
+	token, err := api.getToken()
+	if err != nil {
+		return err
+	}
 
 	url := api.BaseURL + endpoint + "?" + params.Encode()
 
@@ -223,7 +226,6 @@ func (api *InbusClient) GetSubjectVersionStudents(subjectVersionId uint, semeste
 		"semesterId": {strconv.Itoa(int(semesterId))},
 	}, students)
 	if err != nil {
-		panic(err)
 		return nil, &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to import data",

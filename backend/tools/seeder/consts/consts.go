@@ -1,15 +1,18 @@
 package consts
 
-import "encoding/json"
+import "elogika.vsb.cz/backend/models"
 
-var DefaultContent = json.RawMessage(`{
-  "type": "doc",
-  "content": [{
-    "type": "paragraph",
-    "attrs": {"textAlign": null},
-    "content": [{
-      "type": "text",
-      "text": "asdasdasdasdasd"
-    }]
-  }]
-}`)
+var DefaultContent = &models.TipTapContent{
+	Type: "doc",
+	Content: []*models.TipTapContent{
+		{
+			Type: "paragraph",
+			Content: []*models.TipTapContent{
+				{
+					Type: "text",
+					Text: "asdasdasdasdasd",
+				},
+			},
+		},
+	},
+}

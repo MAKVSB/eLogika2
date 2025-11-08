@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
-
 	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/models"
 	authdtos "elogika.vsb.cz/backend/modules/auth/dtos"
@@ -12,19 +10,20 @@ import (
 	"elogika.vsb.cz/backend/repositories"
 	"elogika.vsb.cz/backend/services"
 	"elogika.vsb.cz/backend/utils"
+	"elogika.vsb.cz/backend/utils/tiptap"
 	"github.com/gin-gonic/gin"
 )
 
 // @Description Request to insert new course
 type CourseInsertRequest struct {
 	Name          string                     `json:"name" binding:"required"`                          // Name of the course
-	Content       json.RawMessage            `json:"content" binding:"required" ts_type:"JSONContent"` // Course text in json (Using TipTap editor format)
+	Content       *models.TipTapContent      `json:"content" binding:"required" ts_type:"JSONContent"` // Course text in json (Using TipTap editor format)
 	Shortname     string                     `json:"shortname" binding:"required"`                     // Short name fort course
 	Public        bool                       `json:"public"`                                           // Can any user join ?
 	Year          uint                       `json:"year" binding:"required"`                          // Start year of academic year
 	Semester      enums.SemesterEnum         `json:"semester" binding:"required"`                      // Semester of the above year
-	PointsMin     float64                    `json:"pointsMin" binding:"required"`                     // Minimum required points to pass
-	PointsMax     float64                    `json:"pointsMax" binding:"required"`                     // Maximum points
+	PointsMin     float64                    `json:"pointsMin"`                                        // Minimum required points to pass
+	PointsMax     float64                    `json:"pointsMax"`                                        // Maximum points
 	ImportOptions models.CourseImportOptions `json:"importOptions" binding:"required"`
 }
 
@@ -81,20 +80,17 @@ func CourseInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enum
 
 	transaction := initializers.DB.Begin()
 
+	err = tiptap.FindAndSaveRelations(transaction, userData.ID, reqData.Content, &course, "ContentFiles")
+	if err != nil {
+		return err
+	}
+
 	if err := transaction.Save(&course).Error; err != nil {
 		transaction.Rollback()
 		return &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to insert course",
 		}
-	}
-
-	// Sync content courseFiles
-	courseRepo := repositories.NewCourseRepository()
-	err = courseRepo.SyncFiles(transaction, course.Content, course)
-	if err != nil {
-		transaction.Rollback()
-		return err
 	}
 
 	chapter := &models.Chapter{
@@ -105,6 +101,11 @@ func CourseInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enum
 		Content:  reqData.Content,
 		Visible:  false,
 		Order:    1,
+	}
+
+	err = tiptap.FindAndSaveRelations(transaction, userData.ID, reqData.Content, &chapter, "ContentFiles")
+	if err != nil {
+		return err
 	}
 
 	if err := transaction.Save(&chapter).Error; err != nil {
@@ -123,14 +124,6 @@ func CourseInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enum
 			Code:    500,
 			Message: "Failed to insert course",
 		}
-	}
-
-	// Sync content chapterFiles
-	chapterRepo := repositories.NewChapterRepository()
-	err = chapterRepo.SyncFiles(transaction, chapter.Content, chapter)
-	if err != nil {
-		transaction.Rollback()
-		return err
 	}
 
 	if err := transaction.Commit().Error; err != nil {

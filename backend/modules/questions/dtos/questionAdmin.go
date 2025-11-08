@@ -1,8 +1,6 @@
 package dtos
 
 import (
-	"encoding/json"
-
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common/enums"
 )
@@ -12,7 +10,7 @@ type QuestionAdminDTO struct {
 	Version uint `json:"version"`
 
 	Title          string                   `json:"title"`
-	Content        json.RawMessage          `json:"content" ts_type:"JSONContent"`
+	Content        *models.TipTapContent    `json:"content" ts_type:"JSONContent"`
 	TimeToRead     int                      `json:"timeToRead"`
 	TimeToProcess  int                      `json:"timeToProcess"`
 	QuestionType   enums.QuestionTypeEnum   `json:"questionType"`

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"time"
 
 	"elogika.vsb.cz/backend/auth"
@@ -14,13 +13,14 @@ import (
 	"elogika.vsb.cz/backend/repositories"
 	services_course_item "elogika.vsb.cz/backend/services/courseItem"
 	"elogika.vsb.cz/backend/utils"
+	"elogika.vsb.cz/backend/utils/tiptap"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 type ActivityInstanceSaveRequest struct {
-	Points  *float64         `json:"points"`
-	Content *json.RawMessage `json:"content"`
+	Points  *float64              `json:"points"`
+	Content *models.TipTapContent `json:"content"`
 }
 
 type ActivityInstanceSaveResponse struct {
@@ -179,28 +179,11 @@ func studentSave(dbRef *gorm.DB, activityInstance *models.ActivityInstance, reqD
 
 	// User is student
 	if reqData.Content != nil {
-		activityInstance.Content = *reqData.Content
-
-		// Sync content files
-		var files []models.File
-		if err := dbRef.Where("id IN ?", utils.GetFilesInsideContent(*reqData.Content)).Find(&files).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    500,
-				Message: "Failed to load files",
-				Details: err.Error(),
-			}
+		err := tiptap.FindAndSaveRelations(dbRef, userId, reqData.Content, &activityInstance, "ContentFiles")
+		if err != nil {
+			return err
 		}
-
-		activityInstance.ContentFiles = files
-
-		if err := dbRef.Model(&activityInstance).Association("ContentFiles").Replace(&activityInstance.ContentFiles); err != nil {
-
-			return &common.ErrorResponse{
-				Code:    500,
-				Message: "Failed to update files",
-				Details: err.Error(),
-			}
-		}
+		activityInstance.Content = reqData.Content
 
 		if err := dbRef.Save(&activityInstance).Error; err != nil {
 

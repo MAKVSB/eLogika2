@@ -1,13 +1,11 @@
 package repositories
 
 import (
-	"encoding/json"
 	"strconv"
 
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
-	"elogika.vsb.cz/backend/utils"
 	"gorm.io/gorm"
 )
 
@@ -181,27 +179,6 @@ func (r *ChapterRepository) ListChaptersStudent(
 	}
 
 	return chapters, totalCount, nil
-}
-
-func (r *ChapterRepository) SyncFiles(
-	dbRef *gorm.DB,
-	content json.RawMessage,
-	chapter *models.Chapter,
-) *common.ErrorResponse {
-	if err := dbRef.Where("id IN ?", utils.GetFilesInsideContent(content)).Find(&chapter.ContentFiles).Error; err != nil {
-		return &common.ErrorResponse{
-			Code:    500,
-			Message: "Failed to load files",
-		}
-	}
-
-	if err := dbRef.Model(&chapter).Association("ContentFiles").Replace(&chapter.ContentFiles); err != nil {
-		return &common.ErrorResponse{
-			Code:    500,
-			Message: "Failed to update files",
-		}
-	}
-	return nil
 }
 
 func (r *ChapterRepository) LastChapterOrder(

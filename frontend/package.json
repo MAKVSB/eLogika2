@@ -84,6 +84,7 @@
 		"@tiptap/extension-typography": "^3.0.7",
 		"@tiptap/pm": "^3.0.7",
 		"@tiptap/starter-kit": "^3.0.7",
+		"highlight.js": "^11.11.1",
 		"jwt-decode": "^4.0.0",
 		"katex": "^0.16.22",
 		"lodash.merge": "^4.6.2",

@@ -1,8 +1,6 @@
 package dtos
 
 import (
-	"encoding/json"
-
 	"elogika.vsb.cz/backend/models"
 )
 
@@ -11,11 +9,11 @@ type ChapterDTO struct {
 	CourseID uint `json:"courseId"`
 	Version  uint `json:"version"`
 
-	Name     string          `json:"name"`
-	Content  json.RawMessage `json:"content" ts_type:"JSONContent"`
-	Visible  bool            `json:"visible"`
-	ParentID *uint           `json:"parentId"`
-	Order    uint            `json:"order"`
+	Name     string                `json:"name"`
+	Content  *models.TipTapContent `json:"content" ts_type:"JSONContent"`
+	Visible  bool                  `json:"visible"`
+	ParentID *uint                 `json:"parentId"`
+	Order    uint                  `json:"order"`
 
 	Childs []ChapterListItemDTO `json:"childs"`
 }

@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"time"
 
 	"elogika.vsb.cz/backend/modules/common"
@@ -17,17 +16,17 @@ type Question struct {
 	DeletedAt gorm.DeletedAt ``
 	Version   uint           ``
 
-	QuestionGroupID uint                     `` // Question origin tracking
-	Title           string                   `` // Title of the question
-	Content         json.RawMessage          `` // The text of the answer
-	ContentFiles    []File                   `gorm:"many2many:question_content_files;"`
-	TimeToRead      int                      `` // Time to read the question
-	TimeToProcess   int                      `` // Time to common solution (building a graph or similar)
-	QuestionType    enums.QuestionTypeEnum   `` // Type of the question
-	QuestionFormat  enums.QuestionFormatEnum `` // Format of the question
-	CreatedByID     uint                     `` // ID of user who created it
-	ManagedBy       enums.CourseUserRoleEnum `` // Role of user who manages it
-	Active          bool                     `` // If the question can be picked during test generation
+	QuestionGroupID uint                     ``                                         // Question origin tracking
+	Title           string                   ``                                         // Title of the question
+	Content         *TipTapContent           `gorm:"serializer:json;type:varbinary"`    // The text of the answer
+	ContentFiles    []*File                  `gorm:"many2many:question_content_files;"` // Files related to content
+	TimeToRead      int                      ``                                         // Time to read the question
+	TimeToProcess   int                      ``                                         // Time to common solution (building a graph or similar)
+	QuestionType    enums.QuestionTypeEnum   ``                                         // Type of the question
+	QuestionFormat  enums.QuestionFormatEnum ``                                         // Format of the question
+	CreatedByID     uint                     ``                                         // ID of user who created it
+	ManagedBy       enums.CourseUserRoleEnum ``                                         // Role of user who manages it
+	Active          bool                     ``                                         // If the question can be picked during test generation
 	AnswerCount     uint                     ``
 
 	QuestionGroup *QuestionGroup   ``

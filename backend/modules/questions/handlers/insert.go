@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
-
 	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/models"
@@ -13,6 +11,7 @@ import (
 	"elogika.vsb.cz/backend/repositories"
 	"elogika.vsb.cz/backend/services"
 	"elogika.vsb.cz/backend/utils"
+	"elogika.vsb.cz/backend/utils/tiptap"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -20,7 +19,7 @@ import (
 // @Description Request to insert new question
 type QuestionInsertRequest struct {
 	Title          string                        `json:"title" binding:"required" example:"Is number even ?"`    // Title of the question (for listing only)
-	Content        json.RawMessage               `json:"content" binding:"required" ts_type:"JSONContent"`       // Question text in json (Using TipTap editor format)
+	Content        *models.TipTapContent         `json:"content" binding:"required" ts_type:"JSONContent"`       // Question text in json (Using TipTap editor format)
 	TimeToRead     int                           `json:"timeToRead"`                                             // Estimated time in seconds it takes a user to read the question.
 	TimeToProcess  int                           `json:"timeToProcess"`                                          // Estimated time in seconds it takes to think about solution and evaluate common parts of solution (drawing graphs and other)
 	QuestionType   enums.QuestionTypeEnum        `json:"questionType" binding:"required"`                        // Type of the question
@@ -112,6 +111,11 @@ func QuestionInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 		QuestionGroupID: questionGroup.ID,
 	}
 
+	err = tiptap.FindAndSaveRelations(transaction, userData.ID, reqData.Content, &question, "ContentFiles")
+	if err != nil {
+		return err
+	}
+
 	if err := transaction.Save(&question).Error; err != nil {
 		transaction.Rollback()
 		return &common.ErrorResponse{
@@ -137,24 +141,6 @@ func QuestionInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 		}
 	}
 
-	// Sync content questionFiles
-	if err := transaction.Where("id IN ?", utils.GetFilesInsideContent(reqData.Content)).Find(&question.ContentFiles).Error; err != nil {
-		transaction.Rollback()
-		return &common.ErrorResponse{
-			Code:    500,
-			Message: "Failed to load files",
-			Details: err.Error(),
-		}
-	}
-	if err := transaction.Model(&question).Association("ContentFiles").Replace(&question.ContentFiles); err != nil {
-		transaction.Rollback()
-		return &common.ErrorResponse{
-			Code:    500,
-			Message: "Failed to update files",
-			Details: err.Error(),
-		}
-	}
-
 	// Sync steps
 	question, err = questionRepo.SyncSteps(transaction, question, reqData.CategoryID, reqData.Steps)
 	if err != nil {
@@ -163,7 +149,7 @@ func QuestionInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 	}
 
 	// sync answers
-	err = questionService.SyncAnswers(transaction, question, reqData.Answers)
+	err = questionService.SyncAnswers(transaction, userData.ID, question, reqData.Answers)
 	if err != nil {
 		transaction.Rollback()
 		return err

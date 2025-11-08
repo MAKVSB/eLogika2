@@ -12,7 +12,7 @@ type File struct {
 	SizeBytes    int64     ``
 	UploadedAt   time.Time ``
 
-	Chapters []File `gorm:"many2many:chapter_files;"`
+	Chapters []*File `gorm:"many2many:chapter_files;"`
 }
 
 func (File) TableName() string {

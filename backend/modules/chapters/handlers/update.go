@@ -1,25 +1,25 @@
 package handlers
 
 import (
-	"encoding/json"
-
 	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
+	"elogika.vsb.cz/backend/models"
 	authdtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	"elogika.vsb.cz/backend/modules/chapters/dtos"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/repositories"
 	"elogika.vsb.cz/backend/utils"
+	"elogika.vsb.cz/backend/utils/tiptap"
 	"github.com/gin-gonic/gin"
 )
 
 // @Description Request to insert new chapter
 type ChapterUpdateRequest struct {
-	Name    string          `json:"name" binding:"required"`                          // Name of the chapter
-	Content json.RawMessage `json:"content" binding:"required" ts_type:"JSONContent"` // Content of chapter
-	Visible bool            `json:"visible"`                                          // Should chapter be visible to students
-	Version uint            `json:"version"`                                          // Version signature to prevent concurrency problems
+	Name    string                `json:"name" binding:"required"`                          // Name of the chapter
+	Content *models.TipTapContent `json:"content" binding:"required" ts_type:"JSONContent"` // Content of chapter
+	Visible bool                  `json:"visible"`                                          // Should chapter be visible to students
+	Version uint                  `json:"version"`                                          // Version signature to prevent concurrency problems
 }
 
 // @Description Updated chapter
@@ -86,15 +86,12 @@ func ChapterUpdate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 	// Partially modify data
 	chapter.Version = chapter.Version + 1
 	chapter.Name = reqData.Name
-	chapter.Content = reqData.Content
-	chapter.Visible = reqData.Visible
-
-	// Sync files
-	err = chapterRepo.SyncFiles(transaction, reqData.Content, chapter)
+	err = tiptap.FindAndSaveRelations(transaction, userData.ID, reqData.Content, &chapter, "ContentFiles")
 	if err != nil {
-		transaction.Rollback()
 		return err
 	}
+	chapter.Content = reqData.Content
+	chapter.Visible = reqData.Visible
 
 	if err := transaction.Save(&chapter).Error; err != nil {
 		transaction.Rollback()

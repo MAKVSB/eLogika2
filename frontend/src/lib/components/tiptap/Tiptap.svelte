@@ -3,6 +3,7 @@
 
 	import { onDestroy, onMount } from 'svelte';
 	import { createLowlight, common as LLCommon } from 'lowlight';
+	import latexHighlight from 'highlight.js/lib/languages/latex';
 	import { createEditor, Editor, EditorContent } from 'svelte-tiptap';
 
 	import StarterKit from '@tiptap/starter-kit';
@@ -27,7 +28,6 @@
 	import { API } from '$lib/services/api.svelte';
 	import type { FileUploadResponse } from '$lib/api_types';
 	import { m } from '$lib/paraglide/messages';
-
 
 	import MathReplacer from './plugins/MathReplacer';
 	import CharsReplacer from './plugins/CharsReplacer';
@@ -72,6 +72,9 @@
 	let editor = $state() as Readable<Editor>;
 	let isUpdatingFromOutside = false;
 
+	let lowlightInstance = createLowlight(LLCommon)
+	lowlightInstance.register("latex", latexHighlight)
+
 	async function uploadFile(file: File): Promise<FileUploadResponse> {
 		const formData = new FormData();
 		formData.append('file', file);
@@ -83,7 +86,7 @@
 			});
 		} catch (err) {
 			console.error(err);
-			toast.error("Failed to upload file")
+			toast.error('Failed to upload file');
 			throw new Error(`Upload failed: ${err}`);
 		}
 	}
@@ -143,7 +146,7 @@
 								.updateInlineMath({ latex: newCalculation })
 								.focus()
 								.run();
-						} else if (newCalculation == "") {
+						} else if (newCalculation == '') {
 							$editor.chain().deleteInlineMath().focus().run();
 						}
 					}
@@ -158,7 +161,7 @@
 								.updateBlockMath({ latex: newCalculation })
 								.focus()
 								.run();
-						} else if (newCalculation == "") {
+						} else if (newCalculation == '') {
 							$editor.chain().deleteBlockMath().focus().run();
 						}
 					}
@@ -230,9 +233,10 @@
 				TextAlign.configure({
 					types: ['heading', 'paragraph']
 				}),
-				// CodeBlockLowlight.configure({
-				// 	lowlight: createLowlight(LLCommon)
-				// }),
+				CodeBlockLowlight.configure({
+					lowlight: lowlightInstance,
+					defaultLanguage: "latex",
+				}),
 				TipTapImage
 			],
 			content: value,
@@ -250,7 +254,6 @@
 			$editor.destroy();
 		}
 	});
-
 </script>
 
 <div>

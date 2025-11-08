@@ -575,7 +575,6 @@ func PickRandomAnswers(reqAnswerCount int, allAnswers []helpers.QuestionAnswer, 
 		}
 		return &pickedAnswers, nil
 	} else {
-		fmt.Println(remainingCorrect, remainingIncorrect, remainingRandom)
 		return nil, errors.New("not enough answers to pick from")
 	}
 }

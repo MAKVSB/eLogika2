@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
-
 	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/models"
@@ -10,22 +8,22 @@ import (
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/modules/courses/dtos"
-	"elogika.vsb.cz/backend/repositories"
 	"elogika.vsb.cz/backend/services"
 	"elogika.vsb.cz/backend/utils"
+	"elogika.vsb.cz/backend/utils/tiptap"
 	"github.com/gin-gonic/gin"
 )
 
 // @Description Request to insert new course
 type CourseUpdateRequest struct {
 	Name          string                     `json:"name" binding:"required"`                          // Name of the course
-	Content       json.RawMessage            `json:"content" binding:"required" ts_type:"JSONContent"` // Course text in json (Using TipTap editor format)
+	Content       *models.TipTapContent      `json:"content" binding:"required" ts_type:"JSONContent"` // Course text in json (Using TipTap editor format)
 	Shortname     string                     `json:"shortname" binding:"required"`                     // Short name fort course
 	Public        bool                       `json:"public"`                                           // Can any user join ?
 	Year          uint                       `json:"year" binding:"required"`                          // Start year of academic year
 	Semester      enums.SemesterEnum         `json:"semester" binding:"required"`                      // Semester of the above year
-	PointsMin     float64                    `json:"pointsMin" binding:"required"`                     // Minimum required points to pass
-	PointsMax     float64                    `json:"pointsMax" binding:"required"`                     // Maximum points
+	PointsMin     float64                    `json:"pointsMin"`                                        // Minimum required points to pass
+	PointsMax     float64                    `json:"pointsMax"`                                        // Maximum points
 	ImportOptions models.CourseImportOptions `json:"importOptions" binding:"required"`
 	Version       uint                       `json:"version" binding:"required"` // Version signature to prevent concurrency problems
 }
@@ -85,6 +83,10 @@ func Update(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 	// Update only selected values
 	course.Version = reqData.Version + 1
 	course.Name = reqData.Name
+	err = tiptap.FindAndSaveRelations(transaction, userData.ID, reqData.Content, &course, "ContentFiles")
+	if err != nil {
+		return err
+	}
 	course.Content = reqData.Content
 	course.Shortname = reqData.Shortname
 	course.Public = reqData.Public
@@ -92,7 +94,6 @@ func Update(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 	course.PointsMin = reqData.PointsMin
 	course.PointsMax = reqData.PointsMax
 	course.Semester = reqData.Semester
-
 	course.ImportOptions = reqData.ImportOptions
 
 	if err := transaction.Save(&course).Error; err != nil {
@@ -101,14 +102,6 @@ func Update(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 			Code:    500,
 			Message: "Failed to update course",
 		}
-	}
-
-	// Sync content courseFiles
-	courseRepo := repositories.NewCourseRepository()
-	err = courseRepo.SyncFiles(transaction, course.Content, course)
-	if err != nil {
-		transaction.Rollback()
-		return err
 	}
 
 	if err := transaction.Commit().Error; err != nil {

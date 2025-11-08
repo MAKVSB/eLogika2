@@ -49,7 +49,11 @@ func TokenCreate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 	token := tokens.ApiToken{}
 	apiTokenString, err2 := token.New(userData, reqData.Name, reqData.ExpiresAt)
 	if err2 != nil {
-		panic(err2)
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to generate token",
+			Details: err2,
+		}
 	}
 
 	// Response

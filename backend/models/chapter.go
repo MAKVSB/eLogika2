@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"time"
 
 	"gorm.io/gorm"
@@ -15,12 +14,12 @@ type Chapter struct {
 	DeletedAt gorm.DeletedAt ``
 	Version   uint           ``
 
-	CourseID uint            ``
-	Name     string          ``
-	ParentID *uint           ``
-	Content  json.RawMessage ``
-	Visible  bool            ``
-	Order    uint            `gorm:"not null"`
+	CourseID uint           ``
+	Name     string         ``
+	ParentID *uint          ``
+	Content  *TipTapContent `gorm:"serializer:json;type:varbinary"`
+	Visible  bool           ``
+	Order    uint           `gorm:"not null"`
 
 	ContentFiles []*File     `gorm:"many2many:chapter_files;"`
 	Parent       *Chapter    ``

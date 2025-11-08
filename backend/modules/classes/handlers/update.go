@@ -115,7 +115,7 @@ func ClassUpdate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 		transaction.Rollback()
 		return &common.ErrorResponse{
 			Code:    500,
-			Message: "Failed to update course",
+			Message: "Failed to update class",
 		}
 	}
 

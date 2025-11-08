@@ -7,7 +7,6 @@ import (
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
-	"elogika.vsb.cz/backend/utils"
 	"gorm.io/gorm"
 )
 
@@ -17,11 +16,11 @@ type TestInstanceAnswer struct {
 }
 
 type TestInstanceQuestion struct {
-	QuestionID           uint                 `json:"id" binding:"required"`
-	TextAnswer           json.RawMessage      `json:"textAnswer"`
-	TextAnswerPercentage *float64             `json:"textAnswerPercentage"` // Only for teacher endpoint
-	TextAnswerReviewed   *bool                `json:"textAnswerReviewed"`   // Only for teacher endpoint
-	Answers              []TestInstanceAnswer `json:"answers"`
+	QuestionID           uint                  `json:"id" binding:"required"`
+	TextAnswer           *models.TipTapContent `json:"textAnswer"`
+	TextAnswerPercentage *float64              `json:"textAnswerPercentage"` // Only for teacher endpoint
+	TextAnswerReviewed   *bool                 `json:"textAnswerReviewed"`   // Only for teacher endpoint
+	Answers              []TestInstanceAnswer  `json:"answers"`
 }
 
 func UpdateOpenQuestion(ti_q *models.TestInstanceQuestion, rd_q *TestInstanceQuestion, transaction *gorm.DB, userId uint, isTutor bool, events *[]*models.TestInstanceEvent) *common.ErrorResponse {
@@ -29,7 +28,7 @@ func UpdateOpenQuestion(ti_q *models.TestInstanceQuestion, rd_q *TestInstanceQue
 		if ti_q.TextAnswer == nil {
 			ti_q.TextAnswer = rd_q.TextAnswer
 		} else {
-			reqAnswer, err := utils.HashJSON(rd_q.TextAnswer)
+			reqAnswer, err := rd_q.TextAnswer.Hash()
 			if err != nil {
 				return &common.ErrorResponse{
 					Code:    500,
@@ -38,7 +37,7 @@ func UpdateOpenQuestion(ti_q *models.TestInstanceQuestion, rd_q *TestInstanceQue
 				}
 			}
 
-			tiAnswer, err := utils.HashJSON(ti_q.TextAnswer)
+			tiAnswer, err := ti_q.TextAnswer.Hash()
 			if err != nil {
 				return &common.ErrorResponse{
 					Code:    500,

@@ -1,8 +1,6 @@
 package dtos
 
 import (
-	"encoding/json"
-
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common/enums"
 )
@@ -12,7 +10,7 @@ type CourseDTO struct {
 	Version uint `json:"version"`
 
 	Name          string                     `json:"name"`
-	Content       json.RawMessage            `json:"content" ts_type:"JSONContent"`
+	Content       *models.TipTapContent      `json:"content" ts_type:"JSONContent"`
 	Shortname     string                     `json:"shortname"`
 	Public        bool                       `json:"public"`
 	Year          uint                       `json:"year"`

@@ -1,14 +1,12 @@
 package models
 
-import "encoding/json"
-
 type TestInstanceQuestion struct {
 	CommonModel
-	ID             uint
+	ID             uint `gorm:"primarykey"`
 	TestInstanceID uint
 
 	TestQuestionID         uint                          ``
-	TextAnswer             json.RawMessage               ``
+	TextAnswer             *TipTapContent                `gorm:"serializer:json;type:varbinary"`
 	TextAnswerReviewedByID *uint                         ``
 	TextAnswerPercentage   float64                       ``
 	Answers                []*TestInstanceQuestionAnswer ``

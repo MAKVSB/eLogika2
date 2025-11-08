@@ -14,13 +14,16 @@ import (
 	"github.com/pdfcpu/pdfcpu/pkg/api"
 )
 
-func PrintTests(testsData []*models.Test, courseItem *models.CourseItem, printAnswerSheet bool, separateAnswerPage bool) string {
+func PrintTests(testsData []*models.Test, courseItem *models.CourseItem, printAnswerSheet bool, separateAnswerPage bool) (string, error) {
 	workDir, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
-	tmpFolder := utils.CreateTmpFolder(workDir)
+	tmpFolder, err := utils.CreateTmpFolder(workDir)
+	if err != nil {
+		return "", err
+	}
 
 	var (
 		joiner []string
@@ -40,23 +43,31 @@ func PrintTests(testsData []*models.Test, courseItem *models.CourseItem, printAn
 			defer wg.Done()
 			defer func() { <-sem }() // release semaphore
 
-			testOutputDir := utils.CreateFolder(
+			testOutputDir, err := utils.CreateFolder(
 				filepath.Join(tmpFolder, strconv.Itoa(int(testData.ID))),
 			)
-
-			testPrinter := TestPrinter{
-				WorkDir:   workDir,
-				AssetDir:  utils.CreateFolder(filepath.Join(tmpFolder, "assets")),
-				OutputDir: testOutputDir,
+			if err != nil {
+				panic(err)
 			}
 
-			finalTestPath, finalTestPages := testPrinter.GenerateTestContent(testData)
+			assetDir, err := utils.CreateFolder(filepath.Join(tmpFolder, "assets"))
+			if err != nil {
+				panic(err)
+			}
+
+			finalTestPath, finalTestPages, err := GenerateTestContent(testData, workDir, assetDir, testOutputDir)
+			if err != nil {
+				panic(err)
+			}
 
 			var paths []string
 
 			if printAnswerSheet {
 				if len(testData.Instances) == 0 {
-					answerSheetDir := utils.CreateFolder(filepath.Join(testOutputDir, "instances"))
+					answerSheetDir, err := utils.CreateFolder(filepath.Join(testOutputDir, "instances"))
+					if err != nil {
+						panic(err)
+					}
 					answerSheetPrinter := AnswerSheetPrinter{
 						WorkDir:    workDir,
 						OutputDir:  answerSheetDir,
@@ -70,7 +81,10 @@ func PrintTests(testsData []*models.Test, courseItem *models.CourseItem, printAn
 					}
 				} else {
 					for _, instance := range testData.Instances {
-						answerSheetDir := utils.CreateFolder(filepath.Join(testOutputDir, "instances"))
+						answerSheetDir, err := utils.CreateFolder(filepath.Join(testOutputDir, "instances"))
+						if err != nil {
+							panic(err)
+						}
 						answerSheetPrinter := AnswerSheetPrinter{
 							WorkDir:    workDir,
 							OutputDir:  answerSheetDir,
@@ -98,10 +112,13 @@ func PrintTests(testsData []*models.Test, courseItem *models.CourseItem, printAn
 
 	wg.Wait()
 
-	mergeDir := utils.CreateFolder(
+	mergeDir, err := utils.CreateFolder(
 		filepath.Join(tmpFolder, "merging"),
 	)
-	return MergeFiles(joiner, mergeDir)
+	if err != nil {
+		panic(err)
+	}
+	return MergeFiles(joiner, mergeDir), nil
 }
 
 func MergeFiles(filesToJoin []string, tmpPath string) string {

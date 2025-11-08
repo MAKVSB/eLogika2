@@ -11,8 +11,8 @@ import (
 	"elogika.vsb.cz/backend/models"
 	authdtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	"elogika.vsb.cz/backend/modules/common"
+	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 // @Description Request to upload a file
@@ -70,24 +70,10 @@ func FileUpload(c *gin.Context, userData authdtos.LoggedUserDTO) {
 	}
 
 	// Generate a random UUID filename
-	newFileName := uuid.New().String() + ext
-	for i := 0; i > 0; i++ {
-		candidate := uuid.New().String() + ext
-
-		var count int64
-		if err := initializers.DB.Model(&models.File{}).
-			Where("stored_name = ?", candidate).
-			Count(&count).Error; err != nil {
-			c.AbortWithStatusJSON(500, common.ErrorResponse{
-				Message: "DB error during UUID check",
-			})
-			return
-		}
-
-		if count == 0 {
-			newFileName = candidate
-			break
-		}
+	newFileName, err := utils.GenerateFileName(initializers.DB, ext)
+	if err != nil {
+		c.AbortWithStatusJSON(500, err)
+		return
 	}
 
 	// Create file
@@ -95,6 +81,7 @@ func FileUpload(c *gin.Context, userData authdtos.LoggedUserDTO) {
 	if err2 != nil {
 		c.AbortWithStatusJSON(500, common.ErrorResponse{
 			Message: "Could not save file",
+			Details: newFileName,
 		})
 		return
 	}

@@ -51,13 +51,21 @@ func SSOLoginCallback(c *gin.Context) {
 	if reqData.SSOProvider == "VSBCAS" {
 		casUrl, err := url.Parse("https://www.sso.vsb.cz/")
 		if err != nil {
-			panic("Failed to parse VSB-SSO url")
+			err_obj := &common.ErrorResponse{
+				Code:    500,
+				Message: "Failed to parse VSB-SSO url",
+			}
+			c.AbortWithStatusJSON(err_obj.Code, err_obj)
 		}
 
 		var serviceUrl *url.URL
 		serviceUrl, err = url.Parse("https://elogika.vsb.cz/new/login/callback?provider=VSBCAS")
 		if err != nil {
-			panic("Failed to parse VSB-SSO url")
+			err_obj := &common.ErrorResponse{
+				Code:    500,
+				Message: "Failed to parse VSB-SSO url",
+			}
+			c.AbortWithStatusJSON(err_obj.Code, err_obj)
 		}
 
 		casRestClient := cas.NewRestClient(&cas.RestOptions{
@@ -125,6 +133,7 @@ func SSOLoginCallback(c *gin.Context) {
 		c.JSON(200, LoginResponse{
 			AccessToken: accessTokenStr,
 		})
+		return
 	} else {
 		errr := &common.ErrorResponse{
 			Code:    500,
