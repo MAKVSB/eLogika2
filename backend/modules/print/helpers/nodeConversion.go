@@ -84,7 +84,7 @@ func (tp NodeConvertor) ConvertNodeToLaTeX(node *models.TipTapContent) (string, 
 
 	case "blockMath":
 		latex := node.Attrs["latex"].(string)
-		return `\begin{equation*}` + latex + `\end{equation*}\n\n\n`, nil
+		return `\begin{equation*}` + latex + `\end{equation*}` + "\n\n\n", nil
 
 	case "bulletList":
 		items := ""
@@ -129,7 +129,7 @@ func (tp NodeConvertor) ConvertNodeToLaTeX(node *models.TipTapContent) (string, 
 
 		width = min(width/2, 500)
 
-		return fmt.Sprintf("\\vspace{10pt}  \\includegraphics[width=%dpt, keepaspectratio]{%s}\n\n  \\vspace{10pt}", width, src), nil
+		return fmt.Sprintf("\\vspace{10pt}  \\includegraphics[width=%fpt, keepaspectratio]{%s}\n\n  \\vspace{10pt}", width, src), nil
 
 	case "table":
 		type TableCell struct {
@@ -272,8 +272,7 @@ func (tp NodeConvertor) ConvertNodeToLaTeX(node *models.TipTapContent) (string, 
 				\begin{tabularx}{` + tableWidth + `}{` + colDef + `}
 					\cline{1-` + strconv.Itoa(tableCols) + `}
 					` + strings.Join(text_rows, "") + `
-				\end{tabularx}
-		\n\n`, nil
+				\end{tabularx}` + "\n\n", nil
 	case "listItem":
 		return tp.concatContent(node.Content)
 	case "tableHeader":
