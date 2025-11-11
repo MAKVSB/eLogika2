@@ -197,32 +197,6 @@
 			></Form.Checkbox>
 		{/if}
 	</div>
-	{#if instanceData.recognizerFiles.length != 0}
-		<Collapsible.Root class="gap-1 p-2 border" bind:open={showRecogniserFiles}>
-			<Collapsible.Trigger>
-				<Button class="" variant="outline">
-					{#if showRecogniserFiles}
-						<ChevronsDownIcon />
-					{:else}
-						<ChevronsRightIcon />
-					{/if}
-					{m.testinstance_editor_recognizer_toggle({ open: String(showRecogniserFiles) })}
-				</Button>
-			</Collapsible.Trigger>
-			<Collapsible.Content class="pt-4 ml-4">
-				<div class="flex gap-4 overflow-x-scroll">
-					{#each instanceData.recognizerFiles as recognizerFile}
-						<img
-							src={import.meta.env.VITE_API_URL + '/api/v2/files/' + recognizerFile.storedName}
-							alt="Test answer sheet"
-							style="height: 40rem"
-							class="my-4 max-h-[40rem]"
-						/>
-					{/each}
-				</div>
-			</Collapsible.Content>
-		</Collapsible.Root>
-	{/if}
 	{#if instanceData.questions}
 		<Table.Root>
 			<Table.Header>
@@ -292,6 +266,36 @@
 						<Table.Cell>{m.no_questions()}</Table.Cell>
 					</Table.Row>
 				{/each}
+				{#if instanceData.recognizerFiles.length != 0}
+					<Table.Row>
+						<Table.Cell colspan={50}>
+							<Collapsible.Root bind:open={showRecogniserFiles}>
+								<Collapsible.Trigger>
+									<Button variant="default">
+										{#if showRecogniserFiles}
+											<ChevronsDownIcon />
+										{:else}
+											<ChevronsRightIcon />
+										{/if}
+										{m.testinstance_editor_recognizer_toggle({ open: String(showRecogniserFiles) })}
+									</Button>
+								</Collapsible.Trigger>
+								<Collapsible.Content class="pt-4 ml-4">
+									<div class="flex gap-4 overflow-x-scroll">
+										{#each instanceData.recognizerFiles as recognizerFile}
+											<img
+												src={import.meta.env.VITE_API_URL + '/api/v2/files/' + recognizerFile.storedName}
+												alt="Test answer sheet"
+												style="height: 40rem"
+												class="my-4 max-h-[40rem]"
+											/>
+										{/each}
+									</div>
+								</Collapsible.Content>
+							</Collapsible.Root>
+						</Table.Cell>
+					</Table.Row>
+				{/if}
 			</Table.Body>
 		</Table.Root>
 	{/if}
@@ -330,7 +334,9 @@
 												></Form.Checkbox>
 											</Table.Cell>
 											<Table.Cell>
-												<TiptapRenderer jsonContent={answer.content}></TiptapRenderer>
+												{#if answer.content}
+													<TiptapRenderer jsonContent={answer.content}></TiptapRenderer>
+												{/if}
 											</Table.Cell>
 										</Table.Row>
 									{/each}

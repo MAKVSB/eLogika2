@@ -46,6 +46,9 @@ func (ttc *TipTapContent) Scan(value interface{}) error {
 	return err
 }
 
-func (ttc TipTapContent) Value(ctx context.Context, field *schema.Field, dst reflect.Value, fieldValue interface{}) (interface{}, error) {
+func (ttc *TipTapContent) Value(ctx context.Context, field *schema.Field, dst reflect.Value, fieldValue interface{}) (interface{}, error) {
+	if ttc == nil {
+		return []byte{}, nil
+	}
 	return json.Marshal(ttc)
 }

@@ -136,7 +136,7 @@ func (ttc *TipTapParser) ParseContent(dbRef *gorm.DB, userId uint, node *models.
 
 func (ttc *TipTapParser) HandleImage(node *models.TipTapContent) error {
 	if node.Attrs["mode"] == "storage" {
-		ttc.FileIDs = append(ttc.FileIDs, node.Attrs["id"].(uint))
+		ttc.FileIDs = append(ttc.FileIDs, uint(node.Attrs["id"].(float64)))
 	}
 
 	return nil

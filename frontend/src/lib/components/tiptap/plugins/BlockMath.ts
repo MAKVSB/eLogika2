@@ -32,6 +32,10 @@ export const CustomBlockMath = BlockMath.extend({
 				}
 			})
 		];
+	},
+
+	renderText({ node }) {
+		return `$$$${node.attrs.latex}$$$`;
 	}
 });
 

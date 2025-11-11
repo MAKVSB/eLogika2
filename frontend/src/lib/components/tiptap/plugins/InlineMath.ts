@@ -54,6 +54,10 @@ export const CustomInlineMath = InlineMath.extend({
 				}
 			})
 		];
+	},
+
+	renderText({ node }) {
+		return `$${node.attrs.latex}$`;
 	}
 });
 
