@@ -11,6 +11,9 @@ importers:
       '@inlang/paraglide-js':
         specifier: ^2.2.0
         version: 2.2.0
+      '@svelte-put/resize':
+        specifier: ^4.0.0
+        version: 4.0.0(svelte@5.36.8)
       '@tiptap/core':
         specifier: ^3.0.7
         version: 3.0.7(@tiptap/pm@3.0.7)
@@ -682,6 +685,11 @@ packages:
   '@sqlite.org/sqlite-wasm@3.48.0-build4':
     resolution: {integrity: sha512-hI6twvUkzOmyGZhQMza1gpfqErZxXRw6JEsiVjUbo7tFanVD+8Oil0Ih3l2nGzHdxPI41zFmfUQG7GHqhciKZQ==}
     hasBin: true
+
+  '@svelte-put/resize@4.0.0':
+    resolution: {integrity: sha512-ZZuBEaTCcUk5491o1Px5ZWq9DZPw3G+3/zCrMGwSO/oqa5X8ksV9LLgqAd8ODRw/Sl1/sNZiPU7JwB0qjhcf5Q==}
+    peerDependencies:
+      svelte: ^5.1.0
 
   '@sveltejs/acorn-typescript@1.0.5':
     resolution: {integrity: sha512-IwQk4yfwLdibDlrXVE04jTZYlLnwsTT2PIOQQGNLWfjavGifnk1JD1LcZjZaBTRcxZu2FfPfNLOE04DSu9lqtQ==}
@@ -3103,6 +3111,10 @@ snapshots:
   '@sinclair/typebox@0.31.28': {}
 
   '@sqlite.org/sqlite-wasm@3.48.0-build4': {}
+
+  '@svelte-put/resize@4.0.0(svelte@5.36.8)':
+    dependencies:
+      svelte: 5.36.8
 
   '@sveltejs/acorn-typescript@1.0.5(acorn@8.15.0)':
     dependencies:

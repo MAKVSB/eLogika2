@@ -5,6 +5,7 @@
 	import TiptapRendererDetail from './tiptap-renderer-detail.svelte';
 	import katex from 'katex';
 	import CodeBlock from '../ui/code-block/code-block.svelte';
+	import { resize } from '@svelte-put/resize';
 
 	let {
 		jsonContent
@@ -104,15 +105,15 @@
 		{/each}
 	</p>
 {:else if jsonContent.type == 'custom-image'}
-	<img
-		src={jsonContent.attrs?.mode === 'storage'
-			? import.meta.env.VITE_API_URL + '/api/v2/files/' + jsonContent.attrs?.src
-			: jsonContent.attrs?.src}
-		alt={jsonContent.attrs?.alt}
-		style="width: {jsonContent.attrs?.width}px"
-		height="auto"
-		class="my-4"
-	/>
+	<div class="my-4 overflow-auto resize-x w-fit" use:resize style="width: {jsonContent.attrs?.width}px">
+		<img
+			src={jsonContent.attrs?.mode === 'storage'
+				? import.meta.env.VITE_API_URL + '/api/v2/files/' + jsonContent.attrs?.src
+				: jsonContent.attrs?.src}
+			alt={jsonContent.attrs?.alt}
+			class="w-full my-4"
+		/>
+	</div>
 {:else if jsonContent.type == 'table'}
 	<div class="w-full overflow-scroll">
 		<table class="border">
@@ -181,13 +182,13 @@
 	<TiptapRendererDetail {jsonContent}></TiptapRendererDetail>
 {:else if jsonContent.type == 'codeBlock'}
 	{#if jsonContent.attrs?.filename}
-		<img
-			src={import.meta.env.VITE_API_URL + '/api/v2/files/' + jsonContent.attrs?.filename}
-			alt={jsonContent.attrs?.alt}
-			style="width: {jsonContent.attrs?.width}px"
-			height="auto"
-			class="my-4 bg-white"
-		/>
+		<div class="my-4 overflow-auto resize-x w-fit" use:resize>
+			<img
+				src={import.meta.env.VITE_API_URL + '/api/v2/files/' + jsonContent.attrs?.filename}
+				alt={jsonContent.attrs?.alt}
+				class="w-full bg-white"
+			/>
+		</div>
 	{:else if jsonContent.content?.length == 1}
 		<CodeBlock code={jsonContent.content[0].text ?? ''}></CodeBlock>
 	{/if}
