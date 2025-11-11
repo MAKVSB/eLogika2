@@ -51,7 +51,7 @@
 		{#if (node.attrs.type as string).startsWith('image/')}
 			{#if node.attrs.src}
 				<div
-					class="my-4 w-fit resize-x overflow-auto"
+					class="my-4 overflow-auto resize-x w-fit"
 					use:resize
 					onresized={onResized}
 					style="width: {node.attrs.width}px"
@@ -61,7 +61,7 @@
 							? import.meta.env.VITE_API_URL + '/api/v2/files/' + node.attrs.src
 							: node.attrs.src}
 						alt={node.attrs.alt}
-						class="my-4 w-full"
+						class="w-full my-4"
 					/>
 				</div>
 			{:else}
@@ -70,7 +70,7 @@
 			<div class="grid grid-cols-2 gap-4">
 				<div class="col-span-2">
 					<Label>Image source</Label>
-					<Input value={node.attrs.src} disabled={node.attrs.mode != 'url'}></Input>
+					<Input value={node.attrs.src} disabled={node.attrs.mode != 'url'} onchange={updateSrc}></Input>
 				</div>
 				<Button variant="default" onclick={downloadFile}>Download file</Button>
 				{#if editor.options.editable}
@@ -78,7 +78,7 @@
 				{/if}
 			</div>
 		{:else}
-			<div class="flex items-center gap-4 rounded-2xl border p-4">
+			<div class="flex items-center gap-4 p-4 border rounded-2xl">
 				Attachment: {node.attrs.originalFilename}
 				<Button variant="default" onclick={downloadFile}>Download file</Button>
 				<Button variant="destructive" onclick={deleteNode}>Delete file</Button>
@@ -88,7 +88,7 @@
 		{#if node.attrs.src}
 			<div class="relative h-max w-max">
 				<img
-					class="border-accent border"
+					class="border border-accent"
 					src={node.attrs.mode === 'storage'
 						? import.meta.env.VITE_API_URL + '/api/v2/files/' + node.attrs.src
 						: node.attrs.src}
@@ -101,7 +101,7 @@
 			<span class="border border-red-500">No image</span>
 		{/if}
 	{:else}
-		<div class="flex items-center gap-4 rounded-2xl border p-4">
+		<div class="flex items-center gap-4 p-4 border rounded-2xl">
 			Attachment: {node.attrs.originalFilename}
 			<Button variant="default" onclick={downloadFile}>Download file</Button>
 		</div>
