@@ -17,6 +17,7 @@ type TestInstanceQuestionDTO struct {
 	Title                *string                         `json:"title,omitempty"`
 	Content              *models.TipTapContent           `json:"content,omitempty"`
 	QuestionFormat       enums.QuestionFormatEnum        `json:"questionFormat"`
+	QuestionID           uint                            `json:"questionId"`
 }
 
 func (m TestInstanceQuestionDTO) From(
@@ -29,6 +30,7 @@ func (m TestInstanceQuestionDTO) From(
 		ID:             d.ID,
 		TextAnswer:     d.TextAnswer,
 		BlockID:        d.TestQuestion.BlockID,
+		QuestionID:     d.TestQuestion.QuestionID,
 		Order:          d.TestQuestion.Order,
 		QuestionFormat: d.TestQuestion.Question.QuestionFormat,
 		Answers:        make([]TestInstanceQuestionAnswerDTO, len(d.Answers)),

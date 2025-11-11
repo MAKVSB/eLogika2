@@ -24,6 +24,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { ChevronsDownIcon, ChevronsRightIcon } from '@lucide/svelte';
 	import { invalidateAll } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	let {
 		instanceData,
@@ -77,6 +78,7 @@
 		)
 			.then(() => {
 				invalidateAll();
+				toast.success("Instance saved, test re-evaluated")
 			})
 			.catch(() => {});
 	}
@@ -222,7 +224,9 @@
 						</Table.Cell>
 						{#if hasTitle}
 							<Table.Cell onclick={() => scrollToQuestion(question.id)}>
-								{question.title}
+								<a href="{base}/app/{page.params.courseId}/tutor/questions/{question.questionId}" class="underline">
+									{question.title}
+								</a>
 							</Table.Cell>
 						{/if}
 						{#if question.questionFormat == QuestionFormatEnum.OPEN}
@@ -305,8 +309,10 @@
 				<div class="flex flex-col gap-4 p-4 border" id={'q' + question.id}>
 					<div>
 						<h2 class="text-xl">
-							{m.question()}
-							{question.order + 1}
+							<a href="{base}/app/{page.params.courseId}/tutor/questions/{question.questionId}" class="underline">
+								{m.question()}
+								{question.order + 1}
+							</a>
 						</h2>
 						{#if question.content}
 							<TiptapRenderer jsonContent={question.content}></TiptapRenderer>
