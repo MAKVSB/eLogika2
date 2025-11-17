@@ -154,7 +154,11 @@ export function encodeJsonToBase64Url<T>(object: T): string {
 	return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); // make it URL-safe
 }
 
-export function decodeBase64UrlToJson<T>(searchParamString: string): T {
+export function decodeBase64UrlToJson<T>(searchParamString: string | null): T {
+	if (!searchParamString) {
+		return {} as T;
+	}
+
 	const urlSafe = searchParamString.replace(/-/g, '+').replace(/_/g, '/');
 
 	let base64 = urlSafe.replace(/-/g, '+').replace(/_/g, '/');

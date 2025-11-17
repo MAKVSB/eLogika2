@@ -76,6 +76,9 @@
 			) => {
 				switch (event) {
 					case 'remove_role':
+						if (!confirm(m.user_role_remove_confirm())) {
+							return;
+						}
 						await API.request<RemoveCourseUserRequest, RemoveCourseUserResponse>(
 							`api/v2/courses/${page.params.courseId}/users`,
 							{

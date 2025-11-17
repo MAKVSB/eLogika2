@@ -30,6 +30,8 @@
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import GlobalState from '$lib/shared.svelte';
 
+	const { setOpenMobile } = Sidebar.useSidebar();
+
 	let { name, items, requiredRoles, noCourse }: SidebarCategory = $props();
 
 	const canShow = (requiredRoles?: string[]): boolean => {
@@ -56,7 +58,7 @@
 					<Sidebar.MenuItem>
 						<Sidebar.MenuButton>
 							{#snippet child({ props })}
-								<a href={item.url} {...props}>
+								<a href={item.url} onclick={() => setOpenMobile(false)} {...props}>
 									<item.icon />
 									<span>{item.title}</span>
 								</a>

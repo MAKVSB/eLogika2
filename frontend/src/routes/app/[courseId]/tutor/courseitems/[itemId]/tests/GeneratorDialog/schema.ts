@@ -1,13 +1,13 @@
 import type { ColumnDef } from '@tanstack/table-core';
 import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
-import { type CourseUserDTO } from '$lib/api_types';
+import { type JoinedStudentDTO } from '$lib/api_types';
 import { type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
 import { Checkbox } from '$lib/components/ui/checkbox';
 
 export const filters: Filter[] = [];
 
-export const columns: (ColumnDef<CourseUserDTO> & { uniqueId?: string })[] = [
+export const columns: (ColumnDef<JoinedStudentDTO> & { uniqueId?: string })[] = [
 	{
 		accessorKey: 'row_index',
 		header: 'ID',
@@ -46,12 +46,17 @@ export const columns: (ColumnDef<CourseUserDTO> & { uniqueId?: string })[] = [
 			})
 	},
 	{
-		accessorKey: 'firstName',
-		header: m.user_first_name()
+		accessorKey: 'familyName',
+		header: ({ column }) =>
+			renderComponent(SortButton, {
+				name: m.user_family_name(),
+				sorted: column.getIsSorted(),
+				onclick: column.getToggleSortingHandler()
+			})
 	},
 	{
-		accessorKey: 'familyName',
-		header: m.user_family_name()
+		accessorKey: 'firstName',
+		header: m.user_first_name()
 	},
 	{
 		accessorKey: 'degreeBefore',

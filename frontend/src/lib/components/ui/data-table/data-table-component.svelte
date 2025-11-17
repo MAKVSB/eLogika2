@@ -1,6 +1,5 @@
 <script lang="ts" generics="TData, TValue">
 	import {
-		getCoreRowModel,
 		type ColumnDef,
 		type PaginationState,
 		type RowSelectionState,
@@ -9,6 +8,8 @@
 		type TableState,
 		type InitialTableState,
 		type ColumnSizingState,
+		type TableOptions,
+		getCoreRowModel,
 		getFilteredRowModel,
 		getPaginationRowModel,
 		getSortedRowModel
@@ -21,10 +22,11 @@
 	import { type Filter, type FilterSelect, FilterTypeEnum } from './filter';
 	import { m } from '$lib/paraglide/messages';
 	import { page } from '$app/state';
-	import { decodeBase64UrlToJson, encodeJsonToBase64Url } from '$lib/services/api.svelte';
+	import { decodeBase64UrlToJson } from '$lib/services/api.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { type Table as Tabl } from '@tanstack/table-core';
+	import { DataTableSearchParams } from '$lib/api_types_static';
 
 	type DataTableProps<TData, TValue> = {
 		columns: ColumnDef<TData, TValue>[];
@@ -40,6 +42,7 @@
 		selectionEnabled?: boolean;
 		queryParam?: string;
 		frontEndMode?: boolean;
+		replaceState?: boolean;
 	};
 
 	let {
@@ -55,7 +58,8 @@
 		sortingEnabled = true,
 		filterEnabled = true,
 		selectionEnabled = true,
-		frontEndMode = false
+		frontEndMode = false,
+		replaceState = false
 	}: DataTableProps<TData, TValue> = $props();
 
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 25 });
@@ -70,22 +74,16 @@
 		refetch_timer = setTimeout(() => {
 			if (!table) return;
 
-			const newUrl = new URL(page.url);
 			const state = table.getState();
-			const queryParams = {
-				...(state.pagination ? { pagination: state.pagination } : {}),
-				...(state.sorting ? { sorting: state.sorting } : {}),
-				...(state.columnFilters ? { columnFilters: state.columnFilters } : {})
-			};
-			const queryString = encodeJsonToBase64Url(queryParams);
+			const queryString = DataTableSearchParams.fromDataTable(state).toURL();
 
 			if (refetch) {
-				refetch(table.getState(), queryString);
+				refetch(state, queryString);
 			}
 			if (queryParam) {
+				const newUrl = new URL(page.url);
 				newUrl.searchParams.set(queryParam, queryString);
-				console.log('Transfering 11');
-				goto(newUrl);
+				goto(newUrl, { replaceState });
 			}
 		}, 0);
 	};
@@ -138,7 +136,10 @@
 		if (queryParam) {
 			const encodedParams = page.url.searchParams.get(queryParam);
 			if (encodedParams) {
-				initialState = decodeBase64UrlToJson(encodedParams);
+				initialState = {
+					...initialState,
+					...decodeBase64UrlToJson(encodedParams)
+				};
 			}
 		}
 

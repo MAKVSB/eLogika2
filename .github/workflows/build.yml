@@ -80,11 +80,17 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm build
 
+      - name: Move and package artifacts
+        run: |
+          mkdir -p dist
+          mv backend/tools/migrate/elogika2-migrator.exe dist/elogika2-migrator.exe
+          mv backend/elogika2.exe dist/elogika2.exe
+          mv frontend/build dist/public
+
       - name: Package artifacts
         run: |
-          zip -r elogika2-server-${{ github.ref_name }}.zip backend/elogika2.exe backend/tools/migrate/elogika2-migrator.exe
-          zip -r elogika2-front-${{ github.ref_name }}.zip frontend/build
-          zip -r elogika2-docs-${{ github.ref_name }}.zip backend/docs
+          zip -r elogika2-back-${{ github.ref_name }}.zip dist/*.exe
+          zip -r elogika2-front-${{ github.ref_name }}.zip dist/public
 
       # If release is set, push also to release page
       - name: Create GitHub Release
@@ -94,16 +100,21 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: "elogika2 ${{ github.ref_name }}"
           files: |
-            elogika2-server-${{ github.ref_name }}.zip
+            elogika2-back-${{ github.ref_name }}.zip
             elogika2-front-${{ github.ref_name }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Upload artifacts
-      - name: Upload build artifacts
+      - name: Upload backend artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: elogika2-build
+          name: elogika2-back
           path: |
-            elogika2-server-${{ github.ref_name }}.zip
+            elogika2-back-${{ github.ref_name }}.zip
+      - name: Upload frontend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: elogika2-front
+          path: |
             elogika2-front-${{ github.ref_name }}.zip

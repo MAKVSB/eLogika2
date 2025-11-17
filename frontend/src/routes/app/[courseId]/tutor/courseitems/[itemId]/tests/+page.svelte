@@ -3,7 +3,7 @@
 
 	import DataTable from '$lib/components/ui/data-table/data-table-component.svelte';
 	import { columns, filters } from './schema';
-	import { API, ApiError, decodeBase64UrlToJson } from '$lib/services/api.svelte';
+	import { API } from '$lib/services/api.svelte';
 	import type {
 		PrintTestRequest,
 		TestEvaluationRequest,
@@ -31,6 +31,9 @@
 		pagination: {
 			pageIndex: 0,
 			pageSize: 25
+		},
+		columnVisibility: {
+			termId: false
 		}
 	});
 
@@ -92,7 +95,7 @@
 								console.log(err);
 							});
 					case 'delete':
-						if (!confirm('Test and all its instances will be deleted permanently.')) {
+						if (!confirm(m.test_delete_confirm())) {
 							return;
 						}
 						API.request<any, Blob>(
@@ -146,15 +149,6 @@
 	});
 
 	onMount(() => {
-		const encodedParams = page.url.searchParams.get('search');
-		if (encodedParams) {
-			initialState = decodeBase64UrlToJson(encodedParams);
-			if (!initialState.columnVisibility) {
-				initialState.columnVisibility = {
-					termId: false
-				};
-			}
-		}
 		loading[0] = false;
 	});
 

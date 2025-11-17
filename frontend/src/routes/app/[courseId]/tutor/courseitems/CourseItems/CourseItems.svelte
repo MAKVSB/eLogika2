@@ -128,15 +128,6 @@
 			.catch(() => {});
 	}
 
-	function refetch(state: TableState) {
-		const queryParams: RestRequest = {
-			...(state.pagination ? { pagination: state.pagination } : {}),
-			...(state.sorting ? { sorting: state.sorting } : {}),
-			...(state.columnFilters ? { columnFilters: state.columnFilters } : {})
-		};
-		encodedParams = encodeJsonToBase64Url(queryParams);
-	}
-
 	onMount(() => {
 		const encodedParams = page.url.searchParams.get('search');
 		if (encodedParams) {
@@ -179,10 +170,10 @@
 		{data}
 		{columns}
 		{filters}
-		{refetch}
 		{initialState}
 		{rowCount}
 		paginationEnabled={false}
 		queryParam='search'
+		frontEndMode
 	/>
 {/if}

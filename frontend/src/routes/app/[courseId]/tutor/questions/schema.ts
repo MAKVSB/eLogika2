@@ -89,14 +89,14 @@ export const columns: (ColumnDef<QuestionListItemDTO> & { uniqueId?: string })[]
 	},
 	{
 		accessorKey: 'chapterName',
-		header: 'Chapter name'
+		header: m.question_chapter()
 	},
 	{
 		accessorKey: 'categoryId'
 	},
 	{
 		accessorKey: 'categoryName',
-		header: 'Category name'
+		header: m.question_category()
 	},
 	{
 		accessorKey: 'questionType',

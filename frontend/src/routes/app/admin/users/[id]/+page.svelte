@@ -66,7 +66,8 @@
 		},
 		type: UserTypeEnum.NORMAL,
 		identityProvider: IdentityProviderEnum.INT,
-		courses: []
+		courses: [],
+		apiTokens: []
 	};
 	let form = $state(Form.createForm(UserInsertRequestSchema, defaultFormData));
 

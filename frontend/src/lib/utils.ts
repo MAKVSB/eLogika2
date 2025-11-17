@@ -12,7 +12,7 @@ export type WithoutChildren<T> = T extends { children?: any } ? Omit<T, 'childre
 export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;
 export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: U | null };
 
-export function enumToOptions<T extends Record<string, string>>(
+export function enumToOptions<T extends Record<string, any>>(
 	en: T,
 	langFunc?: (inputs: any, options?: any) => string,
 	langParams?: any
@@ -20,7 +20,7 @@ export function enumToOptions<T extends Record<string, string>>(
 	return Object.values(en).map((value) => {
 		return {
 			value: value,
-			display: langFunc ? langFunc({ value: value, ...langParams }) : value
+			display: langFunc ? langFunc({ value: String(value), ...langParams }) : value
 		};
 	});
 }

@@ -154,6 +154,7 @@ func (r *TermService) ListJoinedStudents(
 	filters *(func(*gorm.DB) *gorm.DB),
 	full bool,
 	searchParams *common.SearchRequest,
+	skipUsersWithInstance bool,
 ) ([]*models.UserTerm, int64, *common.ErrorResponse) {
-	return r.termRepo.ListJoinedStudents(dbRef, termID, nil, false, nil)
+	return r.termRepo.ListJoinedStudents(dbRef, termID, nil, false, searchParams, skipUsersWithInstance)
 }

@@ -25,6 +25,7 @@
 	import { m } from '$lib/paraglide/messages';
 	import { page } from '$app/state';
 	import { toast } from 'svelte-sonner';
+	import { DataTableSearchParams } from '$lib/api_types_static';
 
 	let {
 		defaultRole,
@@ -87,17 +88,8 @@
 			.catch(() => {});
 	};
 
-	type RestRequest = {
-		sorting?: SortingState;
-		columnFilters?: ColumnFiltersState;
-	};
-
 	function refetch(state: TableState) {
-		const queryParams: RestRequest = {
-			...(state.sorting ? { sorting: state.sorting } : {}),
-			...(state.columnFilters ? { columnFilters: state.columnFilters } : {})
-		};
-		search = encodeJsonToBase64Url(queryParams);
+		search = DataTableSearchParams.fromDataTable(state).toURL();
 		loadData();
 	}
 

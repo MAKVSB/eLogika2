@@ -41,15 +41,25 @@ export const columns: (ColumnDef<JoinedStudentDTO> & { uniqueId?: string })[] = 
 	// },
 	{
 		accessorKey: 'username',
-		header: m.user_username()
+		header: ({ column }) =>
+			renderComponent(SortButton, {
+				name: m.user_username(),
+				sorted: column.getIsSorted(),
+				onclick: column.getToggleSortingHandler()
+			})
+	},
+	{
+		accessorKey: 'familyName',
+		header: ({ column }) =>
+			renderComponent(SortButton, {
+				name: m.user_family_name(),
+				sorted: column.getIsSorted(),
+				onclick: column.getToggleSortingHandler()
+			})
 	},
 	{
 		accessorKey: 'firstName',
 		header: m.user_first_name()
-	},
-	{
-		accessorKey: 'familyName',
-		header: m.user_family_name()
 	},
 	{
 		accessorKey: 'degreeBefore',

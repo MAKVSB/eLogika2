@@ -119,7 +119,7 @@
 							.catch(() => {});
 						break;
 					case 'delete':
-						if (!confirm('Question will be deleted permanently.')) {
+						if (!confirm(m.question_delete_confirm())) {
 							return;
 						}
 						API.request<any, Blob>(

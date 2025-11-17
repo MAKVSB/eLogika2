@@ -1,30 +1,38 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import {
-		CourseUserRoleEnum,
 		TestInstanceFormEnum,
-		type CourseUserDTO,
-		type ListCourseUsersResponse,
+		type JoinedStudentDTO,
+		type ListJoinedStudentsResponse,
 		type TestGeneratorRequest,
 		type TestGeneratorResponse
 	} from '$lib/api_types';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import { API, ApiError, encodeJsonToBase64Url } from '$lib/services/api.svelte';
-	import { onMount } from 'svelte';
+	import { API } from '$lib/services/api.svelte';
 	import { columns, filters } from './schema';
 	import { DataTable } from '$lib/components/ui/data-table';
-	import type { InitialTableState, RowSelectionState } from '@tanstack/table-core';
-	import Loader from '$lib/components/ui/loader/loader.svelte';
+	import type { InitialTableState, RowSelectionState, TableState } from '@tanstack/table-core';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
 	import { Input } from '$lib/components/ui/input';
-	import { toast } from 'svelte-sonner';
 	import { invalidateAll } from '$app/navigation';
 	import * as Form from '$lib/components/ui/form';
 	import { enumToOptions } from '$lib/utils';
 	import { m } from '$lib/paraglide/messages';
 
+	$effect(() => {
+		searchCache = page.url.searchParams.get('generateTestSearch')
+	})
+
+	function refetch(_: any, str: string) {
+		searchCache = str
+	}
+
+	$effect(() => {
+		loadData(searchCache, skipUsersWithInstance)
+	})
+	
 	let {
 		termId,
 		openState = $bindable()
@@ -38,39 +46,34 @@
 	let usersAll = $state(false);
 	let users: number[] = $state([]);
 
-	let rowItems: CourseUserDTO[] = $state([]);
+	let rowItems: JoinedStudentDTO[] = $state([]);
 	let rowCount: number = $state(0);
-	let initialState: InitialTableState = $state({});
-	let loading = $state(true);
+	let initialState: InitialTableState = $state({
+		pagination: {
+			pageIndex: 0,
+			pageSize: 10000
+		}
+	});
+	let searchCache: string | null = $state("")
 
 	let instanceForm = $state(TestInstanceFormEnum.OFFLINE);
 	let skipUsersWithInstance = $state(true);
 
-	const loadData = () => {
-		initialState.columnFilters = [
-			{
-				id: 'role',
-				value: CourseUserRoleEnum.STUDENT
-			}
-		];
-		initialState.pagination = {
-			pageIndex: 0,
-			pageSize: 10000
-		};
-		const search = encodeJsonToBase64Url(initialState);
 
-		API.request<null, ListCourseUsersResponse>(
+	const loadData = (search: string | null, skipUsersWithInstance: boolean) => {
+		API.request<null, ListJoinedStudentsResponse>(
 			`/api/v2/courses/${page.params.courseId}/items/${page.params.itemId}/terms/${termId}/students`,
 			{
 				searchParams: {
-					...(search ? { search: search } : {})
+					...(search ? { search: search } : {}),
+					...(skipUsersWithInstance ? { skipUsersWithInstance: String(skipUsersWithInstance) } : {})
 				}
 			},
 			fetch
 		)
 			.then((res) => {
 				rowItems = res.items;
-				rowCount = res.items.length;
+				rowCount = res.itemsCount;
 			})
 			.catch(() => {});
 	};
@@ -94,7 +97,7 @@
 				method: 'POST',
 				body: {
 					variants: numberToGenerate,
-					usersAll: usersAll,
+					usersAll: usersAll ?? users.length == 0,
 					usersIds: users,
 					form: instanceForm,
 					skipUsersWithInstance: skipUsersWithInstance
@@ -108,11 +111,6 @@
 			})
 			.catch(() => {});
 	};
-
-	onMount(() => {
-		loadData();
-		loading = false;
-	});
 </script>
 
 <Dialog.Content class="max-h-full w-300 overflow-scroll sm:max-h-[90%] sm:max-w-[90%]">
@@ -125,7 +123,7 @@
 		name="instanceForm"
 		id="instandeForm"
 		bind:value={instanceForm}
-		options={enumToOptions(TestInstanceFormEnum)}
+		options={enumToOptions(TestInstanceFormEnum, m.test_instance_form_enum)}
 		error=""
 	></Form.SingleSelect>
 
@@ -149,19 +147,18 @@
 			<Label for="skipUsersWithInstance">{m.test_generate_skip()}</Label>
 		</div>
 
-		{#if !loading}
-			<DataTable
-				data={rowItems}
-				{columns}
-				{filters}
-				{selection}
-				{rowCount}
-				paginationEnabled={false}
-				{initialState}
-			/>
-		{:else}
-			<Loader></Loader>
-		{/if}
+		<DataTable
+			data={rowItems}
+			{columns}
+			{filters}
+			{selection}
+			{rowCount}
+			paginationEnabled={false}
+			{initialState}
+			queryParam="generateTestSearch"
+			{refetch}
+			replaceState
+		/>
 	{:else}
 		<div class="flex flex-col gap-2">
 			<Label for="generateNumber">{m.test_generate_number()}</Label>

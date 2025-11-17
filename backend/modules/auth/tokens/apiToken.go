@@ -41,7 +41,8 @@ func (t *ApiToken) Parse(tokenStr string, allowExpired bool) *common.ErrorRespon
 	})
 	if err != nil {
 		return &common.ErrorResponse{
-			Message: "Failed to parse token",
+			Code:    401,
+			Message: "Failed to parse api token",
 			Details: err.Error(),
 		}
 	}

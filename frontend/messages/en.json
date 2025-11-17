@@ -281,6 +281,13 @@
 				"value"
 			],
 			"match": {
+				"value=1": "Monday",
+				"value=2": "Tuesday",
+				"value=3": "Wednesday",
+				"value=4": "Thursday",
+				"value=5": "Friday",
+				"value=6": "Saturday",
+				"value=7": "Sunday",
 				"value=MONDAY": "Monday",
 				"value=TUESDAY": "Tuesday",
 				"value=WEDNESDAY": "Wednesday",
@@ -288,7 +295,7 @@
 				"value=FRIDAY": "Friday",
 				"value=SATURDAY": "Saturday",
 				"value=SUNDAY": "Sunday",
-				"value=*": "{value}"
+				"value=*": "ERROR ({value})"
 			}
 		}
 	],
@@ -669,5 +676,35 @@
 	"download": "Download",
 	"recognizer_source_description": "View source code or build with custom settings.",
 	"recognizer_source": "Source code",
-	"recognizer": "Recognizer"
+	"recognizer": "Recognizer",
+	"user_password_reset_current": "Current password",
+	"user_password_reset_new": "New password",
+	"user_password_reset_newrepeat": "New password repeated",
+	"user_role_remove_confirm": "User role will be removed.",
+	"class_delete_confirm": "Question will be deleted permanently.",
+	"term_delete_confirm": "Term will be deleted permanently.",
+	"test_delete_confirm": "Test and all its instances will be deleted permanently.",
+	"test_instance_delete_confirm": "Instance will be deleted permanently.",
+	"activity_instance_delete_confirm": "Activity instance will be deleted.",
+	"course_delete_confirm": "Course item will be deleted permanently.",
+	"question_delete_confirm": "Question will be deleted permanently.",
+	"template_delete_confirm": "Template will be deleted permanently.",
+	"user_token_revoke_confirm": "All external aplications using this token will stop working.",
+	"test_instance_form_enum": [
+		{
+			"declarations": [
+				"input value"
+			],
+			"selectors": [
+				"value"
+			],
+			"match": {
+				"value=OFFLINE": "Paper test",
+				"value=ONLINE": "Online test",
+				"value=*": "{value}"
+			}
+		}
+	],
+	"question_chapter": "Chapter",
+	"question_category": "Category"
 }

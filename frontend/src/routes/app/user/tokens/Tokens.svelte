@@ -32,7 +32,7 @@
 			clickEventHandler: async (event: string, id: number) => {
 				switch (event) {
 					case 'revoke':
-						if (!confirm('All external aplications using this token will stop working.')) {
+						if (!confirm(m.user_token_revoke_confirm())) {
 							return;
 						}
 						API.request<any, Blob>(

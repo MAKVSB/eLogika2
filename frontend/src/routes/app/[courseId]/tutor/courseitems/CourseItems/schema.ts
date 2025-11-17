@@ -40,12 +40,7 @@ export const columns: (ColumnDef<CourseItemDTO> & { uniqueId?: string })[] = [
 	// },
 	{
 		accessorKey: 'name',
-		header: ({ column }) =>
-			renderComponent(SortButton, {
-				name: m.course_item_name(),
-				sorted: column.getIsSorted(),
-				onclick: column.getToggleSortingHandler()
-			})
+		header: m.course_item_name()
 	},
 	{
 		accessorKey: 'type',
@@ -56,12 +51,7 @@ export const columns: (ColumnDef<CourseItemDTO> & { uniqueId?: string })[] = [
 	},
 	{
 		accessorKey: 'pointsMin',
-		header: ({ column }) =>
-			renderComponent(SortButton, {
-				name: 'Points',
-				sorted: column.getIsSorted(),
-				onclick: column.getToggleSortingHandler()
-			}),
+		header: m.course_item_points_min_max(),
 		cell: ({ row }) => {
 			return `${row.original.pointsMin}/${row.original.pointsMax}`;
 		}

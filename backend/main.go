@@ -2,20 +2,19 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
 	"log"
 	"net/http"
-	"runtime/debug"
 	"strconv"
 	"time"
 
 	"elogika.vsb.cz/backend/docs"
 	"elogika.vsb.cz/backend/initializers"
+	"elogika.vsb.cz/backend/middlewares"
 	"elogika.vsb.cz/backend/modules/activities"
 	"elogika.vsb.cz/backend/modules/auth"
 	authCrons "elogika.vsb.cz/backend/modules/auth/crons"
 	"elogika.vsb.cz/backend/modules/auth/helpers"
-	"elogika.vsb.cz/backend/modules/auth/middlewares"
+	authMiddlewares "elogika.vsb.cz/backend/modules/auth/middlewares"
 	"elogika.vsb.cz/backend/modules/categories"
 	"elogika.vsb.cz/backend/modules/chapters"
 	"elogika.vsb.cz/backend/modules/classes"
@@ -48,26 +47,6 @@ func init() {
 	}
 }
 
-func CustomRecovery() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		defer func() {
-			if err := recover(); err != nil {
-				// Log the error however you want
-				fmt.Printf("panic recovered: %s\n%s\n", err, debug.Stack())
-
-				// Replace default 500 response with custom JSON
-				jsonObj := &common.ErrorResponse{
-					Code:    500,
-					Message: "Thread panicked",
-				}
-				c.Abort()
-				c.JSON(jsonObj.Code, jsonObj)
-			}
-		}()
-		c.Next()
-	}
-}
-
 // @title           eLogika public API
 // @version         1.0
 // @description     Public api for e-learning system eLogika developer at VŠB-TUO
@@ -94,7 +73,8 @@ func main() {
 	}
 	r := gin.Default()
 	r.Use(gin.Logger())
-	r.Use(CustomRecovery())
+	r.Use(middlewares.CustomRecoveryMiddleware())
+	r.Use(middlewares.AccessLogMiddleware())
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8000", "https://elogika.vsb.cz", "http://elogika.vsb.cz"},
 		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
@@ -106,7 +86,6 @@ func main() {
 
 	docs.SwaggerInfo.BasePath = ""
 
-	authCrons.DeleteExpiredExpirations()
 	testCrons.ExpireReadyTests()
 	testCrons.FinishActiveTests()
 	printCrons.ClearTempDir()
@@ -135,7 +114,7 @@ func main() {
 			auth.RegisterRoutesUnauth(public)
 			files.RegisterRoutesUnauth(public)
 		}
-		private := v2api.Group("", middlewares.AuthMiddleware())
+		private := v2api.Group("", authMiddlewares.AuthMiddleware())
 		{
 			questions.RegisterRoutes(private)
 			auth.RegisterRoutes(private)

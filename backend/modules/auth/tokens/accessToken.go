@@ -39,7 +39,8 @@ func (t *AccessToken) Parse(tokenStr string, allowExpired bool) *common.ErrorRes
 
 	if err != nil && err.Error() != "token has invalid claims: token is expired" && !allowExpired {
 		return &common.ErrorResponse{
-			Message: "Failed to parse token",
+			Code:    401,
+			Message: "Failed to parse access token",
 			Details: err.Error(),
 		}
 	}

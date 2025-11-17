@@ -52,7 +52,8 @@ func (t *RefreshToken) Parse(tokenStr string, allowExpired bool) *common.ErrorRe
 
 	if err != nil {
 		return &common.ErrorResponse{
-			Message: "Failed to parse token",
+			Code:    401,
+			Message: "Failed to parse refresh token",
 			Details: err.Error(),
 		}
 	}

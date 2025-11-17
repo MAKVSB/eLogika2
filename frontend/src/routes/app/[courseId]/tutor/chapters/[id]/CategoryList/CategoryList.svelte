@@ -24,6 +24,7 @@
 	import type { CategoryListItemDTO, CategoryListResponse } from '$lib/api_types';
 	import { m } from '$lib/paraglide/messages';
 	import { base } from '$app/paths';
+	import { DataTableSearchParams } from '$lib/api_types_static';
 
 	let loading: boolean = $state(true);
 	let data: CategoryListItemDTO[] = $state([]);
@@ -42,12 +43,6 @@
 		}
 	});
 
-	type RestRequest = {
-		pagination?: PaginationState;
-		sorting?: SortingState;
-		columnFilters?: ColumnFiltersState;
-	};
-
 	async function fetchData(encodedFilters?: string) {
 		await API.request<null, CategoryListResponse>(
 			`/api/v2/courses/${page.params.courseId}/chapters/${page.params.id}/categories`,
@@ -65,12 +60,7 @@
 	}
 
 	function refetch(state: TableState) {
-		const queryParams: RestRequest = {
-			...(state.pagination ? { pagination: state.pagination } : {}),
-			...(state.sorting ? { sorting: state.sorting } : {}),
-			...(state.columnFilters ? { columnFilters: state.columnFilters } : {})
-		};
-		encodedParams = encodeJsonToBase64Url(queryParams);
+		encodedParams = DataTableSearchParams.fromDataTable(state).toURL();
 	}
 
 	onMount(async () => {

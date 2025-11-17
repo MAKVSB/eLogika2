@@ -55,6 +55,8 @@ func main() {
 		&models.ActivityInstance{},
 		&models.Email{},
 		&models.RecognizerFile{},
+		&models.LogAccess{},
+		&models.LogError{},
 	)
 	fmt.Println(err)
 }

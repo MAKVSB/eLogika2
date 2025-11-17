@@ -30,7 +30,7 @@
 			clickEventHandler: async (event: string, id: number) => {
 				switch (event) {
 					case 'delete':
-						if (!confirm('Question will be deleted permanently.')) {
+						if (!confirm(m.class_delete_confirm())) {
 							return;
 						}
 						API.request<any, Blob>(

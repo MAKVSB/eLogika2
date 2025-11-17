@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/iancoleman/strcase"
+
 	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/modules/common"
 	"gorm.io/gorm"
@@ -18,7 +20,7 @@ func (CommonModel) ApplySorting(query *gorm.DB, sortings []common.SearchRequestS
 		if s.Desc {
 			direction = "DESC"
 		}
-		query = query.Order(fmt.Sprintf("%s %s", s.ID, direction))
+		query = query.Order(fmt.Sprintf("%s %s", strcase.ToSnake(s.ID), direction))
 	}
 	return query
 }
@@ -39,11 +41,7 @@ func (q CommonModel) ApplyFilters(query *gorm.DB, filters []common.SearchRequest
 		column, typ, err := GetModelColumnName(initializers.DB, model, CapitalizeFirstLetter(filter.ID))
 
 		if err != nil {
-			// return nil, &common.ErrorResponse{
-			// 	Message: "Failed to find filters",
-			// 	Details: err.Error(),
-			// }
-			continue //Todo not the best ????
+			continue
 		}
 		value := filter.Value
 

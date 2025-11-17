@@ -184,19 +184,23 @@ func (r *TermRepository) ListTermsTutor(
 
 func (r *TermRepository) ListJoinedStudents(
 	dbRef *gorm.DB,
-	termID uint,
+	termId uint,
 	filters *(func(*gorm.DB) *gorm.DB),
 	full bool,
 	searchParams *common.SearchRequest,
+	skipUsersWithInstance bool,
 ) ([]*models.UserTerm, int64, *common.ErrorResponse) {
 	query := dbRef.
 		Model(&models.UserTerm{}).
 		Joins("User").
-		Where("term_id = ?", termID).
-		Order("\"User\".\"family_name\"")
+		Where("user_terms.term_id = ?", termId)
 
 	if filters != nil {
 		query = (*filters)(query)
+	}
+
+	if skipUsersWithInstance {
+		query = query.Joins("LEFT JOIN \"test_instances\" ti on ti.participant_id = \"User\".id and ti.term_id = ? and ti.deleted_at is null", termId).Where("ti.id is NULL")
 	}
 
 	if full {
@@ -209,7 +213,11 @@ func (r *TermRepository) ListJoinedStudents(
 		if err != nil {
 			return nil, 0, err
 		}
-		query = models.UserTerm{}.ApplySorting(query, searchParams.Sorting)
+		if len(searchParams.Sorting) == 0 {
+			query = query.Order("\"User\".\"family_name\"")
+		} else {
+			query = models.UserTerm{}.ApplySorting(query, searchParams.Sorting)
+		}
 	}
 	totalCount := models.UserTerm{}.GetCount(query) // Gets count before pagination
 	if searchParams != nil {

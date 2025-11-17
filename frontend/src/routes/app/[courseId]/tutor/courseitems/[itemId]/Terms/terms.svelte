@@ -16,6 +16,8 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { TermDTO, TermsListRequest, TermsListResponse } from '$lib/api_types';
 	import { base } from '$app/paths';
+	import { m } from '$lib/paraglide/messages';
+	import { DataTableSearchParams } from '$lib/api_types_static';
 
 	let loading: boolean = $state(true);
 	let data: TermDTO[] = $state([]);
@@ -38,7 +40,7 @@
 			clickEventHandler: async (event: string, id: number) => {
 				switch (event) {
 					case 'delete':
-						if (!confirm('Term will be deleted permanently.')) {
+						if (!confirm(m.term_delete_confirm())) {
 							return;
 						}
 						API.request<any, Blob>(
@@ -70,12 +72,6 @@
 		}
 	});
 
-	type RestRequest = {
-		pagination?: PaginationState;
-		sorting?: SortingState;
-		columnFilters?: ColumnFiltersState;
-	};
-
 	async function fetchData(encodedFilters?: string) {
 		await API.request<TermsListRequest, TermsListResponse>(
 			`/api/v2/courses/${courseId}/items/${itemId}/terms`,
@@ -93,12 +89,7 @@
 	}
 
 	function refetch(state: TableState) {
-		const queryParams: RestRequest = {
-			...(state.pagination ? { pagination: state.pagination } : {}),
-			...(state.sorting ? { sorting: state.sorting } : {}),
-			...(state.columnFilters ? { columnFilters: state.columnFilters } : {})
-		};
-		encodedParams = encodeJsonToBase64Url(queryParams);
+		encodedParams = DataTableSearchParams.fromDataTable(state).toURL();
 	}
 
 	onMount(async () => {

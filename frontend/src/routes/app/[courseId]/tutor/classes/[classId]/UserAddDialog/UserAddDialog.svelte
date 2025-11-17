@@ -22,6 +22,7 @@
 	} from '@tanstack/table-core';
 	import Loader from '$lib/components/ui/loader/loader.svelte';
 	import { invalidateAll } from '$app/navigation';
+	import { DataTableSearchParams } from '$lib/api_types_static';
 
 	let {
 		defaultRole,
@@ -76,17 +77,8 @@
 			.catch(() => {});
 	};
 
-	type RestRequest = {
-		sorting?: SortingState;
-		columnFilters?: ColumnFiltersState;
-	};
-
 	function refetch(state: TableState) {
-		const queryParams: RestRequest = {
-			...(state.sorting ? { sorting: state.sorting } : {}),
-			...(state.columnFilters ? { columnFilters: state.columnFilters } : {})
-		};
-		search = encodeJsonToBase64Url(queryParams);
+		search = DataTableSearchParams.fromDataTable(state).toURL();
 		loadData();
 	}
 

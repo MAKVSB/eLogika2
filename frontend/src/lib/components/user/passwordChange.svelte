@@ -70,7 +70,7 @@
 							: 'grid-cols-2'} gap-4"
 					>
 						<Form.TextInput
-							title="Current password"
+							title={m.user_password_reset_current()}
 							name="oldPassword"
 							id="oldPassword"
 							type="password"
@@ -78,7 +78,7 @@
 							error={passwordForm.errors.oldPassword}
 						></Form.TextInput>
 						<Form.TextInput
-							title="New password"
+							title={m.user_password_reset_new()}
 							name="newPassword"
 							id="newPassword"
 							type="password"
@@ -86,8 +86,8 @@
 							error={passwordForm.errors.newPassword}
 						></Form.TextInput>
 						<Form.TextInput
-							title={m.user_family_name()}
-							name="New password repeated"
+							title={m.user_password_reset_newrepeat()}
+							name="newPasswordRep"
 							id="newPasswordRep"
 							type="password"
 							bind:value={passwordForm.fields.newPasswordRep}

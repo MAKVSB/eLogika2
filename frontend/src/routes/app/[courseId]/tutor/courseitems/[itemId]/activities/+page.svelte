@@ -30,7 +30,7 @@
 			clickEventHandler: async (event: string, id: number) => {
 				switch (event) {
 					case 'delete':
-						if (!confirm('Activity instance will be deleted.')) {
+						if (!confirm(m.activity_instance_delete_confirm())) {
 							return;
 						}
 						API.request<any, Blob>(
