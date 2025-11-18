@@ -32,6 +32,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.25.1" # adjust if needed
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
 
       # Set up Node.js + pnpm
       - name: Set up Node.js
