@@ -7,9 +7,11 @@
 	import { invalidateAll } from '$app/navigation';
 
 	let {
-		userId
+		userId,
+		isJoined
 	}: {
 		userId: number | string;
+		isJoined: boolean;
 	} = $props();
 
 	async function termSignOut() {
@@ -30,7 +32,7 @@
 </script>
 
 <div class="flex justify-between gap-2">
-	<Button variant="outline" class="relative" onclick={() => termSignOut()}>
+	<Button variant="outline" class="relative" onclick={() => termSignOut()} disabled={!isJoined}>
 		<span>{m.term_signout_student()}</span>
 	</Button>
 </div>

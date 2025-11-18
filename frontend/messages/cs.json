@@ -696,5 +696,8 @@
 		}
 	],
 	"question_chapter": "Kapitola",
-	"question_category": "Kategorie"
+	"question_category": "Kategorie",
+	"course_item_includeinsum": "Započítávat výsledek",
+	"course_item_term_user_signedinat": "Přihlášen v",
+	"course_item_term_user_signedoutat": "Odhlášen v"
 }

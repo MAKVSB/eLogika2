@@ -707,5 +707,7 @@
 	],
 	"question_chapter": "Chapter",
 	"question_category": "Category",
-	"course_item_includeinsum": "Count towards the overall result"
+	"course_item_includeinsum": "Count towards the overall result",
+	"course_item_term_user_signedoutat": "Signed out at",
+	"course_item_term_user_signedinat": "Signed in at"
 }

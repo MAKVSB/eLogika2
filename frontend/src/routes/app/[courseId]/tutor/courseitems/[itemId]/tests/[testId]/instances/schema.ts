@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/table-core';
 import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
-import DataTableDateRange from './data-table-date-range.svelte';
+import DataTableDateRange from '$lib/components/ui/data-table/data-table-date-range.svelte';
 import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 import type { TestInstanceListItemDTO } from '$lib/api_types';
 import { type Filter } from '$lib/components/ui/data-table/filter';

@@ -80,9 +80,20 @@ func ListJoinedStudents(c *gin.Context, userData authdtos.LoggedUserDTO, userRol
 	}
 
 	skipUsersWithInstance := c.Query("skipUsersWithInstance") != ""
+	showHistory := c.Query("showHistory") != ""
 
 	termService := services.TermService{}
-	joinedStudents, joinedStudentsCount, err := termService.ListJoinedStudents(initializers.DB, params.TermID, userData.ID, userRole, nil, false, searchParams, skipUsersWithInstance)
+	joinedStudents, joinedStudentsCount, err := termService.ListJoinedStudents(
+		initializers.DB,
+		params.TermID,
+		userData.ID,
+		userRole,
+		nil,
+		false,
+		searchParams,
+		skipUsersWithInstance,
+		showHistory,
+	)
 	if err != nil {
 		return err
 	}

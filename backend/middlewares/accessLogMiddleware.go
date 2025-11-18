@@ -53,6 +53,9 @@ func AccessLogMiddleware() gin.HandlerFunc {
 		logEntry.Duration = float64(time.Since(start).Milliseconds())
 
 		go func() {
+			if logEntry.Method == "OPTION" {
+				return
+			}
 			// Place regexes of routes where i want to preserve body in logs here
 			if true {
 				logEntry.RequestBody = &[]byte{}

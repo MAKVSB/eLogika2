@@ -189,6 +189,7 @@ func (r *TermRepository) ListJoinedStudents(
 	full bool,
 	searchParams *common.SearchRequest,
 	skipUsersWithInstance bool,
+	showHistory bool,
 ) ([]*models.UserTerm, int64, *common.ErrorResponse) {
 	query := dbRef.
 		Model(&models.UserTerm{}).
@@ -201,6 +202,10 @@ func (r *TermRepository) ListJoinedStudents(
 
 	if skipUsersWithInstance {
 		query = query.Joins("LEFT JOIN \"test_instances\" ti on ti.participant_id = \"User\".id and ti.term_id = ? and ti.deleted_at is null", termId).Where("ti.id is NULL")
+	}
+
+	if showHistory {
+		query = query.Unscoped()
 	}
 
 	if full {

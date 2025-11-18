@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { StringDate } from '$lib/api_types';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { getLocale } from '$lib/paraglide/runtime';
 
@@ -8,8 +9,8 @@
 		showTime = true,
 		showLabel = false
 	}: {
-		start: string;
-		end: string;
+		start: StringDate;
+		end: StringDate;
 		showTime?: boolean;
 		showLabel?: boolean;
 	} = $props();

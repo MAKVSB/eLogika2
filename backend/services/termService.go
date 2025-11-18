@@ -155,6 +155,7 @@ func (r *TermService) ListJoinedStudents(
 	full bool,
 	searchParams *common.SearchRequest,
 	skipUsersWithInstance bool,
+	showHistory bool,
 ) ([]*models.UserTerm, int64, *common.ErrorResponse) {
-	return r.termRepo.ListJoinedStudents(dbRef, termID, nil, false, searchParams, skipUsersWithInstance)
+	return r.termRepo.ListJoinedStudents(dbRef, termID, filters, false, searchParams, skipUsersWithInstance, showHistory)
 }
