@@ -49,6 +49,7 @@ type CourseItemInsertRequest struct {
 	AllowNegative     bool                        `json:"allowNegative"`                // Allow passing negative points outside of this item
 	ParentID          *uint                       `json:"parentId" validate:"optional"` // Id of parent group object
 	EvaluateByAttempt enums.EvaluateByAttemptEnum `json:"evaluateByAttempt"`            // Evaluation mode
+	IncludeInResults  bool                        `json:"includeInResults"`             // Include in overall results
 	// TODO ManagedBy
 
 	ActivityDetail *ActivityDetailCourseItemInsertRequest `json:"activityDetail" validate:"optional"` // Additional data for type ACTIVITY (homework, project, ...)
@@ -137,6 +138,7 @@ func Insert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 		MaxAttempts:       reqData.MaxAttempts,
 		AllowNegative:     reqData.AllowNegative,
 		EvaluateByAttempt: reqData.EvaluateByAttempt,
+		IncludeInResults:  reqData.IncludeInResults,
 	}
 	if reqData.ParentID != nil && *reqData.ParentID != uint(0) {
 		courseItem.ParentID = reqData.ParentID

@@ -47,6 +47,7 @@ type CourseItemUpdateRequest struct {
 	MaxAttempts       uint                        `json:"maxAttempts"`       // Maximum attempts to sign up to this item
 	AllowNegative     bool                        `json:"allowNegative"`     // Allow passing negative points outside of this item
 	EvaluateByAttempt enums.EvaluateByAttemptEnum `json:"evaluateByAttempt"` // Evaluation mode
+	IncludeInResults  bool                        `json:"includeInResults"`  // Include in overall results
 	// TODO ManagedBy
 
 	ActivityDetail *ActivityDetailCourseItemUpdateRequest `json:"activityDetail"` // Additional data for type ACTIVITY (homework, project, ...)
@@ -137,6 +138,7 @@ func Update(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Cour
 	courseItem.MaxAttempts = reqData.MaxAttempts
 	courseItem.AllowNegative = reqData.AllowNegative
 	courseItem.EvaluateByAttempt = reqData.EvaluateByAttempt
+	courseItem.IncludeInResults = reqData.IncludeInResults
 
 	transaction := initializers.DB.Begin()
 

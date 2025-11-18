@@ -17,7 +17,7 @@ type Chapter struct {
 	CourseID uint           ``
 	Name     string         ``
 	ParentID *uint          ``
-	Content  *TipTapContent `gorm:"serializer:json;type:varbinary"`
+	Content  *TipTapContent `gorm:"serializer:json;type:varbinary(max)"`
 	Visible  bool           ``
 	Order    uint           `gorm:"not null"`
 

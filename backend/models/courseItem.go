@@ -29,7 +29,8 @@ type CourseItem struct {
 	MaxAttempts       uint                        ``
 	AllowNegative     bool                        ``
 	ManagedBy         enums.CourseUserRoleEnum    ``
-	EvaluateByAttempt enums.EvaluateByAttemptEnum `` // TODO TODO TODO add to user interface
+	EvaluateByAttempt enums.EvaluateByAttemptEnum ``
+	IncludeInResults  bool                        ``
 
 	ActivityDetailID *uint ``
 	TestDetailID     *uint ``

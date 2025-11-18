@@ -496,7 +496,7 @@
 	"answer": "Odpověď",
 	"question": "Otázka",
 	"testinstance_variant": "Skupina",
-	"correctanswers_show": "Zobrazit správné odpovědi",
+	"correctanswers_show": "Zobrazit správné odpovědi (Odpovědi, které jsou správné jsou zelené)",
 	"testinstance_status": "Stav",
 	"courseitem_evaluatebyattempt": "Vyhodnotit podle pokusu",
 	"testinstance_activetime": "Aktivní v čase",

@@ -95,7 +95,7 @@ func (r *TermService) ListTerms(
 	if userRole == enums.CourseUserRoleAdmin {
 		// Can user see the course item
 		cis := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
-		courseItem, err := cis.GetCourseItemByID(dbRef, courseID, courseItemID, userID, userRole, nil, false, nil)
+		courseItem, err := cis.GetCourseItemByID(dbRef, courseID, courseItemID, userID, userRole, filters, false, nil)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -110,7 +110,7 @@ func (r *TermService) ListTerms(
 	} else if userRole == enums.CourseUserRoleGarant {
 		// Can user see the course item
 		cis := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
-		courseItem, err := cis.GetCourseItemByID(dbRef, courseID, courseItemID, userID, userRole, nil, false, nil)
+		courseItem, err := cis.GetCourseItemByID(dbRef, courseID, courseItemID, userID, userRole, filters, false, nil)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -125,7 +125,7 @@ func (r *TermService) ListTerms(
 	} else if userRole == enums.CourseUserRoleTutor {
 		// Can user see the course item
 		cis := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
-		courseItem, err := cis.GetCourseItemByID(dbRef, courseID, courseItemID, userID, userRole, nil, false, nil)
+		courseItem, err := cis.GetCourseItemByID(dbRef, courseID, courseItemID, userID, userRole, filters, false, nil)
 		if err != nil {
 			return nil, 0, err
 		}

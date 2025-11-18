@@ -17,7 +17,7 @@ type ActivityInstance struct {
 	TermID        uint ``
 	CourseItemID  uint ``
 
-	Content      *TipTapContent `gorm:"serializer:json;type:varbinary"`
+	Content      *TipTapContent `gorm:"serializer:json;type:varbinary(max)"`
 	ContentFiles []*File        `gorm:"many2many:activity_instance_content_files;"`
 
 	Participant *User       ``

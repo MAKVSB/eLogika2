@@ -67,6 +67,7 @@
 	</Table.Cell>
 	<Table.Cell>{m.yes_no({ value: String(item.mandatory) })}</Table.Cell>
 	<Table.Cell>{m.yes_no({ value: String(item.passed) })}</Table.Cell>
+	<Table.Cell>{m.yes_no({ value: String(item.includeInResults) })}</Table.Cell>
 	<Table.Cell>{item.maxAttempts}</Table.Cell>
 </Table.Row>
 {#if open}

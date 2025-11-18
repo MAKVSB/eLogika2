@@ -21,7 +21,7 @@ type Course struct {
 	Version   uint           ``
 
 	Name          string              ``
-	Content       *TipTapContent      `gorm:"serializer:json;type:varbinary"`
+	Content       *TipTapContent      `gorm:"serializer:json;type:varbinary(max)"`
 	ContentFiles  []*File             `gorm:"many2many:course_content_files;"`
 	Shortname     string              ``
 	Public        bool                ``

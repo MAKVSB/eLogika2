@@ -20,6 +20,7 @@ type CourseItemDTO struct {
 	Editable          bool                        `json:"editable"`
 	ManagedBy         enums.CourseUserRoleEnum    `json:"managedBy"`
 	EvaluateByAttempt enums.EvaluateByAttemptEnum `json:"evaluateByAttempt"`
+	IncludeInResults  bool                        `json:"includeInResults"`
 
 	ActivityDetail *CourseItemActivityDTO `json:"activityDetail,omitempty"`
 	TestDetail     *CourseItemTestDTO     `json:"testDetail,omitempty"`
@@ -42,6 +43,7 @@ func (m CourseItemDTO) From(d *models.CourseItem) CourseItemDTO {
 		Editable:          d.Editable,
 		ManagedBy:         d.ManagedBy,
 		EvaluateByAttempt: d.EvaluateByAttempt,
+		IncludeInResults:  d.IncludeInResults,
 	}
 	if d.ActivityDetail != nil {
 		a := CourseItemActivityDTO{}.From(d.ActivityDetail)

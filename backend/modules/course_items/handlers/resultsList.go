@@ -109,7 +109,7 @@ func ListResults(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 	for i, u := range users {
 		dtoList[i] = dtos.CourseItemResultsDTO{}.From(&u)
 
-		_, innerPoints, innerPassed, _, innerResults := CalculateItemResult(courseItem, u.ID, &results, true)
+		_, innerPoints, innerPassed, _, innerResults := CalculateItemResult(courseItem, u.ID, &results, true, courseItem.Type != enums.CourseItemTypeGroup)
 		dtoList[i].Points = innerPoints
 		dtoList[i].Passed = innerPassed
 		dtoList[i].Results = innerResults

@@ -246,11 +246,9 @@
 							{#each question.answers as answer}
 								<Table.Cell>
 									<Form.Checkbox
-										innerClass={showCorrect
-											? answer.correct
+										innerClass={showCorrect && answer.correct
 												? 'bg-green-500 data-[state=checked]:bg-green-500 dark:bg-green-500 dark:data-[state=checked]:bg-green-500'
-												: 'bg-red-500 data-[state=checked]:bg-red-500 dark:bg-red-500 dark:data-[state=checked]:bg-red-500'
-											: ''}
+												: ''}
 										name="q{question.id}-a{answer.id}"
 										id="q{question.id}-a{answer.id}"
 										bind:value={answer.selected}
@@ -327,11 +325,9 @@
 										<Table.Row>
 											<Table.Cell style="width: 60px;">
 												<Form.Checkbox
-													innerClass={showCorrect
-														? answer.correct
+													innerClass={showCorrect && answer.correct
 															? 'bg-green-500 data-[state=checked]:bg-green-500 dark:bg-green-500 dark:data-[state=checked]:bg-green-500'
-															: 'bg-red-500 data-[state=checked]:bg-red-500 dark:bg-red-500 dark:data-[state=checked]:bg-red-500'
-														: ''}
+															: ''}
 													name="q{question.id}-a{answer.id}"
 													id="q{question.id}-a{answer.id}"
 													bind:value={answer.selected}

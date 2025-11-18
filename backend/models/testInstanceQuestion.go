@@ -6,7 +6,7 @@ type TestInstanceQuestion struct {
 	TestInstanceID uint
 
 	TestQuestionID         uint                          ``
-	TextAnswer             *TipTapContent                `gorm:"serializer:json;type:varbinary"`
+	TextAnswer             *TipTapContent                `gorm:"serializer:json;type:varbinary(max)"`
 	TextAnswerReviewedByID *uint                         ``
 	TextAnswerPercentage   float64                       ``
 	Answers                []*TestInstanceQuestionAnswer ``

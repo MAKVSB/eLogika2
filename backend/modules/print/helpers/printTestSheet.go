@@ -78,7 +78,7 @@ func (asp AnswerSheetPrinter) GenerateAnswerSheets(testData *models.Test, testIn
 			}
 
 			headingLines = append(headingLines, "Datum: "+testData.Term.ActiveFrom.Format("02.01.2006"))
-			headingLines = append(headingLines, "Čas: "+testData.Term.ActiveFrom.Format("15:04")+" - "+testData.Term.ActiveTo.Format("15:04"))
+			headingLines = append(headingLines, "Čas: "+testData.Term.ActiveFrom.Local().Format("15:04")+" - "+testData.Term.ActiveTo.Local().Format("15:04"))
 			headingLines = append(headingLines, "Test: "+testData.CourseItem.Name)
 			headingLines = append(headingLines, "Varianta: "+testData.Group)
 

@@ -143,7 +143,7 @@ func ListForStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 	totalPassed := true
 	dtoList := make([]dtos.StudentCourseItemDTO, len(rootCourseItems))
 	for i, ci := range rootCourseItems {
-		innerDto, innerPoints, innerPassed, innerMandatory, _ := CalculateItemResult(&ci, userData.ID, &results, false)
+		innerDto, innerPoints, innerPassed, innerMandatory, _ := CalculateItemResult(&ci, userData.ID, &results, false, false)
 		dtoList[i] = innerDto
 		totalPoints += innerPoints
 
@@ -175,7 +175,7 @@ func ListForStudent(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 }
 
 // Returns dto, points to count to parent, passed, optional
-func CalculateItemResult(ci *models.CourseItem, studentId uint, allResults *[]*models.CourseItemResult, returnResults bool) (dtos.StudentCourseItemDTO, float64, bool, bool, []*dtos.CourseItemResultDTO) {
+func CalculateItemResult(ci *models.CourseItem, studentId uint, allResults *[]*models.CourseItemResult, returnResults bool, forceInclude bool) (dtos.StudentCourseItemDTO, float64, bool, bool, []*dtos.CourseItemResultDTO) {
 	dto := dtos.StudentCourseItemDTO{}.From(ci)
 	passed := true
 	points := float64(0)
@@ -220,7 +220,7 @@ func CalculateItemResult(ci *models.CourseItem, studentId uint, allResults *[]*m
 		}
 	case enums.CourseItemTypeGroup:
 		for _, ciChildren := range ci.Children {
-			innerDto, innerPoints, innerPassed, innerMandatory, innerResults := CalculateItemResult(ciChildren, studentId, allResults, returnResults)
+			innerDto, innerPoints, innerPassed, innerMandatory, innerResults := CalculateItemResult(ciChildren, studentId, allResults, returnResults, forceInclude)
 
 			if returnResults && innerResults != nil {
 				resultDtos = append(resultDtos, innerResults...)
@@ -263,5 +263,9 @@ func CalculateItemResult(ci *models.CourseItem, studentId uint, allResults *[]*m
 	if !ci.AllowNegative {
 		points = max(points, 0)
 	}
+	if !ci.IncludeInResults && !forceInclude {
+		points = 0
+	}
+
 	return dto, points, passed, ci.Mandatory, resultDtos
 }

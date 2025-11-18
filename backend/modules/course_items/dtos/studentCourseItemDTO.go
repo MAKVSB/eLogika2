@@ -6,13 +6,14 @@ import (
 )
 
 type StudentCourseItemDTO struct {
-	ID          uint                     `json:"id"`
-	Name        string                   `json:"name"`
-	Type        enums.CourseItemTypeEnum `json:"type"`
-	PointsMin   uint                     `json:"pointsMin"`
-	PointsMax   uint                     `json:"pointsMax"`
-	Mandatory   bool                     `json:"mandatory"`
-	MaxAttempts uint                     `json:"maxAttempts"`
+	ID               uint                     `json:"id"`
+	Name             string                   `json:"name"`
+	Type             enums.CourseItemTypeEnum `json:"type"`
+	PointsMin        uint                     `json:"pointsMin"`
+	PointsMax        uint                     `json:"pointsMax"`
+	Mandatory        bool                     `json:"mandatory"`
+	MaxAttempts      uint                     `json:"maxAttempts"`
+	IncludeInResults bool                     `json:"includeInResults"`
 
 	Childs  []*StudentCourseItemDTO `json:"childs"`  // Needs to be assigned outside
 	Results []*CourseItemResultDTO  `json:"results"` // Needs to be assigned outside
@@ -22,14 +23,14 @@ type StudentCourseItemDTO struct {
 
 func (m StudentCourseItemDTO) From(d *models.CourseItem) StudentCourseItemDTO {
 	dto := StudentCourseItemDTO{
-		ID:          d.ID,
-		Name:        d.Name,
-		Type:        d.Type,
-		PointsMin:   d.PointsMin,
-		PointsMax:   d.PointsMax,
-		Mandatory:   d.Mandatory,
-		MaxAttempts: d.MaxAttempts,
-		Points:      0,
+		ID:               d.ID,
+		Name:             d.Name,
+		Type:             d.Type,
+		PointsMin:        d.PointsMin,
+		PointsMax:        d.PointsMax,
+		Mandatory:        d.Mandatory,
+		MaxAttempts:      d.MaxAttempts,
+		IncludeInResults: d.IncludeInResults,
 	}
 
 	return dto

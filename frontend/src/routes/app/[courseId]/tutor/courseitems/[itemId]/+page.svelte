@@ -100,7 +100,8 @@
 				GlobalState.activeRole == CourseUserRoleEnum.TUTOR
 					? CourseUserRoleEnum.TUTOR
 					: CourseUserRoleEnum.GARANT,
-			evaluateByAttempt: EvaluateByAttemptEnum.LAST
+			evaluateByAttempt: EvaluateByAttemptEnum.LAST,
+			includeInResults: true,
 		};
 
 		const parentId = parseParentData();
@@ -252,7 +253,7 @@
 						disabled={!form.fields.editable}
 					></Form.SingleSelect>
 				</div>
-				<div class="grid grid-cols-3 gap-4">
+				<div class="grid grid-cols-4 gap-4">
 					<Form.TextInput
 						title={m.courseitem_maxattempts()}
 						name="maxAttempts"
@@ -269,6 +270,14 @@
 						id="mandatory"
 						bind:value={form.fields.mandatory}
 						error={form.errors.mandatory}
+						disabled={!form.fields.editable}
+					></Form.Checkbox>
+					<Form.Checkbox
+						title={m.course_item_includeinsum()}
+						name="includeInResults"
+						id="includeInResults"
+						bind:value={form.fields.includeInResults}
+						error={form.errors.includeInResults}
 						disabled={!form.fields.editable}
 					></Form.Checkbox>
 				</div>

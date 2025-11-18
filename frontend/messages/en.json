@@ -500,7 +500,7 @@
 	"answers": "Answers",
 	"question": "Question",
 	"no_questions": "No questions",
-	"correctanswers_show": "Show correct answers",
+	"correctanswers_show": "Show correct answers (Answers that are marked as correct are green)",
 	"testinstance_variant": "Group",
 	"testinstance_status": "Status",
 	"testinstance_activetime": "Active time",
@@ -706,5 +706,6 @@
 		}
 	],
 	"question_chapter": "Chapter",
-	"question_category": "Category"
+	"question_category": "Category",
+	"course_item_includeinsum": "Count towards the overall result"
 }

@@ -19,6 +19,7 @@
 		<Table.Head>{m.testinstance_points()}</Table.Head>
 		<Table.Head>{m.course_item_mandatory()}</Table.Head>
 		<Table.Head>{m.course_item_passed()}</Table.Head>
+		<Table.Head>{m.course_item_includeinsum()}</Table.Head>
 		<Table.Head>{m.course_item_tries()}</Table.Head>
 	</Table.Row>
 {/snippet}

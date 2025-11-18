@@ -5,9 +5,9 @@ import (
 )
 
 type ChapterService struct {
-	courseRepo *repositories.CategoryRepository
+	courseRepo *repositories.ChapterRepository
 }
 
-func NewChapterService(repo *repositories.CategoryRepository) *ChapterService {
+func NewChapterService(repo *repositories.ChapterRepository) *ChapterService {
 	return &ChapterService{courseRepo: repo}
 }
