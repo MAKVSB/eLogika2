@@ -32,7 +32,7 @@ type TestInstancePrepareResponse struct {
 // @Failure 400 {object} common.ErrorResponse "Invalid resource or patch"
 // @Failure 403 {object} common.ErrorResponse "Permission or atuhentication errors"
 // @Failure 500 {object} common.ErrorResponse "Fatal failure"
-// @Router /api/v2/courses/{courseId}/tests/instance/start [post]
+// @Router /api/v2/courses/{courseId}/tests/prepare [post]
 func TestInstancePrepare(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.CourseUserRoleEnum) *common.ErrorResponse {
 	// Load request data
 	err, params, reqData := utils.GetRequestData[

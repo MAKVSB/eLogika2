@@ -41,7 +41,7 @@ type UserUpdateSelfResponse struct {
 // @Failure 403 {object} common.ErrorResponse "Permission or atuhentication errors"
 // @Failure 422 {object} common.ErrorResponse "Data validation errors"
 // @Failure 500 {object} common.ErrorResponse "Fatal failure"
-// @Router /api/v2/users/{userId} [put]
+// @Router /api/v2/users/self [put]
 func UserUpdateSelf(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.CourseUserRoleEnum) *common.ErrorResponse {
 	// Load request data
 	err, _, reqData := utils.GetRequestData[

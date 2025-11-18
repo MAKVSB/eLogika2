@@ -26,7 +26,7 @@ type ActivityInstanceDeleteResponse struct {
 // @Failure 400 {object} common.ErrorResponse "Invalid resource or patch"
 // @Failure 403 {object} common.ErrorResponse "Permission or atuhentication errors"
 // @Failure 500 {object} common.ErrorResponse "Fatal failure"
-// @Router /api/v2/courses/{courseId}/tests/{courseItemId}/instance/{instanceId} [delete]
+// @Router /api/v2/courses/{courseId}/activities/instance/{instanceId} [delete]
 func ActivityInstanceDelete(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.CourseUserRoleEnum) *common.ErrorResponse {
 	// Load request data
 	err, params, _ := utils.GetRequestData[

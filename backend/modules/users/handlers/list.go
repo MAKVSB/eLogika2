@@ -30,7 +30,7 @@ type UserListRequest struct {
 // @Failure 400 {object} common.ErrorResponse "Invalid resource or patch"
 // @Failure 403 {object} common.ErrorResponse "Permission or atuhentication errors"
 // @Failure 500 {object} common.ErrorResponse "Fatal failure"
-// @Router /api/v2/courses/{courseId}/users [get]
+// @Router /api/v2/courses/users [get]
 func List(c *gin.Context, userData authdtos.LoggedUserDTO) {
 	// Load request data
 	err, _, _, searchParams := utils.GetRequestDataWithSearch[

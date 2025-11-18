@@ -28,7 +28,7 @@ type ClassDeleteResponse struct {
 // @Failure 400 {object} common.ErrorResponse "Invalid resource or patch"
 // @Failure 403 {object} common.ErrorResponse "Permission or atuhentication errors"
 // @Failure 500 {object} common.ErrorResponse "Fatal failure"
-// @Router /api/v2/courses/{courseId} [get]
+// @Router /api/v2/courses/{courseId}/classes/{classId} [delete]
 func ClassDelete(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.CourseUserRoleEnum) *common.ErrorResponse {
 	// Load request data
 	err, params, _ := utils.GetRequestData[

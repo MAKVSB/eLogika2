@@ -28,7 +28,7 @@ type ListTutorResponse struct {
 // @Failure 403 {object} common.ErrorResponse "Permission or atuhentication errors"
 // @Failure 422 {object} common.ErrorResponse "Data validation errors"
 // @Failure 500 {object} common.ErrorResponse "Fatal failure"
-// @Router /api/v2/courses/ [post] // TODO
+// @Router /api/v2/courses/{courseId}/classes/{classId}/tutors [get]
 func ListTutors(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.CourseUserRoleEnum) *common.ErrorResponse {
 	// Load request data
 	err, params, _ := utils.GetRequestData[

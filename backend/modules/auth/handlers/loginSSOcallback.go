@@ -36,7 +36,7 @@ type SSOLoginCallbackResponse struct {
 // @Failure 401 {object} common.ErrorResponse "Unauthorised"
 // @Failure 422 {object} common.ErrorResponse "Data validation errors"
 // @Failure 500 {object} common.ErrorResponse "Fatal failure"
-// @Router /api/v2/auth/login [post]
+// @Router /api/v2/auth/login/sso/callback [post]
 func SSOLoginCallback(c *gin.Context) {
 	// Load request data
 	err, _, reqData := utils.GetRequestData[

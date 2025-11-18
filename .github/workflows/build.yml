@@ -31,7 +31,6 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.25.1" # adjust if needed
           go-version-file: backend/go.mod
           cache-dependency-path: backend/go.sum
 
@@ -55,7 +54,7 @@ jobs:
         working-directory: backend
         run: |
           make typescript
-          swag init --parseInternal --parseDependency
+          swag init --parseInternal --parseDependency -q
           GOOS=windows GOARCH=amd64 go build -o elogika2.exe
 
       - name: Build backend migration
@@ -104,6 +103,7 @@ jobs:
             dist/public
 
       - name: Package release files
+        if: ${{ inputs.release }}
         run: |
           zip -r elogika2-back-${{ github.ref_name }}.zip dist/*.exe
           zip -r elogika2-front-${{ github.ref_name }}.zip dist/public

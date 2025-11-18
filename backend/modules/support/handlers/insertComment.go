@@ -35,7 +35,7 @@ type SupportTicketCommentInsertResponse struct {
 // @Failure 403 {object} common.ErrorResponse "Permission or atuhentication errors"
 // @Failure 422 {object} common.ErrorResponse "Data validation errors"
 // @Failure 500 {object} common.ErrorResponse "Fatal failure"
-// @Router /api/v2/support [post]
+// @Router /api/v2/support/:ticketId/comment [put]
 func SupportTicketCommentInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.CourseUserRoleEnum) *common.ErrorResponse {
 	// Load request data
 	err, params, reqData := utils.GetRequestData[
