@@ -7,6 +7,7 @@
 	import QrCodeIcon from '@lucide/svelte/icons/qr-code';
 	import GalleryVerticalEndIcon from '@lucide/svelte/icons/gallery-vertical-end';
 	import AudioWaveformIcon from '@lucide/svelte/icons/audio-waveform';
+	import LifeBuoyIcon from "@lucide/svelte/icons/life-buoy"
 	import GlobalState from '$lib/shared.svelte';
 	import { base } from '$app/paths';
 
@@ -131,9 +132,22 @@
 				name: ``,
 				items: [
 					{
+						title: "Create support ticket",
+						fn: () => {
+							window.open(base + `/app/support/0?origin=` + encodeURIComponent(page.url.toString()), "_blank")
+						},
+						icon: LifeBuoyIcon,
+					},
+					{
+						title: "View support tickets",
+						url: base+`/app/support`,
+						icon: LifeBuoyIcon,
+					},
+					{
 						title: m.menu_recognizer(),
 						url: base+`/app/recognizer`,
-						icon: QrCodeIcon
+						icon: QrCodeIcon,
+						requiredRoles: [CourseUserRoleEnum.ADMIN, CourseUserRoleEnum.TUTOR, CourseUserRoleEnum.GARANT]
 					}
 				],
 				requiredRoles: []
@@ -154,6 +168,7 @@
 	} from './nav-category.svelte';
 	import { m } from '$lib/paraglide/messages';
 	import { CourseUserRoleEnum } from '$lib/api_types';
+	import { page } from '$app/state';
 
 	let { ref = $bindable(null), ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 </script>

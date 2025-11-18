@@ -39,6 +39,8 @@ import (
 
 	fileHandlers "elogika.vsb.cz/backend/modules/files/handlers"
 
+	supportHandlers "elogika.vsb.cz/backend/modules/support/handlers"
+
 	"github.com/hypersequent/zen"
 	"github.com/tkrajina/typescriptify-golang-structs/typescriptify"
 )
@@ -185,7 +187,16 @@ func main() {
 		Add(activityHandlers.ActivityListResponse{}).
 		Add(activityHandlers.ActivityInstanceSaveRequest{}).
 		Add(activityHandlers.ActivityInstanceSaveResponse{}).
-		Add(fileHandlers.FileUploadResponse{})
+		Add(fileHandlers.FileUploadResponse{}).
+		Add(supportHandlers.SupportTicketInsertRequest{}).
+		Add(supportHandlers.SupportTicketInsertResponse{}).
+		Add(supportHandlers.SupportTicketUpdateRequest{}).
+		Add(supportHandlers.SupportTicketUpdateResponse{}).
+		Add(supportHandlers.SupportTicketListRequest{}).
+		Add(supportHandlers.SupportTicketListResponse{}).
+		Add(supportHandlers.SupportTicketGetByIdResponse{}).
+		Add(supportHandlers.SupportTicketCommentInsertRequest{}).
+		Add(supportHandlers.SupportTicketCommentInsertResponse{})
 
 	// TODO: maybe remove once handlers exists
 	converter.Add(dtos.CourseItemDTO{})
@@ -268,6 +279,10 @@ func main() {
 	c.AddType(classHandlers.ClassListRequest{})
 
 	c.AddType(activityHandlers.ActivityInstanceSaveRequest{})
+
+	c.AddType(supportHandlers.SupportTicketInsertRequest{})
+	c.AddType(supportHandlers.SupportTicketUpdateRequest{})
+	c.AddType(supportHandlers.SupportTicketCommentInsertRequest{})
 
 	print := "import z from \"zod/v4\"; \n"
 	print += "import { en, cs } from \"zod/v4/locales\"; \n"

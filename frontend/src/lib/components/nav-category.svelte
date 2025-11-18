@@ -10,7 +10,8 @@
 
 	export interface SidebarCategoryItem {
 		title: string;
-		url: string;
+		url?: string;
+		fn?: () => void;
 		icon: Component;
 		isActive?: boolean;
 		requiredRoles?: string[];
@@ -58,7 +59,16 @@
 					<Sidebar.MenuItem>
 						<Sidebar.MenuButton>
 							{#snippet child({ props })}
-								<a href={item.url} onclick={() => setOpenMobile(false)} {...props}>
+								<a
+									href={item.url}
+									onclick={() => {
+										if (item.fn) {
+											item.fn();
+										}
+										setOpenMobile(false);
+									}}
+									{...props}
+								>
 									<item.icon />
 									<span>{item.title}</span>
 								</a>

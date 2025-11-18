@@ -87,7 +87,21 @@ jobs:
           mv backend/elogika2.exe dist/elogika2.exe
           mv frontend/build dist/public
 
-      - name: Package artifacts
+      # Upload artifacts
+      - name: Upload backend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: elogika2-back
+          path: |
+            dist/*.exe
+      - name: Upload frontend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: elogika2-front
+          path: |
+            dist/public
+
+      - name: Package release files
         run: |
           zip -r elogika2-back-${{ github.ref_name }}.zip dist/*.exe
           zip -r elogika2-front-${{ github.ref_name }}.zip dist/public
@@ -104,17 +118,3 @@ jobs:
             elogika2-front-${{ github.ref_name }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Upload artifacts
-      - name: Upload backend artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: elogika2-back
-          path: |
-            elogika2-back-${{ github.ref_name }}.zip
-      - name: Upload frontend artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: elogika2-front
-          path: |
-            elogika2-front-${{ github.ref_name }}.zip

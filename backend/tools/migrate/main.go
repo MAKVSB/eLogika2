@@ -57,6 +57,9 @@ func main() {
 		&models.RecognizerFile{},
 		&models.LogAccess{},
 		&models.LogError{},
+
+		&models.SupportTicketComment{},
+		&models.SupportTicket{},
 	)
 	fmt.Println(err)
 }
