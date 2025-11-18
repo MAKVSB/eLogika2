@@ -4,6 +4,7 @@ import { type JoinedStudentDTO } from '$lib/api_types';
 import { type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
 import { Checkbox } from '$lib/components/ui/checkbox';
+import DataTableDate from '$lib/components/ui/data-table/data-table-date.svelte';
 
 export const filters: Filter[] = [];
 
@@ -69,5 +70,19 @@ export const columns: (ColumnDef<JoinedStudentDTO> & { uniqueId?: string })[] = 
 	{
 		accessorKey: 'email',
 		header: m.user_email()
+	},
+	{
+		accessorKey: 'createdAt',
+		header: ({ column }) =>
+			renderComponent(SortButton, {
+				name: m.course_item_term_user_signedinat(),
+				sorted: column.getIsSorted(),
+				onclick: column.getToggleSortingHandler()
+			}),
+		cell: ({ row }) => {
+			return renderComponent(DataTableDate, {
+				dateTime: row.original.createdAt
+			});
+		}
 	}
 ];

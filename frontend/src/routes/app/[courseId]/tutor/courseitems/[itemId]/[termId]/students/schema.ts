@@ -72,7 +72,12 @@ export const columns: (ColumnDef<JoinedStudentDTO> & { uniqueId?: string })[] = 
 	},
 	{
 		accessorKey: 'createdAt',
-		header: m.course_item_term_user_signedinat(),
+		header: ({ column }) =>
+			renderComponent(SortButton, {
+				name: m.course_item_term_user_signedinat(),
+				sorted: column.getIsSorted(),
+				onclick: column.getToggleSortingHandler()
+			}),
 		cell: ({ row }) => {
 			return renderComponent(DataTableDate, {
 				dateTime: row.original.createdAt
