@@ -21,8 +21,7 @@ type SupportTicketGetByIdResponse struct {
 // @Tags SupportTickets
 // @Security ApiKeyAuth
 // @Produce  json
-// @Param courseId path int true "ID of the corresponding course"
-// @Param support ticketId path int true "ID of the edited support ticket"
+// @Param ticketId path int true "ID of the edited support ticket"
 // @Success 200 {object} SupportTicketGetByIdResponse "Successful operation"
 // @Failure 400 {object} common.ErrorResponse "Invalid resource or patch"
 // @Failure 403 {object} common.ErrorResponse "Permission or atuhentication errors"
