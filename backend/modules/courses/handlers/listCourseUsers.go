@@ -60,7 +60,7 @@ func ListCourseUsers(c *gin.Context, userData authdtos.LoggedUserDTO, userRole e
 	if err != nil {
 		return err
 	}
-	innerQuery = models.User{}.ApplySorting(innerQuery, searchParams.Sorting)
+	innerQuery = models.User{}.ApplySorting(innerQuery, searchParams.Sorting, "")
 
 	query := initializers.DB.Model(models.CourseUser{}).
 		Where("course_id = ?", params.CourseID).
@@ -70,7 +70,7 @@ func ListCourseUsers(c *gin.Context, userData authdtos.LoggedUserDTO, userRole e
 	if err != nil {
 		return err
 	}
-	query = models.CourseUser{}.ApplySorting(query, searchParams.Sorting)
+	query = models.CourseUser{}.ApplySorting(query, searchParams.Sorting, "")
 	totalCount := models.CourseUser{}.GetCount(query) // Gets count before pagination
 	query = models.CourseUser{}.ApplyPagination(query, searchParams.Pagination)
 

@@ -1,23 +1,33 @@
-import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
+import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
-import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 import { type TermDTO } from '$lib/api_types';
 import { type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
 import DataTableDateRange from '$lib/components/ui/data-table/data-table-date-range.svelte';
+import type { InitialTableState } from '@tanstack/table-core';
+
+export const searchParam = 'termsearch';
+
+export const initialState: InitialTableState = {
+	pagination: {
+		pageIndex: 0,
+		pageSize: 50
+	}
+};
 
 export const filters: Filter[] = [];
 
-export const columns: (ColumnDef<TermDTO> & { uniqueId?: string })[] = [
+export const columns: ColDef<TermDTO>[] = [
 	{
 		accessorKey: 'row_index',
 		header: 'ID',
+		columnName: 'ID',
 		cell: ({ row, table }) => {
 			return (
 				table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1
 			);
 		},
+		enableHiding: false,
 		size: 0
 	},
 	// {
@@ -40,6 +50,7 @@ export const columns: (ColumnDef<TermDTO> & { uniqueId?: string })[] = [
 	// },
 	{
 		accessorKey: 'name',
+		columnName: m.term_name(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.term_name(),
@@ -49,6 +60,7 @@ export const columns: (ColumnDef<TermDTO> & { uniqueId?: string })[] = [
 	},
 	{
 		accessorKey: 'activeFrom',
+		columnName: m.term_active(),
 		header: m.term_active(),
 		cell: ({ row }) => {
 			return renderComponent(DataTableDateRange, {
@@ -59,6 +71,7 @@ export const columns: (ColumnDef<TermDTO> & { uniqueId?: string })[] = [
 	},
 	{
 		accessorKey: 'signInFrom',
+		columnName: m.term_signin(),
 		header: m.term_signin(),
 		cell: ({ row }) => {
 			return renderComponent(DataTableDateRange, {
@@ -69,6 +82,7 @@ export const columns: (ColumnDef<TermDTO> & { uniqueId?: string })[] = [
 	},
 	{
 		accessorKey: 'signOutFrom',
+		columnName: m.term_signout(),
 		header: m.term_signout(),
 		cell: ({ row }) => {
 			return renderComponent(DataTableDateRange, {
@@ -79,20 +93,31 @@ export const columns: (ColumnDef<TermDTO> & { uniqueId?: string })[] = [
 	},
 	{
 		accessorKey: 'studentsMax',
+		columnName: m.term_maximumstudents(),
 		header: m.term_maximumstudents()
 	},
 	{
 		accessorKey: 'studentsJoined',
+		columnName: m.term_signed_students(),
 		header: m.term_signed_students()
 	},
 	{
 		header: m.actions(),
+		columnName: m.actions(),
 		cell: ({ row, column }) => {
 			return renderComponent(DataTableActions, {
 				id: row.original.id,
 				meta: column.columnDef.meta
 			});
 		},
-		uniqueId: 'actions'
+		enableHiding: false,
+		id: 'actions'
 	}
 ];
+
+export const tableConfig = {
+	columns,
+	filters,
+	initialState,
+	searchParam
+};

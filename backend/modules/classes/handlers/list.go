@@ -2,12 +2,12 @@ package handlers
 
 import (
 	"elogika.vsb.cz/backend/initializers"
-	"elogika.vsb.cz/backend/models"
 	authdtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	"elogika.vsb.cz/backend/modules/classes/dtos"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/repositories"
+	"elogika.vsb.cz/backend/services"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -46,22 +46,8 @@ func List(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Course
 
 	// TODO validate from here
 
-	classRepo := repositories.NewClassRepository()
-	var classes []*models.Class
-	var classCount int64
-	// If not admin, garant or tutor
-	if userRole == enums.CourseUserRoleAdmin {
-		classes, classCount, err = classRepo.ListClassesAdmin(initializers.DB, params.CourseID, userData.ID, true, searchParams)
-	} else if userRole == enums.CourseUserRoleGarant {
-		classes, classCount, err = classRepo.ListClassesGarant(initializers.DB, params.CourseID, userData.ID, true, searchParams)
-	} else if userRole == enums.CourseUserRoleTutor {
-		classes, classCount, err = classRepo.ListClassesTutor(initializers.DB, params.CourseID, userData.ID, true, searchParams)
-	} else {
-		return &common.ErrorResponse{
-			Code:    403,
-			Message: "Not enough permissions",
-		}
-	}
+	classService := services.NewClassService(repositories.NewClassRepository())
+	classes, classCount, err := classService.ListClasses(initializers.DB, params.CourseID, userData.ID, userRole, nil, true, searchParams)
 	if err != nil {
 		return err
 	}

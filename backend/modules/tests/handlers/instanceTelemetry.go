@@ -78,6 +78,7 @@ func TestInstanceTelemetry(c *gin.Context, userData authdtos.LoggedUserDTO, user
 			TestInstanceID: params.InstanceID,
 			UserID:         userData.ID,
 			OccuredAt:      event.OccuredAt,
+			ReceivedAt:     time.Now(),
 			EventSource:    enums.TestInstanceEventSourceClient,
 			EventType:      event.EventType,
 			EventData:      event.EventData,

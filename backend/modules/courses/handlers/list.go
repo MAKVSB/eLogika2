@@ -60,7 +60,7 @@ func List(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Course
 	if err != nil {
 		return err
 	}
-	query = m.ApplySorting(query, searchParams.Sorting)
+	query = m.ApplySorting(query, searchParams.Sorting, "year DESC, id DESC")
 	totalCount := m.GetCount(query) // Gets count before pagination
 	query = m.ApplyPagination(query, searchParams.Pagination)
 

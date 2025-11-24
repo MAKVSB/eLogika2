@@ -1,24 +1,34 @@
-import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
+import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableDateRange from '$lib/components/ui/data-table/data-table-date-range.svelte';
-import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 import type { TestInstanceListItemDTO } from '$lib/api_types';
 import { type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
 import { displayUserName } from '$lib/utils';
+import type { InitialTableState } from '@tanstack/table-core';
+
+export const searchParam = 'search';
+
+export const initialState: InitialTableState = {
+	pagination: {
+		pageIndex: 0,
+		pageSize: 25
+	}
+};
 
 export const filters: Filter[] = [];
 
-export const columns: (ColumnDef<TestInstanceListItemDTO> & { uniqueId?: string })[] = [
+export const columns: ColDef<TestInstanceListItemDTO>[] = [
 	{
 		accessorKey: 'row_index',
 		header: 'ID',
+		columnName: 'ID',
 		cell: ({ row, table }) => {
 			return (
 				table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1
 			);
 		},
+		enableHiding: false,
 		size: 0
 	},
 	// {
@@ -41,6 +51,7 @@ export const columns: (ColumnDef<TestInstanceListItemDTO> & { uniqueId?: string 
 	// },
 	{
 		accessorKey: 'participant',
+		columnName: m.user_username(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.user_username(),
@@ -53,6 +64,7 @@ export const columns: (ColumnDef<TestInstanceListItemDTO> & { uniqueId?: string 
 	},
 	{
 		accessorKey: 'state',
+		columnName: m.test_instance_state(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.test_instance_state(),
@@ -65,6 +77,7 @@ export const columns: (ColumnDef<TestInstanceListItemDTO> & { uniqueId?: string 
 	},
 	{
 		accessorKey: 'form',
+		columnName: m.test_instance_form(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.test_instance_form(),
@@ -74,10 +87,12 @@ export const columns: (ColumnDef<TestInstanceListItemDTO> & { uniqueId?: string 
 	},
 	{
 		accessorKey: 'points',
+		columnName: m.test_instance_points(),
 		header: m.test_instance_points()
 	},
 	{
 		accessorKey: 'startedAt',
+		columnName: m.test_instance_time(),
 		header: m.test_instance_time(),
 		cell: ({ row }) => {
 			return renderComponent(DataTableDateRange, {
@@ -88,12 +103,21 @@ export const columns: (ColumnDef<TestInstanceListItemDTO> & { uniqueId?: string 
 	},
 	{
 		header: m.actions(),
+		columnName: m.actions(),
 		cell: ({ row, column }) => {
 			return renderComponent(DataTableActions, {
 				id: row.original.id,
 				meta: column.columnDef.meta
 			});
 		},
-		uniqueId: 'actions'
+		enableHiding: false,
+		id: 'actions'
 	}
 ];
+
+export const tableConfig = {
+	columns,
+	filters,
+	initialState,
+	searchParam
+};

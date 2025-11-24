@@ -7,6 +7,8 @@ import (
 	authdtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
+	"elogika.vsb.cz/backend/repositories"
+	services_course_item "elogika.vsb.cz/backend/services/courseItem"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -61,48 +63,13 @@ func ActivityInstanceDelete(c *gin.Context, userData authdtos.LoggedUserDTO, use
 		}
 	}
 
-	var courseItem models.CourseItem
 	// Check if tutor/garant can view/modify courseItem
-	if userRole == enums.CourseUserRoleAdmin {
-	} else if userRole == enums.CourseUserRoleGarant {
-		var test models.ActivityInstance
-		if err := initializers.DB.
-			Find(&test, params.InstanceID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    500,
-				Message: "Failed to commit changes",
-			}
-		}
-
-		if err := initializers.DB.
-			Preload("TestDetail").
-			Where("managed_by = ?", enums.CourseUserRoleGarant).
-			Find(&courseItem, test.CourseItemID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    403,
-				Message: "Not enough permission for this item",
-			}
-		}
-	} else if userRole == enums.CourseUserRoleTutor {
-		var test models.ActivityInstance
-		if err := initializers.DB.
-			Find(&test, params.InstanceID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    500,
-				Message: "Not enough permission for this item",
-			}
-		}
-
-		if err := initializers.DB.
-			Preload("TestDetail").
-			Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userData.ID).
-			Find(&courseItem, test.CourseItemID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    403,
-				Message: "Not enough permission for this item",
-			}
-		}
-	} else {
+	courseItemService := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
+	courseItem, err := courseItemService.GetCourseItemByID(initializers.DB, params.CourseID, activityInstance.CourseItemID, userData.ID, userRole, nil, false, nil)
+	if err != nil {
+		return err
+	}
+	if !courseItem.Editable {
 		return &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",

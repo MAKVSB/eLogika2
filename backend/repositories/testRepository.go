@@ -188,13 +188,13 @@ func (r *TestRepository) ListTests(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.Test, int64, *common.ErrorResponse) {
+	var err *common.ErrorResponse
 	query := dbRef.
 		Model(&models.Test{}).
 		InnerJoins("CreatedBy").
 		InnerJoins("Term").
 		Where("Tests.course_id = ?", courseID).
-		Where("Tests.course_item_id = ?", courseItemID).
-		Order("Name ASC")
+		Where("Tests.course_item_id = ?", courseItemID)
 
 	if termID != nil && *termID != 0 {
 		query = query.Where("term_id = ?", *termID)
@@ -208,13 +208,17 @@ func (r *TestRepository) ListTests(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Test{}.ApplyFilters(query, searchParams.ColumnFilters, models.Test{}, map[string]interface{}{}, "")
-	if err != nil {
-		return nil, 0, err
+	if searchParams != nil {
+		query, err = models.Test{}.ApplyFilters(query, searchParams.ColumnFilters, models.Test{}, map[string]interface{}{}, "")
+		if err != nil {
+			return nil, 0, err
+		}
+		query = models.Test{}.ApplySorting(query, searchParams.Sorting, "name ASC")
 	}
-	query = models.Test{}.ApplySorting(query, searchParams.Sorting)
 	totalCount := models.Test{}.GetCount(query) // Gets count before pagination
-	query = models.Test{}.ApplyPagination(query, searchParams.Pagination)
+	if searchParams != nil {
+		query = models.Test{}.ApplyPagination(query, searchParams.Pagination)
+	}
 
 	var tests []*models.Test
 	if err := query.
@@ -229,42 +233,6 @@ func (r *TestRepository) ListTests(
 	return tests, totalCount, nil
 }
 
-func (r *TestRepository) ListTestsAdmin(
-	dbRef *gorm.DB,
-	courseID uint,
-	courseItemID uint,
-	termID *uint,
-	userID uint,
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.Test, int64, *common.ErrorResponse) {
-	return r.ListTests(dbRef, courseID, courseItemID, termID, userID, nil, full, searchParams)
-}
-
-func (r *TestRepository) ListTestsGarant(
-	dbRef *gorm.DB,
-	courseID uint,
-	courseItemID uint,
-	termID *uint,
-	userID uint,
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.Test, int64, *common.ErrorResponse) {
-	return r.ListTests(dbRef, courseID, courseItemID, termID, userID, nil, full, searchParams)
-}
-
-func (r *TestRepository) ListTestsTutor(
-	dbRef *gorm.DB,
-	courseID uint,
-	courseItemID uint,
-	termID *uint,
-	userID uint,
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.Test, int64, *common.ErrorResponse) {
-	return r.ListTests(dbRef, courseID, courseItemID, termID, userID, nil, full, searchParams)
-}
-
 func (r *TestRepository) ListTestInstances(
 	dbRef *gorm.DB,
 	courseItemID uint,
@@ -275,6 +243,7 @@ func (r *TestRepository) ListTestInstances(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.TestInstance, int64, *common.ErrorResponse) {
+	var err *common.ErrorResponse
 	query := dbRef.
 		Model(&models.TestInstance{}).
 		InnerJoins("Participant").
@@ -294,13 +263,17 @@ func (r *TestRepository) ListTestInstances(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.TestInstance{}.ApplyFilters(query, searchParams.ColumnFilters, models.TestInstance{}, map[string]interface{}{}, "")
-	if err != nil {
-		return nil, 0, err
+	if searchParams != nil {
+		query, err = models.TestInstance{}.ApplyFilters(query, searchParams.ColumnFilters, models.TestInstance{}, map[string]interface{}{}, "")
+		if err != nil {
+			return nil, 0, err
+		}
+		query = models.TestInstance{}.ApplySorting(query, searchParams.Sorting, "")
 	}
-	query = models.TestInstance{}.ApplySorting(query, searchParams.Sorting)
 	totalCount := models.TestInstance{}.GetCount(query) // Gets count before pagination
-	query = models.TestInstance{}.ApplyPagination(query, searchParams.Pagination)
+	if searchParams != nil {
+		query = models.TestInstance{}.ApplyPagination(query, searchParams.Pagination)
+	}
 
 	var tests []*models.TestInstance
 	if err := query.
@@ -313,40 +286,4 @@ func (r *TestRepository) ListTestInstances(
 	}
 
 	return tests, totalCount, nil
-}
-
-func (r *TestRepository) ListTestInstancesAdmin(
-	dbRef *gorm.DB,
-	courseItemID uint,
-	termID *uint,
-	testID uint,
-	userID uint,
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.TestInstance, int64, *common.ErrorResponse) {
-	return r.ListTestInstances(dbRef, courseItemID, termID, testID, userID, nil, full, searchParams)
-}
-
-func (r *TestRepository) ListTestInstancesGarant(
-	dbRef *gorm.DB,
-	courseItemID uint,
-	termID *uint,
-	testID uint,
-	userID uint,
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.TestInstance, int64, *common.ErrorResponse) {
-	return r.ListTestInstances(dbRef, courseItemID, termID, testID, userID, nil, full, searchParams)
-}
-
-func (r *TestRepository) ListTestInstancesTutor(
-	dbRef *gorm.DB,
-	courseItemID uint,
-	termID *uint,
-	testID uint,
-	userID uint,
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.TestInstance, int64, *common.ErrorResponse) {
-	return r.ListTestInstances(dbRef, courseItemID, termID, testID, userID, nil, full, searchParams)
 }

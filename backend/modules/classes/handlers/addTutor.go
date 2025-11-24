@@ -55,9 +55,6 @@ func AddTutor(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Co
 			Message: "Not enough permissions",
 		}
 	}
-	if err != nil {
-		return err
-	}
 
 	transaction := initializers.DB.Begin()
 

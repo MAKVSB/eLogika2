@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { type TokenCreateRequest, type TokenCreateResponse } from '$lib/api_types';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { API } from '$lib/services/api.svelte';
@@ -66,7 +65,7 @@
 
 		<Form.Root>
 			<Form.TextInput
-				title="Token name"
+				title={m.token_name()}
 				name="name"
 				id="name"
 				type="text"
@@ -76,7 +75,7 @@
 			></Form.TextInput>
 
 			<Form.TextInput
-				title="Token value"
+				title={m.token_value()}
 				name="value"
 				id="value"
 				type="value"
@@ -100,7 +99,7 @@
 
 		<Form.Root bind:form onsubmit={handleSubmit} isCreating={true}>
 			<Form.TextInput
-				title="Token name"
+				title={m.token_name()}
 				name="name"
 				id="name"
 				type="text"
@@ -109,7 +108,7 @@
 			></Form.TextInput>
 
 			<div class="flex flex-col gap-2">
-				<Label for="active">{m.term_active_range()}</Label>
+				<Label for="active">{m.token_expires_at()}</Label>
 				<DateField
 					bind:value={helperFieldExpiresAt}
 					{locale}

@@ -68,6 +68,7 @@ func TestInstanceStart(c *gin.Context, userData authdtos.LoggedUserDTO, userRole
 				TestInstanceID: params.InstanceID,
 				UserID:         userData.ID,
 				OccuredAt:      time.Time{},
+				ReceivedAt:     time.Time{},
 				EventSource:    enums.TestInstanceEventSourceServer,
 				EventType:      enums.TestInstanceEventTypeQuestionInvalidIP,
 				EventData:      json.RawMessage(c.ClientIP()),

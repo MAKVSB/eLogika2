@@ -1,25 +1,33 @@
-import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
-import { QuestionCheckedByFilterEnum, QuestionTypeEnum } from '$lib/api_types';
-import type { JoinedStudentDTO, QuestionListItemDTO } from '$lib/api_types';
-import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
-import DataTableCheck from '$lib/components/ui/data-table/data-table-check.svelte';
+import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
+import type { JoinedStudentDTO } from '$lib/api_types';
+import { type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
-import { enumToOptions } from '$lib/utils';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableDate from '$lib/components/ui/data-table/data-table-date.svelte';
+import type { InitialTableState } from '@tanstack/table-core';
+
+export const searchParam = 'search';
+
+export const initialState: InitialTableState = {
+	pagination: {
+		pageIndex: 0,
+		pageSize: 25
+	}
+};
 
 export const filters: Filter[] = [];
 
-export const columns: (ColumnDef<JoinedStudentDTO> & { uniqueId?: string })[] = [
+export const columns: ColDef<JoinedStudentDTO>[] = [
 	{
 		accessorKey: 'row_index',
 		header: 'ID',
+		columnName: 'ID',
 		cell: ({ row, table }) => {
 			return (
 				table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1
 			);
 		},
+		enableHiding: false,
 		size: 0
 	},
 	// {
@@ -42,6 +50,7 @@ export const columns: (ColumnDef<JoinedStudentDTO> & { uniqueId?: string })[] = 
 	// },
 	{
 		accessorKey: 'username',
+		columnName: m.user_username(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.user_username(),
@@ -51,6 +60,7 @@ export const columns: (ColumnDef<JoinedStudentDTO> & { uniqueId?: string })[] = 
 	},
 	{
 		accessorKey: 'familyName',
+		columnName: m.user_family_name(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.user_family_name(),
@@ -60,18 +70,22 @@ export const columns: (ColumnDef<JoinedStudentDTO> & { uniqueId?: string })[] = 
 	},
 	{
 		accessorKey: 'firstName',
+		columnName: m.user_first_name(),
 		header: m.user_first_name()
 	},
 	{
 		accessorKey: 'degreeBefore',
+		columnName: m.user_degree_before(),
 		header: m.user_degree_before()
 	},
 	{
 		accessorKey: 'degreeAfter',
+		columnName: m.user_degree_after(),
 		header: m.user_degree_after()
 	},
 	{
 		accessorKey: 'createdAt',
+		columnName: m.course_item_term_user_signedinat(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.course_item_term_user_signedinat(),
@@ -86,6 +100,7 @@ export const columns: (ColumnDef<JoinedStudentDTO> & { uniqueId?: string })[] = 
 	},
 	{
 		accessorKey: 'deletedAt',
+		columnName: m.course_item_term_user_signedoutat(),
 		header: m.course_item_term_user_signedoutat(),
 		cell: ({ row }) => {
 			return renderComponent(DataTableDate, {
@@ -95,16 +110,26 @@ export const columns: (ColumnDef<JoinedStudentDTO> & { uniqueId?: string })[] = 
 	},
 	{
 		accessorKey: 'email',
+		columnName: m.user_email(),
 		header: m.user_email()
 	},
 	{
 		header: m.actions(),
+		columnName: m.actions(),
 		cell: ({ row, column }) => {
 			return renderComponent(DataTableActions, {
 				userId: row.original.userId,
 				isJoined: row.original.deletedAt == null
 			});
 		},
-		uniqueId: 'actions'
+		enableHiding: false,
+		id: 'actions'
 	}
 ];
+
+export const tableConfig = {
+	columns,
+	filters,
+	initialState,
+	searchParam
+};

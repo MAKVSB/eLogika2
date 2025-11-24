@@ -11,6 +11,7 @@ import (
 type TestInstanceEventDTO struct {
 	ID          uint                              `json:"id"`
 	OccuredAt   time.Time                         `json:"occuredAt"`
+	ReceivedAt  time.Time                         `json:"receivedAt"`
 	EventSource enums.TestInstanceEventSourceEnum `json:"eventSource"`
 	EventType   enums.TestInstanceEventTypeEnum   `json:"eventType"`
 	EventData   json.RawMessage                   `json:"eventData"`
@@ -23,6 +24,7 @@ func (m TestInstanceEventDTO) From(d *models.TestInstanceEvent) TestInstanceEven
 	dto := TestInstanceEventDTO{
 		ID:          d.ID,
 		OccuredAt:   d.OccuredAt,
+		ReceivedAt:  d.ReceivedAt,
 		EventSource: d.EventSource,
 		EventType:   d.EventType,
 		EventData:   d.EventData,

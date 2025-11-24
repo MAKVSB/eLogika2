@@ -20,7 +20,6 @@ func (r *CategoryRepository) GetCategoryByID(
 	categoryID uint,
 	version *uint,
 ) (*models.Category, *common.ErrorResponse) {
-
 	var category *models.Category
 	if err := dbRef.
 		Preload("Steps").
@@ -54,6 +53,7 @@ func (r *CategoryRepository) ListCategories(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.Category, int64, *common.ErrorResponse) {
+	var err *common.ErrorResponse
 	query := dbRef.
 		Model(models.Category{}).
 		Where("course_id = ?", courseID).
@@ -65,13 +65,17 @@ func (r *CategoryRepository) ListCategories(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Question{}.ApplyFilters(query, searchParams.ColumnFilters, models.Question{}, map[string]interface{}{})
-	if err != nil {
-		return nil, 0, err
+	if searchParams != nil {
+		query, err = models.Question{}.ApplyFilters(query, searchParams.ColumnFilters, models.Question{}, map[string]interface{}{})
+		if err != nil {
+			return nil, 0, err
+		}
+		query = models.Question{}.ApplySorting(query, searchParams.Sorting, "id DESC")
 	}
-	query = models.Question{}.ApplySorting(query, searchParams.Sorting)
 	totalCount := models.Question{}.GetCount(query) // Gets count before pagination
-	query = models.Question{}.ApplyPagination(query, searchParams.Pagination)
+	if searchParams != nil {
+		query = models.Question{}.ApplyPagination(query, searchParams.Pagination)
+	}
 
 	var categories []*models.Category
 	if err := query.

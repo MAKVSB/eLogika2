@@ -149,9 +149,10 @@ func (r *ActivityRepository) ListActivityInstances(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.ActivityInstance, int64, *common.ErrorResponse) {
+	var err *common.ErrorResponse
 	query := dbRef.
 		Model(&models.ActivityInstance{}).
-		Preload("Participant").
+		InnerJoins("Participant").
 		Where("course_item_id = ?", courseItemID)
 
 	if termID != nil && *termID != 0 {
@@ -165,14 +166,18 @@ func (r *ActivityRepository) ListActivityInstances(
 	if full {
 	}
 
-	// Apply filters, sorting, pagination
-	query, err := models.ActivityInstance{}.ApplyFilters(query, searchParams.ColumnFilters, models.ActivityInstance{}, map[string]interface{}{}, "")
-	if err != nil {
-		return nil, 0, err
+	if searchParams != nil {
+		// Apply filters, sorting, pagination
+		query, err = models.ActivityInstance{}.ApplyFilters(query, searchParams.ColumnFilters, models.ActivityInstance{}, map[string]interface{}{}, "")
+		if err != nil {
+			return nil, 0, err
+		}
+		query = models.ActivityInstance{}.ApplySorting(query, searchParams.Sorting, "\"Participant\".\"family_name\"")
 	}
-	query = models.ActivityInstance{}.ApplySorting(query, searchParams.Sorting)
 	totalCount := models.ActivityInstance{}.GetCount(query) // Gets count before pagination
-	query = models.ActivityInstance{}.ApplyPagination(query, searchParams.Pagination)
+	if searchParams != nil {
+		query = models.ActivityInstance{}.ApplyPagination(query, searchParams.Pagination)
+	}
 
 	var activitys []*models.ActivityInstance
 	if err := query.

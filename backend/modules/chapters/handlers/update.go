@@ -9,6 +9,7 @@ import (
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/repositories"
+	"elogika.vsb.cz/backend/services"
 	"elogika.vsb.cz/backend/utils"
 	"elogika.vsb.cz/backend/utils/tiptap"
 	"github.com/gin-gonic/gin"
@@ -76,8 +77,8 @@ func ChapterUpdate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 
 	transaction := initializers.DB.Begin()
 
-	chapterRepo := repositories.NewChapterRepository()
-	chapter, err := chapterRepo.GetChapterByID(transaction, params.CourseID, params.ChapterID, false, &reqData.Version)
+	chapterService := services.NewChapterService(repositories.NewChapterRepository())
+	chapter, err := chapterService.GetChapterByID(transaction, params.CourseID, params.ChapterID, userRole, nil, true, &reqData.Version)
 	if err != nil {
 		transaction.Rollback()
 		return err
@@ -109,8 +110,9 @@ func ChapterUpdate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 		}
 	}
 
-	chapter, err = chapterRepo.GetChapterByID(initializers.DB, params.CourseID, params.ChapterID, true, nil)
+	chapter, err = chapterService.GetChapterByID(transaction, params.CourseID, params.ChapterID, userRole, nil, true, nil)
 	if err != nil {
+		transaction.Rollback()
 		return err
 	}
 

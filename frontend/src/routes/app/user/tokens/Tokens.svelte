@@ -1,7 +1,6 @@
 <script lang="ts">
 	import DataTable from '$lib/components/ui/data-table/data-table-component.svelte';
-	import { columns, filters } from './schema';
-	import { type InitialTableState } from '@tanstack/table-core';
+	import { columns, tableConfig } from './schema';
 	import { buttonVariants } from '$lib/components/ui/button/button.svelte';
 	import type { UserAPiTokenDTO } from '$lib/api_types';
 	import { API } from '$lib/services/api.svelte';
@@ -13,19 +12,17 @@
 	let {
 		tokens
 	}: {
-		tokens: any[]
+		tokens: any[];
 	} = $props();
-	let isLoading: boolean = $state(true);
 
-	let dialogOpen = $state(false)
+	let dialogOpen = $state(false);
 
 	$effect(() => {
 		rowItems = tokens;
 		rowCount = tokens.length;
-		isLoading = false;
 	});
 
-	const actionsColumn = columns.find((c) => c.uniqueId == 'actions');
+	const actionsColumn = columns.find((c) => c.id == 'actions');
 	if (actionsColumn) {
 		actionsColumn.meta = {
 			...(actionsColumn.meta ?? {}),
@@ -56,9 +53,7 @@
 
 	let rowItems: UserAPiTokenDTO[] = $state([]);
 	let rowCount: number = $state(0);
-	let initialState: InitialTableState = $state({});
 </script>
-
 
 <div class="flex flex-row justify-between">
 	<h3 class="text-xl">{m.user_tokens()}:</h3>
@@ -73,7 +68,4 @@
 		</Dialog.Root>
 	</div>
 </div>
-{#if !isLoading}
-	<DataTable data={rowItems} {columns} {filters} {initialState} {rowCount} />
-{/if}
-
+<DataTable data={rowItems} {rowCount} {...tableConfig} />

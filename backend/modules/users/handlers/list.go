@@ -64,7 +64,7 @@ func List(c *gin.Context, userData authdtos.LoggedUserDTO) {
 		c.AbortWithStatusJSON(400, err)
 		return
 	}
-	query = m.ApplySorting(query, searchParams.Sorting)
+	query = m.ApplySorting(query, searchParams.Sorting, "family_name ASC, first_name ASC")
 	totalCount := m.GetCount(query) // Gets count before pagination
 	query = m.ApplyPagination(query, searchParams.Pagination)
 

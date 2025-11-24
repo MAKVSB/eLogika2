@@ -19,19 +19,25 @@ func (r *CourseItemService) GetCourseItemByID(
 ) (*models.CourseItem, *common.ErrorResponse) {
 	switch userRole {
 	case enums.CourseUserRoleAdmin:
-		item, err := r.courseItemRepo.GetCourseItemByIDAdmin(dbRef, courseID, courseItemID, userID, full, version)
+		item, err := r.courseItemRepo.GetCourseItemByID(dbRef, courseID, courseItemID, userID, filters, full, version)
 		if err != nil {
 			item.Editable = true
 		}
 		return item, err
 	case enums.CourseUserRoleGarant:
-		item, err := r.courseItemRepo.GetCourseItemByIDGarant(dbRef, courseID, courseItemID, userID, full, version)
+		item, err := r.courseItemRepo.GetCourseItemByID(dbRef, courseID, courseItemID, userID, filters, full, version)
 		if err == nil {
 			item.Editable = item.ManagedBy == enums.CourseUserRoleGarant
 		}
 		return item, err
 	case enums.CourseUserRoleTutor:
-		item, err := r.courseItemRepo.GetCourseItemByIDTutor(dbRef, courseID, courseItemID, userID, full, version)
+		modifier := func(db *gorm.DB) *gorm.DB {
+			if filters != nil {
+				db = (*filters)(db)
+			}
+			return db.Where("managed_by = ? OR (managed_by = ? AND created_by_id = ?)", enums.CourseUserRoleGarant, enums.CourseUserRoleTutor, userID)
+		}
+		item, err := r.courseItemRepo.GetCourseItemByID(dbRef, courseID, courseItemID, userID, &modifier, full, version)
 		if err == nil {
 			item.Editable = item.ManagedBy == enums.CourseUserRoleTutor
 		}

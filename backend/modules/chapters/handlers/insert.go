@@ -9,6 +9,7 @@ import (
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/repositories"
+	"elogika.vsb.cz/backend/services"
 	"elogika.vsb.cz/backend/utils"
 	"elogika.vsb.cz/backend/utils/tiptap"
 	"github.com/gin-gonic/gin"
@@ -104,7 +105,8 @@ func ChapterInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 		}
 	}
 
-	chapter, err = chapterRepo.GetChapterByID(initializers.DB, params.CourseID, chapter.ID, true, nil)
+	chapterService := services.NewChapterService(chapterRepo)
+	chapter, err = chapterService.GetChapterByID(transaction, params.CourseID, chapter.ID, userRole, nil, true, nil)
 	if err != nil {
 		return err
 	}

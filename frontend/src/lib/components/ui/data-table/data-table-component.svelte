@@ -1,6 +1,13 @@
+<script module lang="ts">
+	export enum DataTableActionMode {
+		BACKEND,
+		FRONTEND,
+		DISABLED
+	}
+</script>
+
 <script lang="ts" generics="TData, TValue">
 	import {
-		type ColumnDef,
 		type PaginationState,
 		type RowSelectionState,
 		type ColumnFiltersState,
@@ -8,15 +15,19 @@
 		type TableState,
 		type InitialTableState,
 		type ColumnSizingState,
-		type TableOptions,
 		getCoreRowModel,
 		getFilteredRowModel,
 		getPaginationRowModel,
-		getSortedRowModel
+		getSortedRowModel,
+		type TableOptions,
+		type VisibilityState
 	} from '@tanstack/table-core';
-	import { createSvelteTable, FlexRender } from '$lib/components/ui/data-table/index.js';
+	import {
+		createSvelteTable,
+		FlexRender,
+		type ColDef
+	} from '$lib/components/ui/data-table/index.js';
 	import * as Table from '$lib/components/ui/table/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import * as Select from '$lib/components/ui/select';
 	import { type Filter, type FilterSelect, FilterTypeEnum } from './filter';
@@ -27,21 +38,23 @@
 	import { onMount } from 'svelte';
 	import { type Table as Tabl } from '@tanstack/table-core';
 	import { DataTableSearchParams } from '$lib/api_types_static';
+	import * as Pagination from '$lib/components/ui/pagination/index.js';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import Loader from '../loader/loader.svelte';
 
 	type DataTableProps<TData, TValue> = {
-		columns: ColumnDef<TData, TValue>[];
-		filters?: Filter[];
 		data: TData[];
+		rowCount: number;
+		columns: ColDef<TData, TValue>[];
+		filters?: Filter[];
 		refetch?: (state: TableState, queryString: string) => void;
-		selection?: (rowSelection: RowSelectionState, all: boolean) => void;
+		selectionChange?: (rowSelection: RowSelectionState, all: boolean) => void;
 		initialState?: InitialTableState;
-		rowCount?: number;
-		paginationEnabled?: boolean;
-		sortingEnabled?: boolean;
-		filterEnabled?: boolean;
-		selectionEnabled?: boolean;
-		queryParam?: string;
-		frontEndMode?: boolean;
+		paginationMode?: DataTableActionMode;
+		sortingMode?: DataTableActionMode;
+		filterMode?: DataTableActionMode;
+		searchParam?: string;
 		replaceState?: boolean;
 	};
 
@@ -50,23 +63,34 @@
 		columns,
 		filters,
 		refetch,
-		queryParam,
-		selection,
+		selectionChange,
 		initialState,
 		rowCount: rc,
-		paginationEnabled = true,
-		sortingEnabled = true,
-		filterEnabled = true,
-		selectionEnabled = true,
-		frontEndMode = false,
+		paginationMode = DataTableActionMode.BACKEND,
+		sortingMode = DataTableActionMode.BACKEND,
+		filterMode = DataTableActionMode.BACKEND,
+		searchParam,
 		replaceState = false
 	}: DataTableProps<TData, TValue> = $props();
 
-	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 25 });
-	let rowSelection = $state<RowSelectionState>({});
-	let columnFilters = $state<ColumnFiltersState>([]);
-	let sorting = $state<SortingState>([]);
-	let columnSizing = $state<ColumnSizingState>({});
+	let paginationState = $state<PaginationState>({
+		pageIndex: 0,
+		pageSize: 25
+	});
+	let rowSelectionState = $state<RowSelectionState>({});
+	let filtersState = $state<ColumnFiltersState>([]);
+	let sortingState = $state<SortingState>([]);
+	let sizingState = $state<ColumnSizingState>({});
+	let visibilityState = $state<VisibilityState>({});
+
+	let reloading = $state(true);
+	let queryStringCache = $state<string | null>(null);
+
+	$effect(() => {
+		if (data) {
+			reloading = false;
+		}
+	});
 
 	let refetch_timer: number;
 	const refetch_debounce = () => {
@@ -77,12 +101,17 @@
 			const state = table.getState();
 			const queryString = DataTableSearchParams.fromDataTable(state).toURL();
 
+			if (queryStringCache != queryString) {
+				reloading = true;
+			}
+			queryStringCache = queryString;
+
 			if (refetch) {
 				refetch(state, queryString);
 			}
-			if (queryParam) {
+			if (searchParam) {
 				const newUrl = new URL(page.url);
-				newUrl.searchParams.set(queryParam, queryString);
+				newUrl.searchParams.set(searchParam, queryString);
 				goto(newUrl, { replaceState });
 			}
 		}, 0);
@@ -92,49 +121,18 @@
 		clearTimeout(selection_timer);
 		selection_timer = setTimeout(() => {
 			if (!table) return;
-			if (selection) {
-				selection(rowSelection, table.getIsAllPageRowsSelected());
+			if (selectionChange) {
+				selectionChange(rowSelectionState, table.getIsAllPageRowsSelected());
 			}
 		}, 0);
 	};
 
-	$effect(() => {
-		if (!table) return;
-		table.setOptions((prev: any) => ({
-			...prev,
-			get data() {
-				return data;
-			},
-			...(paginationEnabled
-				? {
-						get rowCount() {
-							return rc;
-						},
-						get pageCount() {
-							console.log(rc, pagination.pageSize);
-							return rc ? Math.ceil(rc / pagination.pageSize) : -1;
-						},
-						onPaginationChange: (updater: any) => {
-							refetch_debounce();
-							if (typeof updater === 'function') {
-								pagination = updater(pagination);
-							} else {
-								pagination = updater;
-							}
-						},
-						manualPagination: true
-					}
-				: {})
-		}));
-		console.log(table.getCanNextPage());
-		// table.setPageIndex(table.getState().pagination.pageIndex)
-	});
-
 	let table: null | Tabl<TData> = $state(null);
 
 	onMount(() => {
-		if (queryParam) {
-			const encodedParams = page.url.searchParams.get(queryParam);
+		if (searchParam) {
+			const encodedParams = page.url.searchParams.get(searchParam);
+			queryStringCache = encodedParams;
 			if (encodedParams) {
 				initialState = {
 					...initialState,
@@ -143,143 +141,153 @@
 			}
 		}
 
-		table = createSvelteTable({
+		if (initialState) {
+			if (initialState.columnFilters) {
+				filtersState = initialState.columnFilters;
+			}
+			if (initialState.sorting) {
+				sortingState = initialState.sorting;
+			}
+			if (initialState.pagination) {
+				paginationState = {
+					...paginationState,
+					...initialState.pagination
+				};
+			}
+			if (initialState.columnVisibility) {
+				visibilityState = initialState.columnVisibility;
+			}
+		}
+
+		const tableOptions: Partial<TableOptions<TData>> = {
 			get data() {
 				return data;
 			},
 			columns,
-			...(paginationEnabled
-				? {
-						get rowCount() {
-							return rc;
-						},
-						get pageCount() {
-							return rc ? Math.ceil(rc / pagination.pageSize) : 1;
-						},
-						onPaginationChange: (updater) => {
-							refetch_debounce();
-							if (typeof updater === 'function') {
-								pagination = updater(pagination);
-							} else {
-								pagination = updater;
-							}
-						},
-						manualPagination: true
-					}
-				: {}),
-			...(sortingEnabled
-				? {
-						onSortingChange: (updater) => {
-							refetch_debounce();
-							if (typeof updater === 'function') {
-								sorting = updater(sorting);
-							} else {
-								sorting = updater;
-							}
-						},
-						manualSorting: true,
-						maxMultiSortColCount: 1
-					}
-				: {}),
-			...(filterEnabled
-				? {
-						onColumnFiltersChange: (updater) => {
-							refetch_debounce();
-							if (typeof updater === 'function') {
-								columnFilters = updater(columnFilters);
-							} else {
-								columnFilters = updater;
-							}
-						},
-						manualFiltering: true
-					}
-				: {}),
-			...(selectionEnabled
-				? {
-						onRowSelectionChange: (updater) => {
-							selection_debounce();
-							if (typeof updater === 'function') {
-								rowSelection = updater(rowSelection);
-							} else {
-								rowSelection = updater;
-							}
-						}
-					}
-				: {}),
 			getCoreRowModel: getCoreRowModel(),
-			...(frontEndMode
-				? {
-						...(paginationEnabled
-							? {
-									getPaginationRowModel: getPaginationRowModel()
-								}
-							: {}),
-						...(sortingEnabled
-							? {
-									getSortedRowModel: getSortedRowModel()
-								}
-							: {}),
-						...(filterEnabled
-							? {
-									getFilteredRowModel: getFilteredRowModel()
-								}
-							: {})
-					}
-				: {}),
-			initialState,
-			getRowId(originalRow, index, parent) {
-				if ('id' in (originalRow as any)) {
-					return (originalRow as any).id;
+			getRowId(originalRow, index): string {
+				return String(paginationState.pageIndex * paginationState.pageSize + index);
+			},
+			onColumnVisibilityChange: (updater) => {
+				if (typeof updater === 'function') {
+					visibilityState = updater(visibilityState);
+				} else {
+					visibilityState = updater;
 				}
-				return index;
 			},
 			state: {
 				get pagination() {
-					return pagination;
+					return paginationState;
 				},
 				get sorting() {
-					return sorting;
+					return sortingState;
 				},
 				get columnFilters() {
-					return columnFilters;
+					return filtersState;
 				},
 				get rowSelection() {
-					return rowSelection;
+					return rowSelectionState;
 				},
 				get columnSizing() {
-					return columnSizing;
+					return sizingState;
+				},
+				get columnVisibility() {
+					return visibilityState;
 				}
 			}
-		});
+		};
 
-		if (initialState) {
-			if (initialState.columnFilters) {
-				table.setColumnFilters(initialState.columnFilters);
-			}
-			if (initialState.sorting) {
-				table.setSorting(initialState.sorting);
-			}
-			if (initialState.pagination) {
-				if (initialState.pagination.pageIndex) {
-					table.setPageIndex(initialState.pagination.pageIndex);
-				}
-				if (initialState.pagination.pageSize) {
-					table.setPageSize(initialState.pagination.pageSize);
-				}
-			}
+		switch (paginationMode) {
+			case DataTableActionMode.BACKEND:
+				tableOptions.rowCount = rc;
+				tableOptions.manualPagination = true;
+				tableOptions.onPaginationChange = (updater) => {
+					refetch_debounce();
+					if (typeof updater === 'function') {
+						paginationState = updater(paginationState);
+					} else {
+						paginationState = updater;
+					}
+				};
+				break;
+			case DataTableActionMode.FRONTEND:
+				tableOptions.rowCount = rc;
+				tableOptions.getPaginationRowModel = getPaginationRowModel();
+				break;
 		}
+
+		switch (sortingMode) {
+			case DataTableActionMode.BACKEND:
+				tableOptions.manualSorting = true;
+				tableOptions.maxMultiSortColCount = 1;
+				tableOptions.onSortingChange = (updater) => {
+					refetch_debounce();
+					if (typeof updater === 'function') {
+						sortingState = updater(sortingState);
+					} else {
+						sortingState = updater;
+					}
+				};
+				break;
+			case DataTableActionMode.FRONTEND:
+				tableOptions.maxMultiSortColCount = 1;
+				tableOptions.getSortedRowModel = getSortedRowModel();
+				break;
+		}
+
+		switch (filterMode) {
+			case DataTableActionMode.BACKEND:
+				tableOptions.manualFiltering = true;
+				tableOptions.onColumnFiltersChange = (updater) => {
+					refetch_debounce();
+					if (typeof updater === 'function') {
+						filtersState = updater(filtersState);
+					} else {
+						filtersState = updater;
+					}
+				};
+				break;
+			case DataTableActionMode.FRONTEND:
+				tableOptions.getFilteredRowModel = getFilteredRowModel();
+				break;
+		}
+
+		if (columns.find((v) => (v.id = 'select'))) {
+			tableOptions.onRowSelectionChange = (updater) => {
+				selection_debounce();
+				if (typeof updater === 'function') {
+					rowSelectionState = updater(rowSelectionState);
+				} else {
+					rowSelectionState = updater;
+				}
+			};
+		}
+
+		table = createSvelteTable(tableOptions as TableOptions<TData>);
 	});
 
-	const getFilterValue = (filter: FilterSelect, accessorKey: string) => {
-		if (!table) return;
-		const value = table.getColumn(accessorKey)?.getFilterValue() as string;
+	let filterStrings = $derived.by(() => {
+		const res: { [key: string]: string } = {};
+
+		for (const filter of filters ?? []) {
+			switch (filter.type) {
+				case FilterTypeEnum.SELECT:
+					res[filter.accessorKey] = getFilterValue(filter);
+			}
+		}
+
+		return res;
+	});
+
+	const getFilterValue = (filter: FilterSelect) => {
+		if (!table) return '';
+		const value = table.getColumn(filter.accessorKey)?.getFilterValue() as string;
 		if (value) {
 			const valueItem = filter.values.find((v) => v.value == value);
 			if (valueItem) {
 				return valueItem.display;
-			} else {
-				return value;
 			}
+			return value;
 		} else {
 			return filter.placeholder;
 		}
@@ -297,7 +305,7 @@
 							value={table.getColumn(filter.accessorKey)?.getFilterValue() as string}
 						>
 							<Select.Trigger>
-								{getFilterValue(filter, filter.accessorKey)}
+								{filterStrings[filter.accessorKey]}
 							</Select.Trigger>
 							<Select.Content>
 								<Select.Item
@@ -369,51 +377,102 @@
 					{/each}
 				</Table.Header>
 				<Table.Body>
-					{#each table.getRowModel().rows as row (row.id)}
-						<Table.Row data-state={row.getIsSelected() && 'selected'}>
-							{#each row.getVisibleCells() as cell (cell.id)}
-								<Table.Cell>
-									<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
-								</Table.Cell>
-							{/each}
+					{#if reloading}
+						<Table.Row>
+							<Table.Cell colspan={200} class="w-full">
+								<div class="flex justify-center mx-auto text-center">
+									<Loader width={150} height={150}></Loader>
+								</div>
+							</Table.Cell>
 						</Table.Row>
 					{:else}
-						<Table.Row>
-							<Table.Cell colspan={columns.length} class="h-24 text-center"
-								>{m.datatable_noresults()}</Table.Cell
-							>
-						</Table.Row>
-					{/each}
+						{#each table.getRowModel().rows as row (row.id)}
+							<Table.Row data-state={row.getIsSelected() && 'selected'}>
+								{#each row.getVisibleCells() as cell (cell.id)}
+									<Table.Cell>
+										<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
+									</Table.Cell>
+								{/each}
+							</Table.Row>
+						{:else}
+							<Table.Row>
+								<Table.Cell colspan={columns.length} class="h-24 text-center"
+									>{m.datatable_noresults()}</Table.Cell
+								>
+							</Table.Row>
+						{/each}
+					{/if}
 				</Table.Body>
 			</Table.Root>
 			{#key rc}
-				<!-- {rc} {table.getPageCount()} -->
-				{#if paginationEnabled}
-					<div class="flex items-center justify-end p-4 space-x-4">
-						<p>
+				<div class="flex w-full p-4 space-x-4 overflow-scroll justify-evenly">
+					{#if paginationMode != DataTableActionMode.DISABLED}
+						<p class="w-full">
 							{m.page_number({
 								current: table.getState().pagination.pageIndex + 1,
-								total: table.getPageCount()
+								total: Math.ceil(rc / paginationState.pageSize)
 							})}
 						</p>
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={() => table && table.previousPage()}
-							disabled={!table.getCanPreviousPage()}
+					{/if}
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger>
+							{#snippet child({ props })}
+								<Button {...props} variant="outline">{m.column_visibility()}</Button>
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content class="w-56">
+							<DropdownMenu.Group>
+								{#each table.getAllColumns().filter((v) => v.getCanHide()) as column}
+									<DropdownMenu.CheckboxItem
+										bind:checked={
+											() => column.getIsVisible(),
+											(v) => {
+												column.toggleVisibility(!!v);
+											}
+										}
+									>
+										{(column.columnDef as ColDef<TData>).columnName}
+									</DropdownMenu.CheckboxItem>
+								{/each}
+							</DropdownMenu.Group>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+					{#if paginationMode != DataTableActionMode.DISABLED}
+						<Pagination.Root
+							class="justify-end"
+							count={rc}
+							page={paginationState.pageIndex + 1}
+							perPage={paginationState.pageSize}
+							onPageChange={(e) => {
+								table?.setPageIndex(e - 1);
+							}}
 						>
-							{m.pagination_previous()}
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={() => table && table.nextPage()}
-							disabled={!table.getCanNextPage()}
-						>
-							{m.pagination_next()}
-						</Button>
-					</div>
-				{/if}
+							{#snippet children({ pages, currentPage })}
+								<Pagination.Content>
+									<Pagination.Item>
+										<Pagination.PrevButton />
+									</Pagination.Item>
+									{#each pages as page (page.key)}
+										{#if page.type === 'ellipsis'}
+											<Pagination.Item>
+												<Pagination.Ellipsis />
+											</Pagination.Item>
+										{:else}
+											<Pagination.Item>
+												<Pagination.Link {page} isActive={currentPage === page.value}>
+													{page.value}
+												</Pagination.Link>
+											</Pagination.Item>
+										{/if}
+									{/each}
+									<Pagination.Item>
+										<Pagination.NextButton />
+									</Pagination.Item>
+								</Pagination.Content>
+							{/snippet}
+						</Pagination.Root>
+					{/if}
+				</div>
 			{/key}
 		</div>
 	</div>

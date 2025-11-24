@@ -14,15 +14,23 @@ import (
 
 type CommonModel struct{}
 
-func (CommonModel) ApplySorting(query *gorm.DB, sortings []common.SearchRequestSorting) *gorm.DB {
-	for _, s := range sortings {
-		direction := "ASC"
-		if s.Desc {
-			direction = "DESC"
+func (CommonModel) ApplySorting(query *gorm.DB, sortings []common.SearchRequestSorting, def string) *gorm.DB {
+	if len(sortings) == 0 {
+		if def == "" {
+			return query
+		} else {
+			return query.Order(def)
 		}
-		query = query.Order(fmt.Sprintf("%s %s", strcase.ToSnake(s.ID), direction))
+	} else {
+		for _, s := range sortings {
+			direction := "ASC"
+			if s.Desc {
+				direction = "DESC"
+			}
+			query = query.Order(fmt.Sprintf("%s %s", strcase.ToSnake(s.ID), direction))
+		}
+		return query
 	}
-	return query
 }
 
 func (CommonModel) ApplyPagination(query *gorm.DB, pagination *common.SearchRequestPagination) *gorm.DB {

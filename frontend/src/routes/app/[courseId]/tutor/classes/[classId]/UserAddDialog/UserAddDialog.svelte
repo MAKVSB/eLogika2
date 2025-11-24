@@ -7,20 +7,9 @@
 		ListCourseUsersResponse
 	} from '$lib/api_types';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import {
-		API,
-		encodeJsonToBase64Url
-	} from '$lib/services/api.svelte';
-	import { onMount } from 'svelte';
-	import { columns, filters } from './schema';
+	import { API } from '$lib/services/api.svelte';
+	import { tableConfig } from './schema';
 	import { DataTable } from '$lib/components/ui/data-table';
-	import type {
-		ColumnFiltersState,
-		InitialTableState,
-		SortingState,
-		TableState
-	} from '@tanstack/table-core';
-	import Loader from '$lib/components/ui/loader/loader.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { DataTableSearchParams } from '$lib/api_types_static';
 
@@ -36,10 +25,8 @@
 
 	let rowItems: CourseUserDTO[] = $state([]);
 	let rowCount: number = $state(0);
-	let initialState: InitialTableState = $state({});
-	let loading = $state(true);
 
-	const actionsColumn = columns.find((c) => c.uniqueId == 'actions');
+	const actionsColumn = tableConfig.columns.find((c) => c.id == 'actions');
 	if (actionsColumn) {
 		actionsColumn.meta = {
 			...(actionsColumn.meta ?? {}),
@@ -60,12 +47,16 @@
 		};
 	}
 
-	const loadData = () => {
+	$effect(() => {
+		const search =
+			page.url.searchParams.get(tableConfig.searchParam) ??
+			DataTableSearchParams.fromDataTable(tableConfig.initialState).toURL();
+
 		API.request<null, ListCourseUsersResponse>(
 			`/api/v2/courses/${page.params.courseId}/users`,
 			{
 				searchParams: {
-					...(search ? { search: search } : {})
+					search
 				}
 			},
 			fetch
@@ -75,23 +66,6 @@
 				rowCount = res.items.length;
 			})
 			.catch(() => {});
-	};
-
-	function refetch(state: TableState) {
-		search = DataTableSearchParams.fromDataTable(state).toURL();
-		loadData();
-	}
-
-	onMount(() => {
-		initialState.columnFilters = [
-			{
-				id: 'roles',
-				value: defaultRole
-			}
-		];
-		search = encodeJsonToBase64Url(initialState);
-		loadData();
-		loading = false;
 	});
 </script>
 
@@ -99,17 +73,5 @@
 	<Dialog.Header>
 		<Dialog.Title>Add tutor to class</Dialog.Title>
 	</Dialog.Header>
-	{#if !loading}
-		<DataTable
-			data={rowItems}
-			{columns}
-			{filters}
-			{refetch}
-			{rowCount}
-			queryParam='usersearch'
-			{initialState}
-		/>
-	{:else}
-		<Loader></Loader>
-	{/if}
+	<DataTable data={rowItems} {rowCount} {...tableConfig} />
 </Dialog.Content>

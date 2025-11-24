@@ -1,10 +1,18 @@
-import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
+import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
-import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
 import type { UserListItemDTO } from '$lib/api_types';
 import { m } from '$lib/paraglide/messages';
+import type { InitialTableState } from '@tanstack/table-core';
+
+export const searchParam = 'search';
+
+export const initialState: InitialTableState = {
+	pagination: {
+		pageIndex: 0,
+		pageSize: 25
+	}
+};
 
 export const filters: Filter[] = [
 	{
@@ -24,10 +32,11 @@ export const filters: Filter[] = [
 	}
 ];
 
-export const columns: ColumnDef<UserListItemDTO>[] = [
+export const columns: ColDef<UserListItemDTO>[] = [
 	{
 		accessorKey: 'row_index',
 		header: 'ID',
+		columnName: 'ID',
 		cell: ({ row, table }) => {
 			return (
 				table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1
@@ -55,6 +64,7 @@ export const columns: ColumnDef<UserListItemDTO>[] = [
 	// },
 	{
 		accessorKey: 'username',
+		columnName: m.user_username(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.user_username(),
@@ -64,6 +74,7 @@ export const columns: ColumnDef<UserListItemDTO>[] = [
 	},
 	{
 		accessorKey: 'familyName',
+		columnName: m.user_family_name(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.user_family_name(),
@@ -73,18 +84,22 @@ export const columns: ColumnDef<UserListItemDTO>[] = [
 	},
 	{
 		accessorKey: 'firstName',
+		columnName: m.user_first_name(),
 		header: m.user_first_name()
 	},
 	{
 		accessorKey: 'degreeBefore',
+		columnName: m.user_degree_before(),
 		header: m.user_degree_before()
 	},
 	{
 		accessorKey: 'degreeAfter',
+		columnName: m.user_degree_after(),
 		header: m.user_degree_after()
 	},
 	{
 		accessorKey: 'email',
+		columnName: m.user_email(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.user_email(),
@@ -94,8 +109,18 @@ export const columns: ColumnDef<UserListItemDTO>[] = [
 	},
 	{
 		header: m.actions(),
+		columnName: m.actions(),
 		cell: ({ row }) => {
 			return renderComponent(DataTableActions, { id: row.original.id });
-		}
+		},
+		enableHiding: false,
+		id: 'actions'
 	}
 ];
+
+export const tableConfig = {
+	columns,
+	filters,
+	initialState,
+	searchParam
+};

@@ -60,41 +60,14 @@ func TestInstanceTutorSave(c *gin.Context, userData authdtos.LoggedUserDTO, user
 	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
-	var courseItem *models.CourseItem
+
 	// Check if tutor/garant can view/modify courseItem
-	if userRole == enums.CourseUserRoleAdmin {
-		if err := initializers.DB.
-			Preload("TestDetail").
-			Preload("Parent").
-			Find(&courseItem, params.CourseItemID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    403,
-				Message: "Not enough permission for this item",
-			}
-		}
-	} else if userRole == enums.CourseUserRoleGarant {
-		if err := initializers.DB.
-			Preload("TestDetail").
-			Preload("Parent").
-			Where("managed_by = ?", enums.CourseUserRoleGarant).
-			Find(&courseItem, params.CourseItemID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    403,
-				Message: "Not enough permission for this item",
-			}
-		}
-	} else if userRole == enums.CourseUserRoleTutor {
-		if err := initializers.DB.
-			Preload("TestDetail").
-			Preload("Parent").
-			Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userData.ID).
-			Find(&courseItem, params.CourseItemID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    403,
-				Message: "Not enough permission for this item",
-			}
-		}
-	} else {
+	courseItemService := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
+	courseItem, err := courseItemService.GetCourseItemByID(initializers.DB, params.CourseID, params.CourseItemID, userData.ID, userRole, nil, false, nil)
+	if err != nil {
+		return err
+	}
+	if !courseItem.Editable {
 		return &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",
@@ -124,6 +97,7 @@ func TestInstanceTutorSave(c *gin.Context, userData authdtos.LoggedUserDTO, user
 			TestInstanceID: testInstance.ID,
 			UserID:         userData.ID,
 			OccuredAt:      time.Now(),
+			ReceivedAt:     time.Now(),
 			EventSource:    enums.TestInstanceEventSourceServer,
 			EventType:      enums.TestInstanceEventTypeBonusPointsModified,
 			EventData:      rawData,
@@ -131,12 +105,13 @@ func TestInstanceTutorSave(c *gin.Context, userData authdtos.LoggedUserDTO, user
 	}
 	testInstance.BonusPoints = reqData.BonusPoints
 	testInstance.BonusPointsReason = reqData.BonusPointsReason
-	if testInstance.State == enums.TestInstanceStateReady {
+	switch testInstance.State {
+	case enums.TestInstanceStateReady:
 		testInstance.StartedAt = time.Now()
 		testInstance.EndsAt = time.Now()
 		testInstance.EndedAt = time.Now()
 		testInstance.State = enums.TestInstanceStateFinished
-	} else if testInstance.State == enums.TestInstanceStateActive {
+	case enums.TestInstanceStateActive:
 		testInstance.EndedAt = time.Now()
 		testInstance.State = enums.TestInstanceStateFinished
 	}

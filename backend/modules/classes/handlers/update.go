@@ -11,6 +11,7 @@ import (
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/repositories"
+	"elogika.vsb.cz/backend/services"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -91,8 +92,8 @@ func ClassUpdate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 
 	transaction := initializers.DB.Begin()
 
-	classRepo := repositories.NewClassRepository()
-	class, err := classRepo.GetClassByIDGarant(transaction, params.CourseID, params.ClassID, userData.ID, nil, true, &reqData.Version)
+	classService := services.NewClassService(repositories.NewClassRepository())
+	class, err := classService.GetClassByID(transaction, params.CourseID, params.ClassID, userData.ID, userRole, nil, true, &reqData.Version)
 	if err != nil {
 		transaction.Rollback()
 		return err
@@ -127,7 +128,7 @@ func ClassUpdate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 		}
 	}
 
-	class, err = classRepo.GetClassByIDGarant(initializers.DB, params.CourseID, params.ClassID, userData.ID, nil, true, nil)
+	class, err = classService.GetClassByID(initializers.DB, params.CourseID, params.ClassID, userData.ID, userRole, nil, true, nil)
 	if err != nil {
 		return err
 	}

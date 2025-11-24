@@ -1,21 +1,28 @@
-import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
+import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
 import type { ClassUserDTO } from '$lib/api_types';
 import { type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
+import type { InitialTableState } from '@tanstack/table-core';
+import { DataTableActionMode } from '$lib/components/ui/data-table/data-table-component.svelte';
+
+export const searchParam = 'class_tutors';
+
+export const initialState: InitialTableState = {};
 
 export const filters: Filter[] = [];
 
-export const columns: (ColumnDef<ClassUserDTO> & { uniqueId?: string })[] = [
+export const columns: ColDef<ClassUserDTO>[] = [
 	{
 		accessorKey: 'row_index',
 		header: 'ID',
+		columnName: 'ID',
 		cell: ({ row, table }) => {
 			return (
 				table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1
 			);
 		},
+		enableHiding: false,
 		size: 0
 	},
 	// {
@@ -39,6 +46,7 @@ export const columns: (ColumnDef<ClassUserDTO> & { uniqueId?: string })[] = [
 
 	{
 		accessorKey: 'username',
+		columnName: m.user_username(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.user_username(),
@@ -48,6 +56,7 @@ export const columns: (ColumnDef<ClassUserDTO> & { uniqueId?: string })[] = [
 	},
 	{
 		accessorKey: 'familyName',
+		columnName: m.user_family_name(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.user_family_name(),
@@ -57,28 +66,44 @@ export const columns: (ColumnDef<ClassUserDTO> & { uniqueId?: string })[] = [
 	},
 	{
 		accessorKey: 'firstName',
+		columnName: m.user_first_name(),
 		header: m.user_first_name()
 	},
 	{
 		accessorKey: 'degreeBefore',
+		columnName: m.user_degree_before(),
 		header: m.user_degree_before()
 	},
 	{
 		accessorKey: 'degreeAfter',
+		columnName: m.user_degree_after(),
 		header: m.user_degree_after()
 	},
 	{
 		accessorKey: 'email',
+		columnName: m.user_email(),
 		header: m.user_email()
 	},
 	{
 		header: m.actions(),
+		columnName: m.actions(),
 		cell: ({ row, column }) => {
 			return renderComponent(DataTableActions, {
 				id: row.original.id,
 				meta: column.columnDef.meta
 			});
 		},
-		uniqueId: 'actions'
+		enableHiding: false,
+		id: 'actions'
 	}
 ];
+
+export const tableConfig = {
+	columns,
+	filters,
+	initialState,
+	searchParam,
+	paginationMode: DataTableActionMode.DISABLED,
+	sortingMode: DataTableActionMode.FRONTEND,
+	filterMode: DataTableActionMode.FRONTEND
+};

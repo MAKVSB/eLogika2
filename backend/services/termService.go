@@ -29,7 +29,8 @@ func (r *TermService) GetTermByID(
 	full bool,
 	version *uint,
 ) (*models.Term, *common.ErrorResponse) {
-	if userRole == enums.CourseUserRoleAdmin {
+	switch userRole {
+	case enums.CourseUserRoleAdmin:
 		// Can user see the course item
 		cis := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
 		courseItem, err := cis.GetCourseItemByID(dbRef, courseID, courseItemID, userID, userRole, nil, false, nil)
@@ -44,7 +45,7 @@ func (r *TermService) GetTermByID(
 		}
 
 		return r.termRepo.GetTermByIDAdmin(initializers.DB, courseID, courseItemID, termID, userID, full, version)
-	} else if userRole == enums.CourseUserRoleGarant {
+	case enums.CourseUserRoleGarant:
 		// Can user see the course item
 		cis := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
 		courseItem, err := cis.GetCourseItemByID(dbRef, courseID, courseItemID, userID, userRole, nil, false, nil)
@@ -59,7 +60,7 @@ func (r *TermService) GetTermByID(
 		}
 
 		return r.termRepo.GetTermByIDGarant(initializers.DB, courseID, courseItemID, termID, userID, full, version)
-	} else if userRole == enums.CourseUserRoleTutor {
+	case enums.CourseUserRoleTutor:
 		// Can user see the course item
 		cis := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
 		courseItem, err := cis.GetCourseItemByID(dbRef, courseID, courseItemID, userID, userRole, nil, false, nil)
@@ -74,7 +75,7 @@ func (r *TermService) GetTermByID(
 		}
 
 		return r.termRepo.GetTermByIDTutor(initializers.DB, courseID, courseItemID, termID, userID, full, version)
-	} else {
+	default:
 		return nil, &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",
@@ -92,7 +93,8 @@ func (r *TermService) ListTerms(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.Term, int64, *common.ErrorResponse) {
-	if userRole == enums.CourseUserRoleAdmin {
+	switch userRole {
+	case enums.CourseUserRoleAdmin:
 		// Can user see the course item
 		cis := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
 		courseItem, err := cis.GetCourseItemByID(dbRef, courseID, courseItemID, userID, userRole, filters, false, nil)
@@ -107,7 +109,7 @@ func (r *TermService) ListTerms(
 		}
 
 		return r.termRepo.ListTermsAdmin(dbRef, courseID, courseItemID, userID, full, searchParams)
-	} else if userRole == enums.CourseUserRoleGarant {
+	case enums.CourseUserRoleGarant:
 		// Can user see the course item
 		cis := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
 		courseItem, err := cis.GetCourseItemByID(dbRef, courseID, courseItemID, userID, userRole, filters, false, nil)
@@ -122,7 +124,7 @@ func (r *TermService) ListTerms(
 		}
 
 		return r.termRepo.ListTermsGarant(dbRef, courseID, courseItemID, userID, full, searchParams)
-	} else if userRole == enums.CourseUserRoleTutor {
+	case enums.CourseUserRoleTutor:
 		// Can user see the course item
 		cis := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
 		courseItem, err := cis.GetCourseItemByID(dbRef, courseID, courseItemID, userID, userRole, filters, false, nil)
@@ -137,7 +139,7 @@ func (r *TermService) ListTerms(
 		}
 
 		return r.termRepo.ListTermsTutor(dbRef, courseID, courseItemID, userID, full, searchParams)
-	} else {
+	default:
 		// TODO student will probably also have access to this endpoint
 		return nil, 0, &common.ErrorResponse{
 			Code:    403,

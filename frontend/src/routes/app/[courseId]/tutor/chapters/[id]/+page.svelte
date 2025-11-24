@@ -1,9 +1,9 @@
 <script lang="ts">
 	import DataTable from '$lib/components/ui/data-table/data-table-component.svelte';
-	import { columns, filters } from './schema';
+	import { tableConfig } from './schema';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { API, ApiError } from '$lib/services/api.svelte';
+	import { API } from '$lib/services/api.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import { toast } from 'svelte-sonner';
 	import Pageloader from '$lib/components/ui/loader/pageloader.svelte';
@@ -48,10 +48,10 @@
 	};
 	let form = $state(Form.createForm(ChapterInsertRequestSchema, defaultFormData));
 
-	const actionColumn = columns.find((c) => c.uniqueId == 'actions');
+	const actionColumn = tableConfig.columns.find((c) => c.id == 'actions');
 	if (actionColumn) {
 		actionColumn.meta = {
-			...(columns[0].meta ?? {}),
+			...(tableConfig.columns[0].meta ?? {}),
 			changeEventHandler: (id: number, direction: MoveDirectionEnum) => {
 				if (!courseId) return;
 				API.request<null, ChapterMoveResponse>(
@@ -154,10 +154,8 @@
 				</Label>
 				<DataTable
 					data={form.fields.childs ?? []}
-					{columns}
-					{filters}
-					paginationEnabled={false}
-					queryParam="search"
+					rowCount={(form.fields.childs ?? []).length}
+					{...tableConfig}
 				/>
 			</div>
 		{/if}

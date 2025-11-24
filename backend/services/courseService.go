@@ -26,9 +26,10 @@ func (r *CourseService) GetCourseByID(
 	full bool,
 	version *uint,
 ) (*models.Course, *common.ErrorResponse) {
-	if userRole == enums.CourseUserRoleAdmin || userRole == enums.CourseUserRoleGarant || userRole == enums.CourseUserRoleTutor {
+	switch userRole {
+	case enums.CourseUserRoleAdmin, enums.CourseUserRoleGarant, enums.CourseUserRoleTutor:
 		return r.courseRepo.GetCourseByID(dbRef, courseID, userID, nil, full, version)
-	} else if userRole == enums.CourseUserRoleStudent {
+	case enums.CourseUserRoleStudent:
 
 		var courseUser *models.CourseUser
 		if err := initializers.DB.
@@ -41,7 +42,7 @@ func (r *CourseService) GetCourseByID(
 			}
 		}
 		return r.courseRepo.GetCourseByID(dbRef, courseID, userID, nil, full, version)
-	} else {
+	default:
 		modifier := func(db *gorm.DB) *gorm.DB {
 			return db.Where("public = ?", true)
 		}

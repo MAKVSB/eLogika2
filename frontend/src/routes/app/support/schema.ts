@@ -1,11 +1,20 @@
-import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
+import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableCreatedBy from '$lib/components/ui/data-table/data-table-created-by.svelte';
 import type { SupportTicketListItemDTO } from '$lib/api_types';
 import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
 import DataTableCheck from '$lib/components/ui/data-table/data-table-check.svelte';
 import { m } from '$lib/paraglide/messages';
+import type { InitialTableState } from '@tanstack/table-core';
+
+export const searchParam = 'search';
+
+export const initialState: InitialTableState = {
+	pagination: {
+		pageIndex: 0,
+		pageSize: 25
+	}
+};
 
 export const filters: Filter[] = [
 	{
@@ -31,15 +40,17 @@ export const filters: Filter[] = [
 	}
 ];
 
-export const columns: (ColumnDef<SupportTicketListItemDTO> & { uniqueId?: string })[] = [
+export const columns: ColDef<SupportTicketListItemDTO>[] = [
 	{
 		accessorKey: 'row_index',
 		header: 'ID',
+		columnName: 'ID',
 		cell: ({ row, table }) => {
 			return (
 				table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1
 			);
 		},
+		enableHiding: false,
 		size: 0
 	},
 	// {
@@ -62,6 +73,7 @@ export const columns: (ColumnDef<SupportTicketListItemDTO> & { uniqueId?: string
 	// },
 	{
 		accessorKey: 'name',
+		columnName: m.ticket_title(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.ticket_title(),
@@ -71,6 +83,7 @@ export const columns: (ColumnDef<SupportTicketListItemDTO> & { uniqueId?: string
 	},
 	{
 		accessorKey: 'createdBy',
+		columnName: m.ticket_created_by(),
 		header: m.ticket_created_by(),
 		cell: ({ row }) => {
 			return renderComponent(DataTableCreatedBy, {
@@ -81,6 +94,7 @@ export const columns: (ColumnDef<SupportTicketListItemDTO> & { uniqueId?: string
 	},
 	{
 		accessorKey: 'solved',
+		columnName: m.ticket_solved(),
 		header: m.ticket_solved(),
 		cell: ({ row, column }) => {
 			return renderComponent(DataTableCheck, {
@@ -90,12 +104,21 @@ export const columns: (ColumnDef<SupportTicketListItemDTO> & { uniqueId?: string
 	},
 	{
 		header: m.actions(),
+		columnName: m.actions(),
 		cell: ({ row, column }) => {
 			return renderComponent(DataTableActions, {
 				id: row.original.id,
 				meta: column.columnDef.meta
 			});
 		},
-		uniqueId: 'actions'
+		enableHiding: false,
+		id: 'actions'
 	}
 ];
+
+export const tableConfig = {
+	columns,
+	filters,
+	initialState,
+	searchParam
+};

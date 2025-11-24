@@ -2,11 +2,10 @@
 	import { page } from '$app/state';
 	import type { ClassUserDTO, RemoveTutorRequest, RemoveTutorResponse } from '$lib/api_types';
 	import { DataTable } from '$lib/components/ui/data-table';
-	import { API, ApiError } from '$lib/services/api.svelte';
-	import { toast } from 'svelte-sonner';
-	import { columns, filters } from './schema';
+	import { API } from '$lib/services/api.svelte';
+	import { tableConfig } from './schema';
 
-	const actionsColumn = columns.find((c) => c.uniqueId == 'actions');
+	const actionsColumn = tableConfig.columns.find((c) => c.id == 'actions');
 	if (actionsColumn) {
 		actionsColumn.meta = {
 			...(actionsColumn.meta ?? {}),
@@ -40,4 +39,4 @@
 	let rowCount: number = $derived(tutors.length);
 </script>
 
-<DataTable data={rowItems} {rowCount} {columns} {filters} queryParam='search'></DataTable>
+<DataTable data={rowItems} {rowCount} {...tableConfig}></DataTable>

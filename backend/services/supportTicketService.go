@@ -27,6 +27,9 @@ func (r *SupportTicketService) GetSupportTicketByID(
 		return r.supportTicketRepo.GetSupportTicketByID(dbRef, ticketID, filters, full)
 	} else {
 		modifier := func(db *gorm.DB) *gorm.DB {
+			if filters != nil {
+				db = (*filters)(db)
+			}
 			return db.Where("created_by_id = ?", userID)
 		}
 		return r.supportTicketRepo.GetSupportTicketByID(dbRef, ticketID, &modifier, full)
@@ -45,6 +48,9 @@ func (r *SupportTicketService) ListSupportTickets(
 		return r.supportTicketRepo.ListSupportTickets(dbRef, filters, full, searchParams)
 	} else {
 		modifier := func(db *gorm.DB) *gorm.DB {
+			if filters != nil {
+				db = (*filters)(db)
+			}
 			return db.Where("created_by_id = ?", userID)
 		}
 		return r.supportTicketRepo.ListSupportTickets(dbRef, &modifier, full, searchParams)

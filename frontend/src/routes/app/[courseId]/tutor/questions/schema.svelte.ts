@@ -1,5 +1,5 @@
-import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
+import type { InitialTableState } from '@tanstack/table-core';
+import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableCheckedBy from './data-table-checked-by.svelte';
 import DataTableCreatedBy from '$lib/components/ui/data-table/data-table-created-by.svelte';
@@ -10,7 +10,16 @@ import DataTableCheck from '$lib/components/ui/data-table/data-table-check.svelt
 import { m } from '$lib/paraglide/messages';
 import { enumToOptions } from '$lib/utils';
 
-export const filters: Filter[] = [
+export const searchParam = 'search';
+
+export const initialState: InitialTableState = {
+	pagination: {
+		pageIndex: 0,
+		pageSize: 5
+	}
+};
+
+export const filters: Filter[] = $state([
 	{
 		type: FilterTypeEnum.STRING,
 		accessorKey: 'title',
@@ -44,17 +53,19 @@ export const filters: Filter[] = [
 		emptyValue: 'No filter',
 		placeholder: m.filter_checkedstate()
 	}
-];
+]);
 
-export const columns: (ColumnDef<QuestionListItemDTO> & { uniqueId?: string })[] = [
+export const columns: ColDef<QuestionListItemDTO>[] = [
 	{
 		accessorKey: 'row_index',
 		header: 'ID',
+		columnName: 'ID',
 		cell: ({ row, table }) => {
 			return (
 				table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1
 			);
 		},
+		enableHiding: false,
 		size: 0
 	},
 	// {
@@ -77,29 +88,33 @@ export const columns: (ColumnDef<QuestionListItemDTO> & { uniqueId?: string })[]
 	// },
 	{
 		accessorKey: 'title',
+		columnName: m.question_title(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
-				name: 'Title',
+				name: m.question_title(),
 				sorted: column.getIsSorted(),
 				onclick: column.getToggleSortingHandler()
 			})
 	},
 	{
-		accessorKey: 'chapterId'
+		accessorKey: 'chapterId',
+		columnName: m.question_chapter(),
+		header: m.question_chapter(),
+		cell: ({ row }) => {
+			return row.original.chapterName;
+		}
 	},
 	{
-		accessorKey: 'chapterName',
-		header: m.question_chapter()
-	},
-	{
-		accessorKey: 'categoryId'
-	},
-	{
-		accessorKey: 'categoryName',
-		header: m.question_category()
+		accessorKey: 'categoryId',
+		columnName: m.question_category(),
+		header: m.question_category(),
+		cell: ({ row }) => {
+			return row.original.categoryName;
+		}
 	},
 	{
 		accessorKey: 'questionType',
+		columnName: m.question_type(),
 		header: m.question_type(),
 		cell: ({ row }) => {
 			return m.question_type_enum({ value: row.original.questionType });
@@ -107,6 +122,7 @@ export const columns: (ColumnDef<QuestionListItemDTO> & { uniqueId?: string })[]
 	},
 	{
 		accessorKey: 'questionFormat',
+		columnName: m.question_format(),
 		header: m.question_format(),
 		cell: ({ row }) => {
 			return m.question_format_enum({ value: row.original.questionFormat });
@@ -114,6 +130,7 @@ export const columns: (ColumnDef<QuestionListItemDTO> & { uniqueId?: string })[]
 	},
 	{
 		accessorKey: 'active',
+		columnName: m.active(),
 		header: m.active(),
 		cell: ({ row, column }) => {
 			return renderComponent(DataTableCheck, {
@@ -122,10 +139,11 @@ export const columns: (ColumnDef<QuestionListItemDTO> & { uniqueId?: string })[]
 				id: row.original.id
 			});
 		},
-		uniqueId: 'active'
+		id: 'active'
 	},
 	{
 		accessorKey: 'checkedBy',
+		columnName: m.question_checked_by(),
 		header: m.question_checked_by(),
 		cell: ({ row }) => {
 			return renderComponent(DataTableCheckedBy, { users: row.original.checkedBy });
@@ -133,6 +151,7 @@ export const columns: (ColumnDef<QuestionListItemDTO> & { uniqueId?: string })[]
 	},
 	{
 		accessorKey: 'createdBy',
+		columnName: m.question_created_by(),
 		header: m.question_created_by(),
 		cell: ({ row }) => {
 			return renderComponent(DataTableCreatedBy, {
@@ -143,6 +162,7 @@ export const columns: (ColumnDef<QuestionListItemDTO> & { uniqueId?: string })[]
 	},
 	{
 		header: m.actions(),
+		columnName: m.actions(),
 		cell: ({ row, column }) => {
 			return renderComponent(DataTableActions, {
 				id: row.original.id,
@@ -150,6 +170,14 @@ export const columns: (ColumnDef<QuestionListItemDTO> & { uniqueId?: string })[]
 				meta: column.columnDef.meta
 			});
 		},
-		uniqueId: 'actions'
+		enableHiding: false,
+		id: 'actions'
 	}
 ];
+
+export const tableConfig = $state({
+	columns,
+	filters,
+	initialState,
+	searchParam
+});

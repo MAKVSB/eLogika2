@@ -55,9 +55,6 @@ func RemoveTutor(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums
 			Message: "Not enough permissions",
 		}
 	}
-	if err != nil {
-		return err
-	}
 
 	var classTutor *models.ClassTutor
 	if err := initializers.DB.

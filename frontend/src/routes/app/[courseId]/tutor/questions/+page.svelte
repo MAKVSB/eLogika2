@@ -1,13 +1,12 @@
 <script lang="ts">
 	import DataTable from '$lib/components/ui/data-table/data-table-component.svelte';
-	import { columns, filters } from './schema';
+	import { tableConfig } from './schema.svelte';
 	import { API } from '$lib/services/api.svelte';
 	import type {
 		QuestionCheckResponse,
 		QuestionListItemDTO,
 		QuestionToggleActiveResponse
 	} from '$lib/api_types';
-	import { type InitialTableState } from '@tanstack/table-core';
 	import { page } from '$app/state';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { toast } from 'svelte-sonner';
@@ -16,16 +15,10 @@
 	import { base } from '$app/paths';
 	import { FilterTypeEnum } from '$lib/components/ui/data-table/filter';
 	import Loader from '$lib/components/ui/loader/loader.svelte';
+	import { DataTableSearchParams } from '$lib/api_types_static';
 
-	let loading: boolean = $state(true);
 	let rowItems: QuestionListItemDTO[] = $state([]);
 	let rowCount: number = $state(0);
-	let initialState: InitialTableState = $state({
-		columnVisibility: {
-			chapterId: false,
-			categoryId: false
-		}
-	});
 
 	let printRunning = $state(false);
 
@@ -37,16 +30,13 @@
 				rowItems = res.items;
 				rowCount = res.itemsCount;
 			})
-			.catch(() => {})
-			.finally(() => {
-				loading = false;
-			});
+			.catch(() => {});
 	});
 
 	$effect(() => {
 		data.chapterData
 			.then((res) => {
-				const filter = filters.find((f) => f.accessorKey == 'chapterId');
+				const filter = tableConfig.filters.find((f) => f.accessorKey == 'chapterId');
 				if (filter && filter.type == FilterTypeEnum.SELECT) {
 					filter.values = res.items.map((chapter) => {
 						return {
@@ -56,16 +46,13 @@
 					});
 				}
 			})
-			.catch(() => {})
-			.finally(() => {
-				loading = false;
-			});
+			.catch(() => {});
 	});
 
 	$effect(() => {
 		data.categoryData
 			.then((res) => {
-				const filter = filters.find((f) => f.accessorKey == 'categoryId');
+				const filter = tableConfig.filters.find((f) => f.accessorKey == 'categoryId');
 				if (filter && filter.type == FilterTypeEnum.SELECT) {
 					filter.values = res.items.map((chapter) => {
 						return {
@@ -75,13 +62,10 @@
 					});
 				}
 			})
-			.catch(() => {})
-			.finally(() => {
-				loading = false;
-			});
+			.catch(() => {});
 	});
 
-	const actionsColumn = columns.find((c) => c.uniqueId == 'actions');
+	const actionsColumn = tableConfig.columns.find((c) => c.id == 'actions');
 	if (actionsColumn) {
 		actionsColumn.meta = {
 			...(actionsColumn.meta ?? {}),
@@ -141,7 +125,7 @@
 		};
 	}
 
-	const activeColumn = columns.find((c) => c.uniqueId == 'active');
+	const activeColumn = tableConfig.columns.find((c) => c.id == 'active');
 	if (activeColumn) {
 		activeColumn.meta = {
 			...(activeColumn.meta ?? {}),
@@ -168,14 +152,16 @@
 
 	function print() {
 		printRunning = true;
-		const search = page.url.searchParams.get('search');
+		const search =
+			page.url.searchParams.get(tableConfig.searchParam) ??
+			DataTableSearchParams.fromDataTable(tableConfig.initialState).toURL();
 
 		API.request<any, Blob>(
 			`/api/v2/courses/${page.params.courseId}/print/questions`,
 			{
 				method: 'POST',
 				searchParams: {
-					...(search ? { search: search } : {})
+					search
 				}
 			},
 			fetch
@@ -197,16 +183,7 @@
 		<Button href="{base}/app/{page.params.courseId}/tutor/questions/0">{m.quesstions_add()}</Button>
 	</div>
 	<div>
-		{#if !loading}
-			<DataTable
-				data={rowItems}
-				{columns}
-				{filters}
-				{initialState}
-				{rowCount}
-				queryParam="search"
-			/>
-		{/if}
+		<DataTable data={rowItems} {rowCount} {...tableConfig} />
 	</div>
 	<div class="flex justify-end gap-4">
 		<Button onclick={() => print()} disabled={printRunning}>

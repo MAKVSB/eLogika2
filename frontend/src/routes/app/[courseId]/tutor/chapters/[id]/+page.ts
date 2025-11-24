@@ -1,7 +1,7 @@
 import type { ChapterGetByIdResponse } from '$lib/api_types.js';
 import { API } from '$lib/services/api.svelte.js';
 
-export async function load({ fetch, params }) {
+export async function load({ fetch, params, url }) {
 	if (params.id === '0') {
 		return {
 			creating: true

@@ -1,9 +1,13 @@
 <script lang="ts">
 	import DataTable from '$lib/components/ui/data-table/data-table-component.svelte';
-	import { columns, filters } from './schema';
+	import { tableConfig } from './schema';
 	import { API } from '$lib/services/api.svelte';
-	import type { ClassImportStudentsResponse, ClassUserDTO, RemoveStudentRequest, RemoveStudentResponse } from '$lib/api_types';
-	import { type InitialTableState } from '@tanstack/table-core';
+	import type {
+		ClassImportStudentsResponse,
+		ClassUserDTO,
+		RemoveStudentRequest,
+		RemoveStudentResponse
+	} from '$lib/api_types';
 	import { page } from '$app/state';
 	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -11,10 +15,8 @@
 	import { m } from '$lib/paraglide/messages';
 	import { invalidate } from '$app/navigation';
 
-	let loading: boolean = $state(true);
 	let rowItems: ClassUserDTO[] = $state([]);
 	let rowCount: number = $state(0);
-	let initialState: InitialTableState = $state({});
 	let dialogOpen = $state(false);
 
 	let { data } = $props();
@@ -25,12 +27,10 @@
 				rowItems = res.items;
 				rowCount = res.itemsCount;
 			})
-			.catch(() => {}).finally(() => {
-				loading = false
-			});
+			.catch(() => {});
 	});
 
-	const actionsColumn = columns.find((c) => c.uniqueId == 'actions');
+	const actionsColumn = tableConfig.columns.find((c) => c.id == 'actions');
 	if (actionsColumn) {
 		actionsColumn.meta = {
 			...(actionsColumn.meta ?? {}),
@@ -59,12 +59,14 @@
 		await API.request<null, ClassImportStudentsResponse>(
 			`api/v2/courses/${page.params.courseId}/classes/${page.params.classId}/students/import`,
 			{
-				method: 'POST',
+				method: 'POST'
 			}
 		)
 			.then((res) => {
 				invalidate((url) => {
-					return url.href.endsWith(`/api/v2/courses/${page.params.courseId}/classes/${page.params.classId}/students`);
+					return url.href.endsWith(
+						`/api/v2/courses/${page.params.courseId}/classes/${page.params.classId}/students`
+					);
 				});
 			})
 			.catch(() => {});
@@ -77,9 +79,12 @@
 	<div class="flex flex-row justify-between">
 		<h1 class="mb-8 text-2xl">Class students</h1>
 		<div class="flex gap-2">
-			<Button variant="outline" onclick={() => importStudents()}>{m.class_students_import()}</Button>
+			<Button variant="outline" onclick={() => importStudents()}>{m.class_students_import()}</Button
+			>
 			<Dialog.Root bind:open={dialogOpen}>
-				<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>{m.class_student_add()}</Dialog.Trigger>
+				<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}
+					>{m.class_student_add()}</Dialog.Trigger
+				>
 				{#if dialogOpen}
 					<UserAddDialog
 						defaultRole="STUDENT"
@@ -89,7 +94,5 @@
 			</Dialog.Root>
 		</div>
 	</div>
-	{#if !loading}
-		<DataTable data={rowItems} {columns} {filters} {initialState} {rowCount} queryParam='search'/>
-	{/if}
+	<DataTable data={rowItems} {rowCount} {...tableConfig} />
 </div>

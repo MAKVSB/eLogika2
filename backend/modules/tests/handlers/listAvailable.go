@@ -79,7 +79,8 @@ func ListAvailable(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 	activeTests := make([]dtos.StudentTestDTO, 0)
 
 	for _, t := range terms {
-		if t.CourseItem.Type == enums.CourseItemTypeGroup {
+		switch t.CourseItem.Type {
+		case enums.CourseItemTypeGroup:
 			for _, ci := range t.CourseItem.Children {
 				if ci.Type == enums.CourseItemTypeTest {
 
@@ -100,7 +101,7 @@ func ListAvailable(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 					})
 				}
 			}
-		} else if t.CourseItem.Type == enums.CourseItemTypeTest {
+		case enums.CourseItemTypeTest:
 			triesLeft, err := helpers.GetTestAttemptsLeft(t.CourseItemID, t.ID, userData.ID)
 			if err != nil {
 				return err

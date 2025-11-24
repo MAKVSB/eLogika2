@@ -1,6 +1,6 @@
 <script lang="ts">
 	import DataTable from '$lib/components/ui/data-table/data-table-component.svelte';
-	import { columns, filters } from './schema';
+	import { tableConfig } from './schema';
 	import { API } from '$lib/services/api.svelte';
 	import {
 		CourseUserRoleEnum,
@@ -8,7 +8,6 @@
 		type RemoveCourseUserRequest,
 		type RemoveCourseUserResponse
 	} from '$lib/api_types';
-	import { type InitialTableState } from '@tanstack/table-core';
 	import { page } from '$app/state';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -18,10 +17,8 @@
 	import GlobalState from '$lib/shared.svelte';
 	import { toast } from 'svelte-sonner';
 
-	let loading: boolean = $state(true);
 	let rowItems: CourseUserDTO[] = $state([]);
 	let rowCount: number = $state(0);
-	let initialState: InitialTableState = $state({});
 	let dialogOpen = $state(false);
 
 	let { data } = $props();
@@ -32,13 +29,10 @@
 				rowItems = res.items;
 				rowCount = res.itemsCount;
 			})
-			.catch(() => {})
-			.finally(() => {
-				loading = false;
-			});
+			.catch(() => {});
 	});
 
-	const actionsColumn = columns.find((c) => c.uniqueId == 'actions');
+	const actionsColumn = tableConfig.columns.find((c) => c.id == 'actions');
 	if (actionsColumn) {
 		actionsColumn.meta = {
 			...(actionsColumn.meta ?? {}),
@@ -56,7 +50,7 @@
 						invalidate((url) => {
 							return url.pathname.endsWith(`courses/${page.params.courseId}/users`);
 						});
-						toast.success(m.toast_course_user_deleted())
+						toast.success(m.toast_course_user_deleted());
 					})
 					.catch(() => {});
 
@@ -65,7 +59,7 @@
 		};
 	}
 
-	const rolesColumn = columns.find((c) => c.uniqueId == 'roles');
+	const rolesColumn = tableConfig.columns.find((c) => c.id == 'roles');
 	if (rolesColumn) {
 		rolesColumn.meta = {
 			...(rolesColumn.meta ?? {}),
@@ -93,7 +87,11 @@
 								invalidate((url) => {
 									return url.pathname.endsWith(`courses/${page.params.courseId}/users`);
 								});
-								toast.success(m.toast_course_user_role_removed({role: m.course_user_role_enum({value: params.role})}))
+								toast.success(
+									m.toast_course_user_role_removed({
+										role: m.course_user_role_enum({ value: params.role })
+									})
+								);
 							})
 							.catch(() => {});
 
@@ -114,14 +112,13 @@
 						{m.course_user_add()}
 					</Dialog.Trigger>
 					{#if dialogOpen}
-						<UserAddDialog endpoint={`api/v2/courses/${page.params.courseId}/users`}>
-					</UserAddDialog>
+						<UserAddDialog
+							endpoint={`api/v2/courses/${page.params.courseId}/users`}
+						></UserAddDialog>
 					{/if}
 				</Dialog.Root>
 			{/if}
 		</div>
 	</div>
-	{#if !loading}
-		<DataTable data={rowItems} {columns} {filters} {initialState} {rowCount} queryParam="search" />
-	{/if}
+	<DataTable data={rowItems} {rowCount} {...tableConfig} />
 </div>

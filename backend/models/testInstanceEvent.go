@@ -18,6 +18,7 @@ type TestInstanceEvent struct {
 	UserID         uint ``
 
 	OccuredAt   time.Time                         ``
+	ReceivedAt  time.Time                         ``
 	EventSource enums.TestInstanceEventSourceEnum ``
 	EventType   enums.TestInstanceEventTypeEnum   ``
 	EventData   json.RawMessage                   ``

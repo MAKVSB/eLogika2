@@ -7,23 +7,19 @@
 	} from '$lib/api_types';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { DataTable } from '$lib/components/ui/data-table';
-	import { columns, filters } from './schema';
+	import { initialState as is, tableConfig } from './schema';
 	import { m } from '$lib/paraglide/messages';
 	import { page } from '$app/state';
-	import { goto, invalidateAll } from '$app/navigation';
-	import { API, decodeBase64UrlToJson, encodeJsonToBase64Url } from '$lib/services/api.svelte';
-	import GlobalState from '$lib/shared.svelte';
+	import { invalidateAll } from '$app/navigation';
+	import { API } from '$lib/services/api.svelte';
 	import { base } from '$app/paths';
 	import type {
 		ColumnFiltersState,
-		InitialTableState,
 		PaginationState,
-		SortingState,
-		TableState
+		SortingState
 	} from '@tanstack/table-core';
-	import { onMount } from 'svelte';
+	import { DataTableSearchParams } from '$lib/api_types_static';
 
-	let loading = $state(false);
 	let {
 		mode,
 		courseId,
@@ -38,21 +34,24 @@
 
 	let data: CourseItemDTO[] = $state([]);
 	let rowCount: number = $state(0);
-	let initialState: InitialTableState = $state({});
-	let encodedParams: string | null = $state(null);
+	let searchParam = $derived('search' + mode);
 
-	$effect(() => {
-		if (!page.params.courseId) return;
-		if (encodedParams) {
-			console.log("Transfering 29")
-			goto(`?search=${encodedParams}`);
-			fetchData();
-		} else {
-			fetchData();
-		}
-	});
+	const initialState = {
+		...is,
+		columnFilters: [
+			...(is.columnFilters ?? []),
+			{
+				id: 'StudyForm',
+				value: mode
+			},
+			{
+				id: 'ParentID',
+				value: parentId ?? 'NULL'
+			}
+		]
+	};
 
-	const actionsColumn = columns.find((c) => c.uniqueId == 'actions');
+	const actionsColumn = tableConfig.columns.find((c) => c.id == 'actions');
 	if (actionsColumn) {
 		actionsColumn.meta = {
 			...(actionsColumn.meta ?? {}),
@@ -87,53 +86,21 @@
 		columnFilters?: ColumnFiltersState;
 	};
 
-	async function fetchData() {
-		const queryParams: RestRequest = {
-			pagination: {
-				pageIndex: 0,
-				pageSize: 1000
-			},
-			columnFilters: [
-				{
-					id: 'StudyForm',
-					value: mode
-				}
-			]
-		};
+	$effect(() => {
+		const search =
+			page.url.searchParams.get(searchParam) ??
+			DataTableSearchParams.fromDataTable(initialState).toURL();
 
-		if (parentId) {
-			queryParams.columnFilters?.push({
-				id: 'ParentID',
-				value: parentId
-			});
-		} else {
-			queryParams.columnFilters?.push({
-				id: 'ParentID',
-				value: 'NULL'
-			});
-		}
-
-		await API.request<null, CourseItemListResponse>(
-			`/api/v2/courses/${page.params.courseId}/items`,
-			{
-				searchParams: {
-					search: encodeJsonToBase64Url(queryParams)
-				}
+		API.request<null, CourseItemListResponse>(`/api/v2/courses/${page.params.courseId}/items`, {
+			searchParams: {
+				search
 			}
-		)
+		})
 			.then((res) => {
 				data = res.items;
 				rowCount = res.itemsCount;
 			})
 			.catch(() => {});
-	}
-
-	onMount(() => {
-		const encodedParams = page.url.searchParams.get('search');
-		if (encodedParams) {
-			initialState = decodeBase64UrlToJson(encodedParams);
-		}
-		loading = false;
 	});
 </script>
 
@@ -165,15 +132,4 @@
 	</Button>
 </div>
 
-{#if !loading}
-	<DataTable
-		{data}
-		{columns}
-		{filters}
-		{initialState}
-		{rowCount}
-		paginationEnabled={false}
-		queryParam='search'
-		frontEndMode
-	/>
-{/if}
+<DataTable {data} {rowCount} {initialState} {searchParam} {...tableConfig} />

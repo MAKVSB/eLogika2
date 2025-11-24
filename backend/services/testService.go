@@ -51,13 +51,14 @@ func (r *TestService) ListTests(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.Test, int64, *common.ErrorResponse) {
-	if userRole == enums.CourseUserRoleAdmin {
-		return r.testRepo.ListTestsAdmin(dbRef, courseID, courseItemID, termID, userID, full, searchParams)
-	} else if userRole == enums.CourseUserRoleGarant {
-		return r.testRepo.ListTestsGarant(dbRef, courseID, courseItemID, termID, userID, full, searchParams)
-	} else if userRole == enums.CourseUserRoleTutor {
-		return r.testRepo.ListTestsTutor(dbRef, courseID, courseItemID, termID, userID, full, searchParams)
-	} else {
+	switch userRole {
+	case enums.CourseUserRoleAdmin:
+		return r.testRepo.ListTests(dbRef, courseID, courseItemID, termID, userID, filters, full, searchParams)
+	case enums.CourseUserRoleGarant:
+		return r.testRepo.ListTests(dbRef, courseID, courseItemID, termID, userID, filters, full, searchParams)
+	case enums.CourseUserRoleTutor:
+		return r.testRepo.ListTests(dbRef, courseID, courseItemID, termID, userID, filters, full, searchParams)
+	default:
 		return nil, 0, &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",
@@ -76,13 +77,14 @@ func (r *TestService) ListTestInstances(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.TestInstance, int64, *common.ErrorResponse) {
-	if userRole == enums.CourseUserRoleAdmin {
-		return r.testRepo.ListTestInstancesAdmin(dbRef, courseItemID, termID, testID, userID, full, searchParams)
-	} else if userRole == enums.CourseUserRoleGarant {
-		return r.testRepo.ListTestInstancesGarant(dbRef, courseItemID, termID, testID, userID, full, searchParams)
-	} else if userRole == enums.CourseUserRoleTutor {
-		return r.testRepo.ListTestInstancesTutor(dbRef, courseItemID, termID, testID, userID, full, searchParams)
-	} else {
+	switch userRole {
+	case enums.CourseUserRoleAdmin:
+		return r.testRepo.ListTestInstances(dbRef, courseItemID, termID, testID, userID, filters, full, searchParams)
+	case enums.CourseUserRoleGarant:
+		return r.testRepo.ListTestInstances(dbRef, courseItemID, termID, testID, userID, filters, full, searchParams)
+	case enums.CourseUserRoleTutor:
+		return r.testRepo.ListTestInstances(dbRef, courseItemID, termID, testID, userID, filters, full, searchParams)
+	default:
 		return nil, 0, &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",

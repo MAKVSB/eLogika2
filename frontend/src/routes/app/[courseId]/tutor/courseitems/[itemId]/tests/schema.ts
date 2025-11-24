@@ -1,11 +1,19 @@
-import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
+import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableCreatedBy from '$lib/components/ui/data-table/data-table-created-by.svelte';
-import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 import type { TestListItemDTO } from '$lib/api_types';
 import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
+import type { InitialTableState } from '@tanstack/table-core';
+
+export const searchParam = 'search';
+
+export const initialState: InitialTableState = {
+	pagination: {
+		pageIndex: 0,
+		pageSize: 25
+	}
+};
 
 export const filters: Filter[] = [
 	{
@@ -17,15 +25,17 @@ export const filters: Filter[] = [
 	}
 ];
 
-export const columns: (ColumnDef<TestListItemDTO> & { uniqueId?: string })[] = [
+export const columns: ColDef<TestListItemDTO>[] = [
 	{
 		accessorKey: 'row_index',
 		header: 'ID',
+		columnName: 'ID',
 		cell: ({ row, table }) => {
 			return (
 				table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1
 			);
 		},
+		enableHiding: false,
 		size: 0
 	},
 	// {
@@ -48,37 +58,31 @@ export const columns: (ColumnDef<TestListItemDTO> & { uniqueId?: string })[] = [
 	// },
 	{
 		accessorKey: 'name',
+		columnName: m.test_name(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
-				name: 'Name',
+				name: m.test_name(),
 				sorted: column.getIsSorted(),
 				onclick: column.getToggleSortingHandler()
 			})
 	},
 	{
 		accessorKey: 'group',
-		header: ({ column }) =>
-			renderComponent(SortButton, {
-				name: 'Variant',
-				sorted: column.getIsSorted(),
-				onclick: column.getToggleSortingHandler()
-			})
+		columnName: m.test_group(),
+		header: m.test_group()
 	},
 	{
-		accessorKey: 'term',
-		header: ({ column }) =>
-			renderComponent(SortButton, {
-				name: 'Term',
-				sorted: column.getIsSorted(),
-				onclick: column.getToggleSortingHandler()
-			})
-	},
-	{
-		accessorKey: 'termId'
+		accessorKey: 'termId',
+		columnName: m.test_term(),
+		header: m.test_term(),
+		cell: ({ row }) => {
+			return row.original.term;
+		}
 	},
 	{
 		accessorKey: 'createdBy',
-		header: m.question_created_by(),
+		columnName: m.test_createdby(),
+		header: m.test_createdby(),
 		cell: ({ row }) => {
 			return renderComponent(DataTableCreatedBy, {
 				createdBy: row.original.createdBy,
@@ -88,12 +92,21 @@ export const columns: (ColumnDef<TestListItemDTO> & { uniqueId?: string })[] = [
 	},
 	{
 		header: m.actions(),
+		columnName: m.actions(),
 		cell: ({ row, column }) => {
 			return renderComponent(DataTableActions, {
 				id: row.original.id,
 				meta: column.columnDef.meta
 			});
 		},
-		uniqueId: 'actions'
+		enableHiding: false,
+		id: 'actions'
 	}
 ];
+
+export const tableConfig = {
+	columns,
+	filters,
+	initialState,
+	searchParam
+};

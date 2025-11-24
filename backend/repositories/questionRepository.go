@@ -6,7 +6,6 @@ import (
 	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common"
-	"elogika.vsb.cz/backend/modules/common/enums"
 	"gorm.io/gorm"
 )
 
@@ -63,55 +62,6 @@ func (r *QuestionRepository) GetQuestionByID(
 	}
 
 	return question, nil
-}
-
-// Modifications for ease of writing code later
-func (r *QuestionRepository) GetQuestionByIDAdmin(
-	dbRef *gorm.DB,
-	courseID uint,
-	questionID uint,
-	userID uint,
-	filters *(func(*gorm.DB) *gorm.DB),
-	full bool,
-	version *uint,
-) (*models.Question, *common.ErrorResponse) {
-	return r.GetQuestionByID(dbRef, courseID, questionID, userID, filters, full, version)
-}
-
-func (r *QuestionRepository) GetQuestionByIDGarant(
-	dbRef *gorm.DB,
-	courseID uint,
-	questionID uint,
-	userID uint,
-	filters *(func(*gorm.DB) *gorm.DB),
-	full bool,
-	version *uint,
-) (*models.Question, *common.ErrorResponse) {
-	modifier := func(db *gorm.DB) *gorm.DB {
-		if filters != nil {
-			db = (*filters)(db)
-		}
-		return db.Where("managed_by = ?", enums.CourseUserRoleGarant)
-	}
-	return r.GetQuestionByID(dbRef, courseID, questionID, userID, &modifier, full, version)
-}
-
-func (r *QuestionRepository) GetQuestionByIDTutor(
-	dbRef *gorm.DB,
-	courseID uint,
-	questionID uint,
-	userID uint,
-	filters *(func(*gorm.DB) *gorm.DB),
-	full bool,
-	version *uint,
-) (*models.Question, *common.ErrorResponse) {
-	modifier := func(db *gorm.DB) *gorm.DB {
-		if filters != nil {
-			db = (*filters)(db)
-		}
-		return db.Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userID)
-	}
-	return r.GetQuestionByID(dbRef, courseID, questionID, userID, &modifier, full, version)
 }
 
 func (r *QuestionRepository) GetMaxVersion(
@@ -185,7 +135,8 @@ func (r *QuestionRepository) ListQuestions(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.Question, int64, *common.ErrorResponse) {
-	courseLinkQuery := initializers.DB.Where("CourseLink.course_id = ?", courseID)
+	courseLinkQuery := initializers.DB.
+		Where("CourseLink.course_id = ?", courseID)
 
 	// Apply filters to innerobjects
 	courseLinkQuery, err := models.CourseQuestion{}.ApplyFilters(courseLinkQuery, searchParams.ColumnFilters, models.CourseQuestion{}, map[string]interface{}{}, "CourseLink.")
@@ -212,15 +163,19 @@ func (r *QuestionRepository) ListQuestions(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err = models.Question{}.ApplyFilters(query, searchParams.ColumnFilters, models.Question{}, map[string]interface{}{
-		"userID": userID,
-	})
-	if err != nil {
-		return nil, 0, err
+	if searchParams != nil {
+		query, err = models.Question{}.ApplyFilters(query, searchParams.ColumnFilters, models.Question{}, map[string]interface{}{
+			"userID": userID,
+		})
+		if err != nil {
+			return nil, 0, err
+		}
+		query = models.Question{}.ApplySorting(query, searchParams.Sorting, "id DESC")
 	}
-	query = models.Question{}.ApplySorting(query, searchParams.Sorting)
 	totalCount := models.Question{}.GetCount(query) // Gets count before pagination
-	query = models.Question{}.ApplyPagination(query, searchParams.Pagination)
+	if searchParams != nil {
+		query = models.Question{}.ApplyPagination(query, searchParams.Pagination)
+	}
 
 	var questions []*models.Question
 	if err := query.
@@ -233,49 +188,4 @@ func (r *QuestionRepository) ListQuestions(
 	}
 
 	return questions, totalCount, nil
-}
-
-func (r *QuestionRepository) ListQuestionsAdmin(
-	dbRef *gorm.DB,
-	courseID uint,
-	userID uint,
-	filters *(func(*gorm.DB) *gorm.DB),
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.Question, int64, *common.ErrorResponse) {
-	return r.ListQuestions(dbRef, courseID, userID, filters, full, searchParams)
-}
-
-func (r *QuestionRepository) ListQuestionsGarant(
-	dbRef *gorm.DB,
-	courseID uint,
-	userID uint,
-	filters *(func(*gorm.DB) *gorm.DB),
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.Question, int64, *common.ErrorResponse) {
-	modifier := func(db *gorm.DB) *gorm.DB {
-		if filters != nil {
-			db = (*filters)(db)
-		}
-		return db.Where("managed_by = ?", enums.CourseUserRoleGarant)
-	}
-	return r.ListQuestions(dbRef, courseID, userID, &modifier, full, searchParams)
-}
-
-func (r *QuestionRepository) ListQuestionsTutor(
-	dbRef *gorm.DB,
-	courseID uint,
-	userID uint,
-	filters *(func(*gorm.DB) *gorm.DB),
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.Question, int64, *common.ErrorResponse) {
-	modifier := func(db *gorm.DB) *gorm.DB {
-		if filters != nil {
-			db = (*filters)(db)
-		}
-		return db.Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userID)
-	}
-	return r.ListQuestions(dbRef, courseID, userID, &modifier, full, searchParams)
 }

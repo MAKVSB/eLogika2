@@ -19,57 +19,30 @@ func (r *ChapterRepository) GetChapterByID(
 	dbRef *gorm.DB,
 	courseId uint,
 	chapterID uint,
+	filters *(func(*gorm.DB) *gorm.DB),
 	full bool,
 	version *uint,
+	onlyVisible bool,
 ) (*models.Chapter, *common.ErrorResponse) {
 
 	query := dbRef.
 		Where("id = ?", chapterID).
 		Where("course_id = ?", courseId)
 
-	if full {
-		query = query.Preload("Childs")
+	if onlyVisible {
+		query = query.Where("visible = ?", true)
 	}
 
-	var chapter *models.Chapter
-	if err := query.
-		Find(&chapter).Error; err != nil {
-		return nil, &common.ErrorResponse{
-			Code:    401,
-			Message: "Failed to load chapter",
-		}
+	if filters != nil {
+		query = (*filters)(query)
 	}
-
-	if version != nil {
-		if chapter.Version != *version {
-			return nil, &common.ErrorResponse{
-				Code:    409,
-				Message: "Version mismatched",
-				Details: strconv.Itoa(int(*version)) + " " + strconv.Itoa(int(chapter.Version)),
-			}
-		}
-	}
-
-	return chapter, nil
-}
-
-func (r *ChapterRepository) GetChapterByIDStudent(
-	dbRef *gorm.DB,
-	courseId uint,
-	chapterID uint,
-	full bool,
-	version *uint,
-) (*models.Chapter, *common.ErrorResponse) {
-
-	query := dbRef.
-		Where("id = ?", chapterID).
-		Where("course_id = ?", courseId).
-		Where("visible = ?", true)
 
 	if full {
 		query = query.Preload("Childs", func(db *gorm.DB) *gorm.DB {
-			return db.
-				Where("visible = ?", true)
+			if onlyVisible {
+				db = db.Where("visible = ?", true)
+			}
+			return db
 		})
 	}
 
@@ -101,72 +74,42 @@ func (r *ChapterRepository) ListChapters(
 	filters *(func(*gorm.DB) *gorm.DB),
 	full bool,
 	searchParams *common.SearchRequest,
+	onlyVisible bool,
 ) ([]*models.Chapter, int64, *common.ErrorResponse) {
+	var err *common.ErrorResponse
 	query := dbRef.
 		Model(models.Chapter{}).
 		Where("course_id = ?", courseID)
 
-	if full {
-		query = query.Preload("Childs")
+	if onlyVisible {
+		query = query.Where("visible = ?", true)
 	}
 
 	if filters != nil {
 		query = (*filters)(query)
 	}
-
-	// Apply filters, sorting, pagination
-	query, err := models.Chapter{}.ApplyFilters(query, searchParams.ColumnFilters, models.Chapter{}, map[string]interface{}{}, "")
-	if err != nil {
-		return nil, 0, err
-	}
-	query = models.Chapter{}.ApplySorting(query, searchParams.Sorting)
-	totalCount := models.Chapter{}.GetCount(query) // Gets count before pagination
-	query = models.Chapter{}.ApplyPagination(query, searchParams.Pagination)
-
-	var chapters []*models.Chapter
-	if err := query.
-		Find(&chapters).Error; err != nil {
-		return nil, 0, &common.ErrorResponse{
-			Code:    404,
-			Message: "Failed to fetch chapter",
-			Details: err.Error(),
-		}
-	}
-
-	return chapters, totalCount, nil
-}
-
-func (r *ChapterRepository) ListChaptersStudent(
-	dbRef *gorm.DB,
-	courseID uint,
-	filters *(func(*gorm.DB) *gorm.DB),
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.Chapter, int64, *common.ErrorResponse) {
-	query := dbRef.
-		Model(models.Chapter{}).
-		Where("course_id = ?", courseID).
-		Where("visible = ?", true)
 
 	if full {
 		query = query.Preload("Childs", func(db *gorm.DB) *gorm.DB {
-			return db.
-				Where("visible = ?", true)
+			if onlyVisible {
+				db = db.Where("visible = ?", true)
+			}
+			return db
 		})
 	}
 
-	if filters != nil {
-		query = (*filters)(query)
-	}
-
 	// Apply filters, sorting, pagination
-	query, err := models.Chapter{}.ApplyFilters(query, searchParams.ColumnFilters, models.Chapter{}, map[string]interface{}{}, "")
-	if err != nil {
-		return nil, 0, err
+	if searchParams != nil {
+		query, err = models.Chapter{}.ApplyFilters(query, searchParams.ColumnFilters, models.Chapter{}, map[string]interface{}{}, "")
+		if err != nil {
+			return nil, 0, err
+		}
+		query = models.Chapter{}.ApplySorting(query, searchParams.Sorting, "id DESC")
 	}
-	query = models.Chapter{}.ApplySorting(query, searchParams.Sorting)
 	totalCount := models.Chapter{}.GetCount(query) // Gets count before pagination
-	query = models.Chapter{}.ApplyPagination(query, searchParams.Pagination)
+	if searchParams != nil {
+		query = models.Chapter{}.ApplyPagination(query, searchParams.Pagination)
+	}
 
 	var chapters []*models.Chapter
 	if err := query.
@@ -207,11 +150,12 @@ func (r *ChapterRepository) GetNextInOrder(
 		Where("course_id = ?", courseId).
 		Where("parent_id = ?", parentId)
 
-	if direction == enums.MoveDirectionDown {
+	switch direction {
+	case enums.MoveDirectionDown:
 		query = query.Where("\"order\" > ?", originalOrder).Order("\"order\" ASC")
-	} else if direction == enums.MoveDirectionUp {
+	case enums.MoveDirectionUp:
 		query = query.Where("\"order\" < ?", originalOrder).Order("\"order\" DESC")
-	} else {
+	default:
 		return nil, &common.ErrorResponse{
 			Code:    500,
 			Message: "Invalid move direction",

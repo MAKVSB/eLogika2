@@ -8,12 +8,15 @@ import (
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/modules/tests/dtos"
+	"elogika.vsb.cz/backend/repositories"
+	services_course_item "elogika.vsb.cz/backend/services/courseItem"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
 type TestInstanceGetTelemetryResponse struct {
-	Items []dtos.TestInstanceEventDTO `json:"items"`
+	Items      []dtos.TestInstanceEventDTO `json:"items"`
+	ItemsCount int64                       `json:"itemsCount"`
 }
 
 // @Summary Gets events associated with test instance
@@ -29,14 +32,14 @@ type TestInstanceGetTelemetryResponse struct {
 // @Router /api/v2/courses/{courseId}/tests/{courseItemId}/instance/{instanceId}/telemetry [GET]
 func TestInstanceGetTelemetry(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.CourseUserRoleEnum) *common.ErrorResponse {
 	// Load request data
-	err, params, _ := utils.GetRequestData[
+	err, params, _, searchParams := utils.GetRequestDataWithSearch[
 		struct {
 			CourseID     uint `uri:"courseId" binding:"required"`
 			CourseItemID uint `uri:"courseItemId" binding:"required"`
 			InstanceID   uint `uri:"instanceId" binding:"required"`
 		},
 		any,
-	](c)
+	](c, "search")
 	if err != nil {
 		return err
 	}
@@ -47,50 +50,13 @@ func TestInstanceGetTelemetry(c *gin.Context, userData authdtos.LoggedUserDTO, u
 	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
-	var courseItem models.CourseItem
-	// Check if tutor/garant can view/modify courseItem
-	if userRole == enums.CourseUserRoleAdmin {
-	} else if userRole == enums.CourseUserRoleGarant {
-		var test models.TestInstance
-		if err := initializers.DB.
-			InnerJoins("Test").
-			Find(&test, params.InstanceID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    500,
-				Message: "Failed to commit changes",
-			}
-		}
 
-		if err := initializers.DB.
-			Preload("TestDetail").
-			Where("managed_by = ?", enums.CourseUserRoleGarant).
-			Find(&courseItem, test.CourseItemID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    403,
-				Message: "Not enough permission for this item",
-			}
-		}
-	} else if userRole == enums.CourseUserRoleTutor {
-		var test models.TestInstance
-		if err := initializers.DB.
-			InnerJoins("Test").
-			Find(&test, params.InstanceID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    500,
-				Message: "Failed to commit changes",
-			}
-		}
-
-		if err := initializers.DB.
-			Preload("TestDetail").
-			Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userData.ID).
-			Find(&courseItem, test.CourseItemID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    403,
-				Message: "Not enough permission for this item",
-			}
-		}
-	} else {
+	courseItemService := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
+	courseItem, err := courseItemService.GetCourseItemByID(initializers.DB, params.CourseID, params.CourseItemID, userData.ID, userRole, nil, false, nil)
+	if err != nil {
+		return err
+	}
+	if !courseItem.Editable {
 		return &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",
@@ -98,10 +64,20 @@ func TestInstanceGetTelemetry(c *gin.Context, userData authdtos.LoggedUserDTO, u
 	}
 
 	var testInstanceEvents []models.TestInstanceEvent
-
-	if err := initializers.DB.
+	query := initializers.DB.
+		Model(&models.TestInstanceEvent{}).
 		Preload("User").
-		Where("test_instance_id = ?", params.InstanceID).
+		Where("test_instance_id = ?", params.InstanceID)
+
+	query, err = models.TestInstanceEvent{}.ApplyFilters(query, searchParams.ColumnFilters, models.TestInstanceEvent{}, map[string]interface{}{}, "")
+	if err != nil {
+		return err
+	}
+	query = models.TestInstanceEvent{}.ApplySorting(query, searchParams.Sorting, "id ASC")
+	totalCount := models.TestInstanceEvent{}.GetCount(query) // Gets count before pagination
+	query = models.TestInstanceEvent{}.ApplyPagination(query, searchParams.Pagination)
+
+	if err := query.
 		Find(&testInstanceEvents).Error; err != nil {
 		return &common.ErrorResponse{
 			Code:    500,
@@ -116,7 +92,8 @@ func TestInstanceGetTelemetry(c *gin.Context, userData authdtos.LoggedUserDTO, u
 	}
 
 	c.JSON(200, TestInstanceGetTelemetryResponse{
-		Items: dtoList,
+		Items:      dtoList,
+		ItemsCount: totalCount,
 	})
 
 	return nil

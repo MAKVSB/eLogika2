@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
 	import DataTable from '$lib/components/ui/data-table/data-table-component.svelte';
-	import { columns, filters } from './schema';
+	import { tableConfig } from './schema';
 	import { API } from '$lib/services/api.svelte';
 	import type {
 		PrintTestRequest,
@@ -10,7 +8,6 @@
 		TestEvaluationResponse,
 		TestInstanceListItemDTO
 	} from '$lib/api_types';
-	import { type InitialTableState } from '@tanstack/table-core';
 	import { page } from '$app/state';
 	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
 	import { toast } from 'svelte-sonner';
@@ -21,10 +18,8 @@
 	import { Label } from '$lib/components/ui/label';
 	import { m } from '$lib/paraglide/messages';
 
-	let loading: boolean = $state(true);
 	let rowItems: TestInstanceListItemDTO[] = $state([]);
 	let rowCount: number = $state(0);
-	let initialState: InitialTableState = $state({});
 
 	let { data } = $props();
 
@@ -41,11 +36,7 @@
 			.catch(() => {});
 	});
 
-	onMount(() => {
-		loading = false;
-	});
-
-	const actionsColumn = columns.find((c) => c.uniqueId == 'actions');
+	const actionsColumn = tableConfig.columns.find((c) => c.id == 'actions');
 	if (actionsColumn) {
 		actionsColumn.meta = {
 			...(actionsColumn.meta ?? {}),
@@ -175,9 +166,7 @@
 			{/if}
 		</Dialog.Root>
 	</div>
-	{#if !loading}
-		<DataTable data={rowItems} {columns} {filters} {initialState} {rowCount} queryParam="search" />
-	{/if}
+		<DataTable data={rowItems} {rowCount} {...tableConfig}/>
 	<div class="flex justify-end gap-4">
 		<Button onclick={() => reevaluate()}>{m.test_reevaluate({ type: 'multi' })}</Button>
 		<Button onclick={() => print()}>{m.print_test({ type: 'multi' })}</Button>

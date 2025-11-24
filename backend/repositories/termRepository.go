@@ -109,6 +109,7 @@ func (r *TermRepository) ListTerms(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.Term, int64, *common.ErrorResponse) {
+	var err *common.ErrorResponse
 	query := dbRef.
 		Model(&models.Term{}).
 		Where("course_id = ?", courseID).
@@ -123,14 +124,17 @@ func (r *TermRepository) ListTerms(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Term{}.ApplyFilters(query, searchParams.ColumnFilters, models.Term{}, map[string]interface{}{}, "")
-	if err != nil {
-		return nil, 0, err
+	if searchParams != nil {
+		query, err = models.Term{}.ApplyFilters(query, searchParams.ColumnFilters, models.Term{}, map[string]interface{}{}, "")
+		if err != nil {
+			return nil, 0, err
+		}
+		query = models.Term{}.ApplySorting(query, searchParams.Sorting, "id ASC")
 	}
-	query = models.Term{}.ApplySorting(query, searchParams.Sorting)
 	totalCount := models.Term{}.GetCount(query) // Gets count before pagination
-	query = models.Term{}.ApplyPagination(query, searchParams.Pagination)
-
+	if searchParams != nil {
+		query = models.Term{}.ApplyPagination(query, searchParams.Pagination)
+	}
 	var terms []*models.Term
 	if err := query.
 		Find(&terms).Error; err != nil {
@@ -218,11 +222,7 @@ func (r *TermRepository) ListJoinedStudents(
 		if err != nil {
 			return nil, 0, err
 		}
-		if len(searchParams.Sorting) == 0 {
-			query = query.Order("\"User\".\"family_name\"")
-		} else {
-			query = models.UserTerm{}.ApplySorting(query, searchParams.Sorting)
-		}
+		query = models.UserTerm{}.ApplySorting(query, searchParams.Sorting, "\"User\".\"family_name\" ASC")
 	}
 	totalCount := models.UserTerm{}.GetCount(query) // Gets count before pagination
 	if searchParams != nil {

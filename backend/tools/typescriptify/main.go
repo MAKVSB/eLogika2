@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"time"
 
+	"elogika.vsb.cz/backend/models"
 	authDtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	authHandlers "elogika.vsb.cz/backend/modules/auth/handlers"
 	"elogika.vsb.cz/backend/modules/course_items/dtos"
@@ -56,7 +57,9 @@ func main() {
 	converter.AddImport("import type { ZonedDateTime } from '@internationalized/date';")
 	converter.AddImport("export type StringDate = string | Date")
 
-	converter.ManageType(time.Time{}, typescriptify.TypeOptions{TSType: "StringDate"})
+	converter.ManageType(time.Time{}, typescriptify.TypeOptions{TSType: "StringDate", TSTransform: "new Date(__VALUE__)"})
+
+	converter.ManageType(models.TipTapContent{}, typescriptify.TypeOptions{TSType: "JSONContent"})
 
 	converter.Add(questionHandlers.QuestionListResponse{}).
 		Add(questionHandlers.QuestionListRequest{}).
@@ -235,6 +238,9 @@ func main() {
 	customTypeHandlers := map[string]zen.CustomFn{
 		"encoding/json.RawMessage": func(c *zen.Converter, t reflect.Type, v string, indent int) string {
 			return "z.any()"
+		},
+		"elogika.vsb.cz/backend/models.TipTapContent": func(c *zen.Converter, t reflect.Type, v string, indent int) string {
+			return "z.any().optional()"
 		},
 	}
 

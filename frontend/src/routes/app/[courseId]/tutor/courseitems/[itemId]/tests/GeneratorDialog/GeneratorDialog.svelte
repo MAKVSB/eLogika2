@@ -10,9 +10,9 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { API } from '$lib/services/api.svelte';
-	import { columns, filters } from './schema';
+	import { tableConfig } from './schema';
 	import { DataTable } from '$lib/components/ui/data-table';
-	import type { InitialTableState, RowSelectionState, TableState } from '@tanstack/table-core';
+	import type { RowSelectionState } from '@tanstack/table-core';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
 	import { Input } from '$lib/components/ui/input';
@@ -20,19 +20,8 @@
 	import * as Form from '$lib/components/ui/form';
 	import { enumToOptions } from '$lib/utils';
 	import { m } from '$lib/paraglide/messages';
+	import { DataTableSearchParams } from '$lib/api_types_static';
 
-	$effect(() => {
-		searchCache = page.url.searchParams.get('generateTestSearch')
-	})
-
-	function refetch(_: any, str: string) {
-		searchCache = str
-	}
-
-	$effect(() => {
-		loadData(searchCache, skipUsersWithInstance)
-	})
-	
 	let {
 		termId,
 		openState = $bindable()
@@ -48,24 +37,20 @@
 
 	let rowItems: JoinedStudentDTO[] = $state([]);
 	let rowCount: number = $state(0);
-	let initialState: InitialTableState = $state({
-		pagination: {
-			pageIndex: 0,
-			pageSize: 10000
-		}
-	});
-	let searchCache: string | null = $state("")
 
 	let instanceForm = $state(TestInstanceFormEnum.OFFLINE);
 	let skipUsersWithInstance = $state(true);
 
+	$effect(() => {
+		const search =
+			page.url.searchParams.get(tableConfig.searchParam) ??
+			DataTableSearchParams.fromDataTable(tableConfig.initialState).toURL();
 
-	const loadData = (search: string | null, skipUsersWithInstance: boolean) => {
 		API.request<null, ListJoinedStudentsResponse>(
 			`/api/v2/courses/${page.params.courseId}/items/${page.params.itemId}/terms/${termId}/students`,
 			{
 				searchParams: {
-					...(search ? { search: search } : {}),
+					search,
 					...(skipUsersWithInstance ? { skipUsersWithInstance: String(skipUsersWithInstance) } : {})
 				}
 			},
@@ -76,7 +61,7 @@
 				rowCount = res.itemsCount;
 			})
 			.catch(() => {});
-	};
+	});
 
 	function selection(state: RowSelectionState, all: boolean) {
 		if (all) {
@@ -147,18 +132,7 @@
 			<Label for="skipUsersWithInstance">{m.test_generate_skip()}</Label>
 		</div>
 
-		<DataTable
-			data={rowItems}
-			{columns}
-			{filters}
-			{selection}
-			{rowCount}
-			paginationEnabled={false}
-			{initialState}
-			queryParam="generateTestSearch"
-			{refetch}
-			replaceState
-		/>
+		<DataTable data={rowItems} selectionChange={selection} {rowCount} {...tableConfig} />
 	{:else}
 		<div class="flex flex-col gap-2">
 			<Label for="generateNumber">{m.test_generate_number()}</Label>

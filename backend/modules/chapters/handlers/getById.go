@@ -3,12 +3,12 @@ package handlers
 import (
 	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
-	"elogika.vsb.cz/backend/models"
 	authdtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	"elogika.vsb.cz/backend/modules/chapters/dtos"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/repositories"
+	"elogika.vsb.cz/backend/services"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -45,33 +45,15 @@ func ChapterGetByID(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 
 	// TODO validate from here
 
-	// TODO TODO TODO TODO přidat getChapterByIdStudent a listChaptersStudent, kde budu filtrovat sisible
-
 	// Check role validity
 	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
 
-	chapterRepo := repositories.NewChapterRepository()
-
-	var chapter *models.Chapter
-
-	// If not admin, garant, or tutor
-	if userRole == enums.CourseUserRoleAdmin || userRole == enums.CourseUserRoleGarant || userRole == enums.CourseUserRoleTutor {
-		chapter, err = chapterRepo.GetChapterByID(initializers.DB, params.CourseID, params.ChapterID, true, nil)
-		if err != nil {
-			return err
-		}
-	} else if userRole == enums.CourseUserRoleStudent {
-		chapter, err = chapterRepo.GetChapterByIDStudent(initializers.DB, params.CourseID, params.ChapterID, true, nil)
-		if err != nil {
-			return err
-		}
-	} else {
-		return &common.ErrorResponse{
-			Code:    403,
-			Message: "Not enough permissions",
-		}
+	chapterService := services.NewChapterService(repositories.NewChapterRepository())
+	chapter, err := chapterService.GetChapterByID(initializers.DB, params.CourseID, params.ChapterID, userRole, nil, true, nil)
+	if err != nil {
+		return err
 	}
 
 	c.JSON(200, ChapterGetByIdResponse{

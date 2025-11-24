@@ -3,11 +3,11 @@ package handlers
 import (
 	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
-	"elogika.vsb.cz/backend/models"
 	authdtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/common/enums"
 	"elogika.vsb.cz/backend/repositories"
+	services_course_item "elogika.vsb.cz/backend/services/courseItem"
 	"elogika.vsb.cz/backend/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -49,53 +49,14 @@ func TestDelete(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.
 	if err := auth.GetClaimCourseRole(userData, params.CourseID, userRole); err != nil {
 		return err
 	}
-	var courseItem models.CourseItem
-	// Check if tutor/garant can view/modify courseItem
-	if userRole == enums.CourseUserRoleAdmin {
-	} else if userRole == enums.CourseUserRoleGarant {
-		var test models.Test
-		if err := initializers.DB.
-			Find(&test, params.TestID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    500,
-				Message: "Failed to load test",
-			}
-		}
 
-		if err := initializers.DB.
-			Preload("TestDetail").
-			Where("managed_by = ?", enums.CourseUserRoleGarant).
-			Find(&courseItem, test.CourseItemID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    403,
-				Message: "Not enough permission for this item",
-			}
-		}
-	} else if userRole == enums.CourseUserRoleTutor {
-		var test models.Test
-		if err := initializers.DB.
-			Find(&test, params.TestID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    500,
-				Message: "Not enough permission for this item",
-			}
-		}
-
-		if err := initializers.DB.
-			Preload("TestDetail").
-			Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userData.ID).
-			Find(&courseItem, test.CourseItemID).Error; err != nil {
-			return &common.ErrorResponse{
-				Code:    403,
-				Message: "Not enough permission for this item",
-			}
-		}
-	} else {
-		return &common.ErrorResponse{
-			Code:    403,
-			Message: "Not enough permissions",
-		}
+	courseItemService := services_course_item.NewCourseItemService(repositories.NewCourseItemRepository())
+	courseItem, err := courseItemService.GetCourseItemByID(initializers.DB, params.CourseID, params.CourseItemID, userData.ID, userRole, nil, false, nil)
+	if err != nil {
+		return err
 	}
+
+	utils.DebugPrintJSON(courseItem)
 
 	transaction := initializers.DB.Begin()
 

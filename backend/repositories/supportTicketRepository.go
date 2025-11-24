@@ -52,6 +52,7 @@ func (r *SupportTicketRepository) ListSupportTickets(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.SupportTicket, int64, *common.ErrorResponse) {
+	var err *common.ErrorResponse
 	query := dbRef.
 		Model(models.SupportTicket{}).
 		Preload("CreatedBy").
@@ -66,13 +67,17 @@ func (r *SupportTicketRepository) ListSupportTickets(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.SupportTicket{}.ApplyFilters(query, searchParams.ColumnFilters, models.SupportTicket{}, map[string]interface{}{}, "")
-	if err != nil {
-		return nil, 0, err
+	if searchParams != nil {
+		query, err = models.SupportTicket{}.ApplyFilters(query, searchParams.ColumnFilters, models.SupportTicket{}, map[string]interface{}{}, "")
+		if err != nil {
+			return nil, 0, err
+		}
+		query = models.SupportTicket{}.ApplySorting(query, searchParams.Sorting, "id DESC")
 	}
-	query = models.SupportTicket{}.ApplySorting(query, searchParams.Sorting)
 	totalCount := models.SupportTicket{}.GetCount(query) // Gets count before pagination
-	query = models.SupportTicket{}.ApplyPagination(query, searchParams.Pagination)
+	if searchParams != nil {
+		query = models.SupportTicket{}.ApplyPagination(query, searchParams.Pagination)
+	}
 
 	var supportTickets []*models.SupportTicket
 	if err := query.

@@ -26,13 +26,26 @@ func (r *TemplateService) GetTemplateByID(
 	full bool,
 	version *uint,
 ) (*models.Template, *common.ErrorResponse) {
-	if userRole == enums.CourseUserRoleAdmin {
-		return r.templateRepo.GetTemplateByIDAdmin(dbRef, courseID, templateID, userID, full, version)
-	} else if userRole == enums.CourseUserRoleGarant {
-		return r.templateRepo.GetTemplateByIDGarant(dbRef, courseID, templateID, userID, full, version)
-	} else if userRole == enums.CourseUserRoleTutor {
-		return r.templateRepo.GetTemplateByIDTutor(dbRef, courseID, templateID, userID, full, version)
-	} else {
+	switch userRole {
+	case enums.CourseUserRoleAdmin:
+		return r.templateRepo.GetTemplateByID(dbRef, courseID, templateID, userID, filters, full, version)
+	case enums.CourseUserRoleGarant:
+		modifier := func(db *gorm.DB) *gorm.DB {
+			if filters != nil {
+				db = (*filters)(db)
+			}
+			return db.Where("managed_by = ?", enums.CourseUserRoleGarant)
+		}
+		return r.templateRepo.GetTemplateByID(dbRef, courseID, templateID, userID, &modifier, full, version)
+	case enums.CourseUserRoleTutor:
+		modifier := func(db *gorm.DB) *gorm.DB {
+			if filters != nil {
+				db = (*filters)(db)
+			}
+			return db.Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userID)
+		}
+		return r.templateRepo.GetTemplateByID(dbRef, courseID, templateID, userID, &modifier, full, version)
+	default:
 		return nil, &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",
@@ -49,13 +62,26 @@ func (r *TemplateService) ListTemplates(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.Template, int64, *common.ErrorResponse) {
-	if userRole == enums.CourseUserRoleAdmin {
-		return r.templateRepo.ListTemplatesAdmin(dbRef, courseID, userID, full, searchParams)
-	} else if userRole == enums.CourseUserRoleGarant {
-		return r.templateRepo.ListTemplatesGarant(dbRef, courseID, userID, full, searchParams)
-	} else if userRole == enums.CourseUserRoleTutor {
-		return r.templateRepo.ListTemplatesTutor(dbRef, courseID, userID, full, searchParams)
-	} else {
+	switch userRole {
+	case enums.CourseUserRoleAdmin:
+		return r.templateRepo.ListTemplates(dbRef, courseID, userID, filters, full, searchParams)
+	case enums.CourseUserRoleGarant:
+		modifier := func(db *gorm.DB) *gorm.DB {
+			if filters != nil {
+				db = (*filters)(db)
+			}
+			return db.Where("managed_by = ?", enums.CourseUserRoleGarant)
+		}
+		return r.templateRepo.ListTemplates(dbRef, courseID, userID, &modifier, full, searchParams)
+	case enums.CourseUserRoleTutor:
+		modifier := func(db *gorm.DB) *gorm.DB {
+			if filters != nil {
+				db = (*filters)(db)
+			}
+			return db.Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userID)
+		}
+		return r.templateRepo.ListTemplates(dbRef, courseID, userID, &modifier, full, searchParams)
+	default:
 		return nil, 0, &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",

@@ -1,10 +1,19 @@
-import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
+import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
 import { SemesterEnum, type CourseListItemDTO } from '$lib/api_types';
 import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
 import { enumToOptions } from '$lib/utils';
+import type { InitialTableState } from '@tanstack/table-core';
+
+export const searchParam = 'search';
+
+export const initialState: InitialTableState = {
+	pagination: {
+		pageIndex: 0,
+		pageSize: 25
+	}
+};
 
 export const filters: Filter[] = [
 	{
@@ -31,15 +40,17 @@ export const filters: Filter[] = [
 	}
 ];
 
-export const columns: ColumnDef<CourseListItemDTO>[] = [
+export const columns: ColDef<CourseListItemDTO>[] = [
 	{
 		accessorKey: 'row_index',
 		header: 'ID',
+		columnName: 'ID',
 		cell: ({ row, table }) => {
 			return (
 				table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1
 			);
 		},
+		enableHiding: false,
 		size: 0
 	},
 	// {
@@ -62,6 +73,7 @@ export const columns: ColumnDef<CourseListItemDTO>[] = [
 	// },
 	{
 		accessorKey: 'name',
+		columnName: m.course_name(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.course_name(),
@@ -71,10 +83,12 @@ export const columns: ColumnDef<CourseListItemDTO>[] = [
 	},
 	{
 		accessorKey: 'shortname',
+		columnName: m.course_shortname(),
 		header: m.course_shortname()
 	},
 	{
 		accessorKey: 'year',
+		columnName: m.academic_year(),
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				name: m.academic_year(),
@@ -87,6 +101,7 @@ export const columns: ColumnDef<CourseListItemDTO>[] = [
 	},
 	{
 		accessorKey: 'semester',
+		columnName: m.semester(),
 		header: m.semester(),
 		cell: ({ row }) => {
 			return m.semester_enum({ value: row.original.semester });
@@ -94,8 +109,18 @@ export const columns: ColumnDef<CourseListItemDTO>[] = [
 	},
 	{
 		header: m.actions(),
+		columnName: m.actions(),
 		cell: ({ row }) => {
 			return renderComponent(DataTableActions, { id: row.original.id });
-		}
+		},
+		enableHiding: false,
+		id: 'actions'
 	}
 ];
+
+export const tableConfig = {
+	columns,
+	filters,
+	initialState,
+	searchParam
+};

@@ -8,17 +8,9 @@
 		type ListCourseUsersResponse
 	} from '$lib/api_types';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import { API, encodeJsonToBase64Url } from '$lib/services/api.svelte';
-	import { onMount } from 'svelte';
-	import { columns, filters } from './schema';
+	import { API } from '$lib/services/api.svelte';
+	import { tableConfig } from './schema';
 	import { DataTable } from '$lib/components/ui/data-table';
-	import type {
-		ColumnFiltersState,
-		InitialTableState,
-		SortingState,
-		TableState
-	} from '@tanstack/table-core';
-	import Loader from '$lib/components/ui/loader/loader.svelte';
 	import { invalidate } from '$app/navigation';
 	import * as Form from '$lib/components/ui/form';
 	import { enumToOptions } from '$lib/utils';
@@ -38,14 +30,10 @@
 	let newUserRole: CourseUserRoleEnum = $state(CourseUserRoleEnum.STUDENT);
 	let newUserStudyForm: StudyFormEnum | null = $state(StudyFormEnum.FULLTIME);
 
-	let search = $state('');
-
 	let rowItems: CourseUserDTO[] = $state([]);
 	let rowCount: number = $state(0);
-	let initialState: InitialTableState = $state({});
-	let loading = $state(true);
 
-	const actionsColumn = columns.find((c) => c.uniqueId == 'actions');
+	const actionsColumn = tableConfig.columns.find((c) => c.id == 'actions');
 	if (actionsColumn) {
 		actionsColumn.meta = {
 			...(actionsColumn.meta ?? {}),
@@ -62,7 +50,9 @@
 						invalidate((url) => {
 							return url.pathname.endsWith(`courses/${page.params.courseId}/users`);
 						});
-						toast.success(m.toast_course_user_added({role: m.course_user_role_enum({value: newUserRole})}))
+						toast.success(
+							m.toast_course_user_added({ role: m.course_user_role_enum({ value: newUserRole }) })
+						);
 					})
 					.catch(() => {});
 
@@ -71,12 +61,16 @@
 		};
 	}
 
-	const loadData = () => {
+	$effect(() => {
+		const search =
+			page.url.searchParams.get(tableConfig.searchParam) ??
+			DataTableSearchParams.fromDataTable(tableConfig.initialState).toURL();
+
 		API.request<null, ListCourseUsersResponse>(
 			`/api/v2/users`,
 			{
 				searchParams: {
-					...(search ? { search: search } : {})
+					search
 				}
 			},
 			fetch
@@ -86,17 +80,6 @@
 				rowCount = res.itemsCount;
 			})
 			.catch(() => {});
-	};
-
-	function refetch(state: TableState) {
-		search = DataTableSearchParams.fromDataTable(state).toURL();
-		loadData();
-	}
-
-	onMount(() => {
-		search = encodeJsonToBase64Url(initialState);
-		loadData();
-		loading = false;
 	});
 </script>
 
@@ -130,17 +113,5 @@
 	<Dialog.Header>
 		<Dialog.Title>{m.course_user_add_modal_userselect()}</Dialog.Title>
 	</Dialog.Header>
-	{#if !loading}
-		<DataTable
-			data={rowItems}
-			{columns}
-			{filters}
-			{refetch}
-			{rowCount}
-			queryParam="usersearch"
-			{initialState}
-		/>
-	{:else}
-		<Loader></Loader>
-	{/if}
+	<DataTable data={rowItems} {rowCount} {...tableConfig} />
 </Dialog.Content>

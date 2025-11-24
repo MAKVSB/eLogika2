@@ -28,13 +28,26 @@ func (r *QuestionService) GetQuestionByID(
 	full bool,
 	version *uint,
 ) (*models.Question, *common.ErrorResponse) {
-	if userRole == enums.CourseUserRoleAdmin {
-		return r.questionRepo.GetQuestionByIDAdmin(dbRef, courseID, questionID, userID, filters, full, version)
-	} else if userRole == enums.CourseUserRoleGarant {
-		return r.questionRepo.GetQuestionByIDGarant(dbRef, courseID, questionID, userID, filters, full, version)
-	} else if userRole == enums.CourseUserRoleTutor {
-		return r.questionRepo.GetQuestionByIDTutor(dbRef, courseID, questionID, userID, filters, full, version)
-	} else {
+	switch userRole {
+	case enums.CourseUserRoleAdmin:
+		return r.questionRepo.GetQuestionByID(dbRef, courseID, questionID, userID, filters, full, version)
+	case enums.CourseUserRoleGarant:
+		modifier := func(db *gorm.DB) *gorm.DB {
+			if filters != nil {
+				db = (*filters)(db)
+			}
+			return db.Where("managed_by = ?", enums.CourseUserRoleGarant)
+		}
+		return r.questionRepo.GetQuestionByID(dbRef, courseID, questionID, userID, &modifier, full, version)
+	case enums.CourseUserRoleTutor:
+		modifier := func(db *gorm.DB) *gorm.DB {
+			if filters != nil {
+				db = (*filters)(db)
+			}
+			return db.Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userID)
+		}
+		return r.questionRepo.GetQuestionByID(dbRef, courseID, questionID, userID, &modifier, full, version)
+	default:
 		return nil, &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",
@@ -51,13 +64,26 @@ func (r *QuestionService) ListQuestions(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.Question, int64, *common.ErrorResponse) {
-	if userRole == enums.CourseUserRoleAdmin {
-		return r.questionRepo.ListQuestionsAdmin(dbRef, courseID, userID, filters, full, searchParams)
-	} else if userRole == enums.CourseUserRoleGarant {
-		return r.questionRepo.ListQuestionsGarant(dbRef, courseID, userID, filters, full, searchParams)
-	} else if userRole == enums.CourseUserRoleTutor {
-		return r.questionRepo.ListQuestionsTutor(dbRef, courseID, userID, filters, full, searchParams)
-	} else {
+	switch userRole {
+	case enums.CourseUserRoleAdmin:
+		return r.questionRepo.ListQuestions(dbRef, courseID, userID, filters, full, searchParams)
+	case enums.CourseUserRoleGarant:
+		modifier := func(db *gorm.DB) *gorm.DB {
+			if filters != nil {
+				db = (*filters)(db)
+			}
+			return db.Where("managed_by = ?", enums.CourseUserRoleGarant)
+		}
+		return r.questionRepo.ListQuestions(dbRef, courseID, userID, &modifier, full, searchParams)
+	case enums.CourseUserRoleTutor:
+		modifier := func(db *gorm.DB) *gorm.DB {
+			if filters != nil {
+				db = (*filters)(db)
+			}
+			return db.Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userID)
+		}
+		return r.questionRepo.ListQuestions(dbRef, courseID, userID, &modifier, full, searchParams)
+	default:
 		return nil, 0, &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",

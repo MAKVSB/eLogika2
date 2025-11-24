@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 
 	import DataTable from '$lib/components/ui/data-table/data-table-component.svelte';
-	import { columns, filters } from './schema';
+	import { columns, filters, initialState, searchParam, tableConfig } from './schema';
 	import { API } from '$lib/services/api.svelte';
 	import type {
 		PrintTestRequest,
@@ -24,22 +24,12 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import Loader from '$lib/components/ui/loader/loader.svelte';
 
-	let loading: boolean[] = $state([true, true, true]);
 	let rowItems: TestListItemDTO[] = $state([]);
 	let rowCount: number = $state(0);
-	let initialState: InitialTableState = $state({
-		pagination: {
-			pageIndex: 0,
-			pageSize: 25
-		},
-		columnVisibility: {
-			termId: false
-		}
-	});
 
 	let termIdFilter: number | undefined = $state(undefined);
 
-	let printRunning = $state(false)
+	let printRunning = $state(false);
 
 	let { data } = $props();
 
@@ -47,7 +37,7 @@
 	let printAnswerSheets = $state(true);
 	let separateAnswerSheets = $state(false);
 
-	const actionsColumn = columns.find((c) => c.uniqueId == 'actions');
+	const actionsColumn = columns.find((c) => c.id == 'actions');
 	if (actionsColumn) {
 		actionsColumn.meta = {
 			...(actionsColumn.meta ?? {}),
@@ -62,7 +52,7 @@
 									courseItemId: Number(page.params.itemId),
 									printAnswerSheets: printAnswerSheets,
 									separateAnswerSheets: separateAnswerSheets,
-									testId: Number(id),
+									testId: Number(id)
 								}
 							},
 							fetch
@@ -80,7 +70,7 @@
 								method: 'POST',
 								body: {
 									courseItemId: Number(page.params.itemId),
-									testId: Number(id),
+									testId: Number(id)
 								}
 							},
 							fetch
@@ -120,16 +110,15 @@
 	$effect(() => {
 		data.tests
 			.then((res) => {
-				loading[2] = true;
 				rowItems = res.items;
 				rowCount = res.itemsCount;
-				loading[2] = false;
 			})
 			.catch(() => {});
+	});
 
+	$effect(() => {
 		data.terms
 			.then((res) => {
-				loading[1] = true;
 				const termOptions: SelectOptions = res.items.map((term) => {
 					return {
 						value: term.id,
@@ -137,19 +126,14 @@
 					};
 				});
 
-				const existingFilter = filters.find((f) => f.accessorKey == 'termId')
+				const existingFilter = filters.find((f) => f.accessorKey == 'termId');
 				if (existingFilter) {
 					if (existingFilter.type == FilterTypeEnum.SELECT) {
-						existingFilter.values = termOptions
+						existingFilter.values = termOptions;
 					}
 				}
-				loading[1] = false;
 			})
 			.catch(() => {});
-	});
-
-	onMount(() => {
-		loading[0] = false;
 	});
 
 	function refetch(state: TableState) {
@@ -162,7 +146,7 @@
 	}
 
 	function print() {
-		printRunning = true
+		printRunning = true;
 		API.request<PrintTestRequest, Blob>(
 			`/api/v2/courses/${page.params.courseId}/print/tests`,
 			{
@@ -182,7 +166,7 @@
 			})
 			.catch(() => {})
 			.finally(() => {
-				printRunning = false
+				printRunning = false;
 			});
 	}
 
@@ -214,17 +198,7 @@
 	<div class="flex flex-row justify-between">
 		<h1 class="text-2xl">Generated tests management</h1>
 	</div>
-	{#if !loading[0] && !loading[1] && !loading[2]}
-		<DataTable
-			data={rowItems}
-			{columns}
-			{filters}
-			{initialState}
-			{rowCount}
-			{refetch}
-			queryParam="search"
-		/>
-	{/if}
+	<DataTable data={rowItems} {rowCount} {refetch} {...tableConfig} />
 	<div class="flex justify-end gap-4">
 		<Dialog.Root bind:open={dialogOpen}>
 			<Dialog.Trigger class={buttonVariants({ variant: 'default' })} disabled={!termIdFilter}>

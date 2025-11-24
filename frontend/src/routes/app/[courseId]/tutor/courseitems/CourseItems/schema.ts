@@ -1,23 +1,27 @@
-import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent, SortButton } from '$lib/components/ui/data-table/index.js';
+import { renderComponent, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
-import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 import { type CourseItemDTO } from '$lib/api_types';
 import { type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
 import DataTableCheck from '$lib/components/ui/data-table/data-table-check.svelte';
+import type { InitialTableState } from '@tanstack/table-core';
+import { DataTableActionMode } from '$lib/components/ui/data-table/data-table-component.svelte';
+
+export const initialState: InitialTableState = {};
 
 export const filters: Filter[] = [];
 
-export const columns: (ColumnDef<CourseItemDTO> & { uniqueId?: string })[] = [
+export const columns: ColDef<CourseItemDTO>[] = [
 	{
 		accessorKey: 'row_index',
 		header: 'ID',
+		columnName: 'ID',
 		cell: ({ row, table }) => {
 			return (
 				table.getState().pagination.pageIndex * table.getState().pagination.pageSize + row.index + 1
 			);
 		},
+		enableHiding: false,
 		size: 0
 	},
 	// {
@@ -40,10 +44,12 @@ export const columns: (ColumnDef<CourseItemDTO> & { uniqueId?: string })[] = [
 	// },
 	{
 		accessorKey: 'name',
+		columnName: m.course_item_name(),
 		header: m.course_item_name()
 	},
 	{
 		accessorKey: 'type',
+		columnName: m.course_item_type(),
 		header: m.course_item_type(),
 		cell: ({ row }) => {
 			return m.course_item_type_enum({ value: row.original.type });
@@ -51,6 +57,7 @@ export const columns: (ColumnDef<CourseItemDTO> & { uniqueId?: string })[] = [
 	},
 	{
 		accessorKey: 'pointsMin',
+		columnName: m.course_item_points_min_max(),
 		header: m.course_item_points_min_max(),
 		cell: ({ row }) => {
 			return `${row.original.pointsMin}/${row.original.pointsMax}`;
@@ -58,6 +65,7 @@ export const columns: (ColumnDef<CourseItemDTO> & { uniqueId?: string })[] = [
 	},
 	{
 		accessorKey: 'mandatory',
+		columnName: m.course_item_mandatory(),
 		header: m.course_item_mandatory(),
 		cell: ({ row, column }) => {
 			return renderComponent(DataTableCheck, {
@@ -67,6 +75,7 @@ export const columns: (ColumnDef<CourseItemDTO> & { uniqueId?: string })[] = [
 	},
 	{
 		accessorKey: 'managedBy',
+		columnName: m.course_item_managedby(),
 		header: m.course_item_managedby(),
 		cell: ({ row, column }) => {
 			return m.course_user_role_enum({ value: row.original.managedBy });
@@ -74,6 +83,7 @@ export const columns: (ColumnDef<CourseItemDTO> & { uniqueId?: string })[] = [
 	},
 	{
 		header: m.actions(),
+		columnName: m.actions(),
 		cell: ({ row, column }) => {
 			return renderComponent(DataTableActions, {
 				id: row.original.id,
@@ -82,6 +92,15 @@ export const columns: (ColumnDef<CourseItemDTO> & { uniqueId?: string })[] = [
 				editable: row.original.editable
 			});
 		},
-		uniqueId: 'actions'
+		enableHiding: false,
+		id: 'actions'
 	}
 ];
+
+export const tableConfig = {
+	columns,
+	filters,
+	paginationMode: DataTableActionMode.DISABLED,
+	sortingMode: DataTableActionMode.FRONTEND,
+	filterMode: DataTableActionMode.FRONTEND
+};

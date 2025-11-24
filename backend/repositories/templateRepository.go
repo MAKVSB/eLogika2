@@ -5,7 +5,6 @@ import (
 
 	"elogika.vsb.cz/backend/models"
 	"elogika.vsb.cz/backend/modules/common"
-	"elogika.vsb.cz/backend/modules/common/enums"
 	"gorm.io/gorm"
 )
 
@@ -63,46 +62,6 @@ func (r *TemplateRepository) GetTemplateByID(
 	return template, nil
 }
 
-// Modifications for ease of writing code later
-func (r *TemplateRepository) GetTemplateByIDAdmin(
-	dbRef *gorm.DB,
-	courseID uint,
-	templateID uint,
-	userID uint,
-	full bool,
-	version *uint,
-) (*models.Template, *common.ErrorResponse) {
-	return r.GetTemplateByID(dbRef, courseID, templateID, userID, nil, full, version)
-}
-
-func (r *TemplateRepository) GetTemplateByIDGarant(
-	dbRef *gorm.DB,
-	courseID uint,
-	templateID uint,
-	userID uint,
-	full bool,
-	version *uint,
-) (*models.Template, *common.ErrorResponse) {
-	modifier := func(db *gorm.DB) *gorm.DB {
-		return db.Where("managed_by = ?", enums.CourseUserRoleGarant)
-	}
-	return r.GetTemplateByID(dbRef, courseID, templateID, userID, &modifier, full, version)
-}
-
-func (r *TemplateRepository) GetTemplateByIDTutor(
-	dbRef *gorm.DB,
-	courseID uint,
-	templateID uint,
-	userID uint,
-	full bool,
-	version *uint,
-) (*models.Template, *common.ErrorResponse) {
-	modifier := func(db *gorm.DB) *gorm.DB {
-		return db.Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userID)
-	}
-	return r.GetTemplateByID(dbRef, courseID, templateID, userID, &modifier, full, version)
-}
-
 func (r *TemplateRepository) ListTemplates(
 	dbRef *gorm.DB,
 	courseID uint,
@@ -111,6 +70,7 @@ func (r *TemplateRepository) ListTemplates(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.Template, int64, *common.ErrorResponse) {
+	var err *common.ErrorResponse
 	query := dbRef.
 		Model(&models.Template{}).
 		Where("course_id = ?", courseID).
@@ -129,13 +89,17 @@ func (r *TemplateRepository) ListTemplates(
 	}
 
 	// Apply filters, sorting, pagination
-	query, err := models.Template{}.ApplyFilters(query, searchParams.ColumnFilters, models.Template{}, map[string]interface{}{}, "")
-	if err != nil {
-		return nil, 0, err
+	if searchParams != nil {
+		query, err = models.Template{}.ApplyFilters(query, searchParams.ColumnFilters, models.Template{}, map[string]interface{}{}, "")
+		if err != nil {
+			return nil, 0, err
+		}
+		query = models.Template{}.ApplySorting(query, searchParams.Sorting, "id DESC")
 	}
-	query = models.Template{}.ApplySorting(query, searchParams.Sorting)
 	totalCount := models.Template{}.GetCount(query) // Gets count before pagination
-	query = models.Template{}.ApplyPagination(query, searchParams.Pagination)
+	if searchParams != nil {
+		query = models.Template{}.ApplyPagination(query, searchParams.Pagination)
+	}
 
 	var templates []*models.Template
 	if err := query.
@@ -148,40 +112,4 @@ func (r *TemplateRepository) ListTemplates(
 	}
 
 	return templates, totalCount, nil
-}
-
-func (r *TemplateRepository) ListTemplatesAdmin(
-	dbRef *gorm.DB,
-	courseID uint,
-	userID uint,
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.Template, int64, *common.ErrorResponse) {
-	return r.ListTemplates(dbRef, courseID, userID, nil, full, searchParams)
-}
-
-func (r *TemplateRepository) ListTemplatesGarant(
-	dbRef *gorm.DB,
-	courseID uint,
-	userID uint,
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.Template, int64, *common.ErrorResponse) {
-	modifier := func(db *gorm.DB) *gorm.DB {
-		return db.Where("managed_by = ?", enums.CourseUserRoleGarant)
-	}
-	return r.ListTemplates(dbRef, courseID, userID, &modifier, full, searchParams)
-}
-
-func (r *TemplateRepository) ListTemplatesTutor(
-	dbRef *gorm.DB,
-	courseID uint,
-	userID uint,
-	full bool,
-	searchParams *common.SearchRequest,
-) ([]*models.Template, int64, *common.ErrorResponse) {
-	modifier := func(db *gorm.DB) *gorm.DB {
-		return db.Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userID)
-	}
-	return r.ListTemplates(dbRef, courseID, userID, &modifier, full, searchParams)
 }

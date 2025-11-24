@@ -50,13 +50,14 @@ func (r *ActivityService) ListActivityInstances(
 	full bool,
 	searchParams *common.SearchRequest,
 ) ([]*models.ActivityInstance, int64, *common.ErrorResponse) {
-	if userRole == enums.CourseUserRoleAdmin {
+	switch userRole {
+	case enums.CourseUserRoleAdmin:
 		return r.activityRepo.ListActivityInstances(dbRef, courseItemID, termID, userID, filters, full, searchParams)
-	} else if userRole == enums.CourseUserRoleGarant {
+	case enums.CourseUserRoleGarant:
 		return r.activityRepo.ListActivityInstances(dbRef, courseItemID, termID, userID, filters, full, searchParams)
-	} else if userRole == enums.CourseUserRoleTutor {
+	case enums.CourseUserRoleTutor:
 		return r.activityRepo.ListActivityInstances(dbRef, courseItemID, termID, userID, filters, full, searchParams)
-	} else {
+	default:
 		return nil, 0, &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",
