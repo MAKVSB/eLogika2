@@ -58,8 +58,8 @@ func PrintQuestion(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 		modifier := func(db *gorm.DB) *gorm.DB {
 			return db.
 				Preload("CourseLink.Chapter").
-				Preload("Answers").
-				Order("CourseLink.chapter_id, CourseLink.category_id DESC")
+				Preload("CourseLink.Category").
+				Preload("Answers")
 		}
 		question, err := questionServ.GetQuestionByID(initializers.DB, params.CourseID, *params.QuestionID, userData.ID, userRole, &modifier, true, nil)
 		if err != nil {
@@ -72,8 +72,8 @@ func PrintQuestion(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 		modifier := func(db *gorm.DB) *gorm.DB {
 			return db.
 				Preload("CourseLink.Chapter").
-				Preload("Answers").
-				Order("CourseLink.chapter_id, CourseLink.category_id DESC")
+				Preload("CourseLink.Category").
+				Preload("Answers")
 		}
 		questions, _, err = questionServ.ListQuestions(initializers.DB, params.CourseID, userData.ID, userRole, &modifier, true, searchParams)
 		if err != nil {

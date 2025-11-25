@@ -241,7 +241,7 @@
 				"value"
 			],
 			"match": {
-				"value=EXAM": "Exam",
+				"value=EXAM": "Main",
 				"value=PRACTISE": "Practise",
 				"value=SAMPLE": "Sample"
 			}

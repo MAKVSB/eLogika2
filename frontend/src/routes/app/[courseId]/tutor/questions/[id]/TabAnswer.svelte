@@ -87,7 +87,7 @@
 					{@const error =
 						String(index) in answersErrors ? (answersErrors[String(index)] as ErrorObject) : {}}
 					<Table.Row>
-						<Table.Cell class="font-bold">{intToLabel(index)}</Table.Cell>
+						<Table.Cell class="font-bold">{index + 1}</Table.Cell>
 						<Table.Cell>
 							<Form.Checkbox
 								name="correct"
@@ -147,7 +147,7 @@
 								</div>
 							</div>
 						</Table.Cell>
-						<Table.Cell class="font-bold">{intToLabel(index)}</Table.Cell>
+						<Table.Cell class="font-bold">{index + 1}</Table.Cell>
 					</Table.Row>
 					{/if}
 			{/each}

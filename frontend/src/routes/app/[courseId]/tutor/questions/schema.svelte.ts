@@ -15,7 +15,7 @@ export const searchParam = 'search';
 export const initialState: InitialTableState = {
 	pagination: {
 		pageIndex: 0,
-		pageSize: 5
+		pageSize: 25
 	}
 };
 
@@ -42,7 +42,7 @@ export const filters: Filter[] = $state([
 	{
 		type: FilterTypeEnum.SELECT,
 		accessorKey: 'questionType',
-		values: enumToOptions(QuestionTypeEnum),
+		values: enumToOptions(QuestionTypeEnum, m.question_type_enum),
 		emptyValue: 'No filter',
 		placeholder: m.filter_questiontype()
 	},

@@ -11,7 +11,7 @@ export const searchParam = 'eventSearch';
 export const initialState: InitialTableState = {
 	pagination: {
 		pageIndex: 0,
-		pageSize: 5
+		pageSize: 25
 	}
 };
 

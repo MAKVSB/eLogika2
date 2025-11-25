@@ -1,11 +1,6 @@
 <script lang="ts">
-	import { API, ApiError } from '$lib/services/api.svelte';
 	import { page } from '$app/state';
 	import { StudyFormEnum } from '$lib/api_types';
-	import { goto } from '$app/navigation';
-	import { toast } from 'svelte-sonner';
-	import Pageloader from '$lib/components/ui/loader/pageloader.svelte';
-	import { m } from '$lib/paraglide/messages';
 	import CourseItems from './CourseItems/CourseItems.svelte';
 </script>
 
