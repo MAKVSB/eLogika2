@@ -90,7 +90,6 @@
 	"active": "Aktivní",
 	"question_checked_by": "Zkontrolováno uživatelem",
 	"question_type": "Typ otázky",
-	"question_created_by": "Vytvořeno uživatelem",
 	"question_format": "Formát otázky",
 	"public": "Veřejný",
 	"course_content": "Obsah kurzu",
@@ -175,7 +174,6 @@
 	"table_changes_instant": "Úpravy provedené v této tabulce jsou ukládány okamžitě",
 	"template_add": "Přidat šablonu",
 	"template_block_count": "Počet bloků",
-	"template_created_by": "Vytvořeno uživatelem",
 	"template_block": "Blok",
 	"selected_chapters": "Vybrané kapitoly",
 	"template_block_chapter_questioncount": "Počet otázek",
@@ -717,7 +715,6 @@
 	"template_delete_confirm": "Šablona bude smazána",
 	"user_token_revoke_confirm": "Všechny externí aplikace používající tento token přestanou fungovat",
 	"support_comment_new_content": "Nový komentář",
-	"ticket_created_by": "Vytvořeno uživatelem",
 	"instanceevent_eventid": "ID eventu",
 	"token_name": "Název",
 	"token_value": "Hodnota",
@@ -736,5 +733,9 @@
 	"instanceevent_eventtype": "Typ",
 	"instanceevent_source": "Zdroj eventu",
 	"instanceevent_user": "Uživatel",
-	"activity_term": "Termín"
+	"activity_term": "Termín",
+	"no_filter": "Bez filtru",
+	"filter_active": "Filtrovat podle aktivnosti",
+	"created_by": "Vytvořil",
+	"updated_by": "Upravil"
 }

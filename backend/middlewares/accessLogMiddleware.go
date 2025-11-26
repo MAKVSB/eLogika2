@@ -24,11 +24,13 @@ func (w bodyLogWriter) Write(b []byte) (int, error) {
 func AccessLogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
+
 		logEntry := &models.LogAccess{
 			UUID:      uuid.New().String(),
 			Time:      start,
 			Method:    c.Request.Method,
 			URL:       c.Request.URL.Path,
+			SourceURL: c.GetHeader("X-URL"),
 			IPAddress: c.ClientIP(),
 		}
 

@@ -1,6 +1,6 @@
 import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
-import DataTableCreatedBy from '$lib/components/ui/data-table/data-table-created-by.svelte';
+import DataTableByUser from '$lib/components/ui/data-table/data-table-by-user.svelte';
 import { type Filter } from '$lib/components/ui/data-table/filter';
 import type { TemplateListItemDTO } from '$lib/api_types';
 import { m } from '$lib/paraglide/messages';
@@ -64,12 +64,12 @@ export const columns: ColDef<TemplateListItemDTO>[] = [
 	},
 	{
 		accessorKey: 'createdBy',
-		columnName: m.template_created_by(),
-		header: m.template_created_by(),
+		columnName: m.created_by(),
+		header: m.created_by(),
 		cell: ({ row }) => {
-			return renderComponent(DataTableCreatedBy, {
-				createdBy: row.original.createdBy,
-				createdAt: row.original.createdAt
+			return renderComponent(DataTableByUser, {
+				user: row.original.createdBy,
+				time: row.original.createdAt
 			});
 		}
 	},

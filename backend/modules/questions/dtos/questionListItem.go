@@ -10,12 +10,14 @@ import (
 type QuestionListItemDTO struct {
 	ID        uint      `json:"id"`
 	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 
 	Title           string                   `json:"title"`
 	QuestionType    enums.QuestionTypeEnum   `json:"questionType"`
 	QuestionFormat  enums.QuestionFormatEnum `json:"questionFormat"`
 	CheckedBy       []QuestionCheckedByDTO   `json:"checkedBy"`
 	CreatedBy       QuestionCreatedByDTO     `json:"createdBy"`
+	UpdatedBy       QuestionCreatedByDTO     `json:"updatedBy"`
 	Active          bool                     `json:"active"`
 	QuestionGroupID uint                     `json:"questionGroupId"`
 	ChapterID       uint                     `json:"chapterId"`
@@ -28,11 +30,13 @@ func (m QuestionListItemDTO) From(d *models.Question) QuestionListItemDTO {
 	dto := QuestionListItemDTO{
 		ID:              d.ID,
 		CreatedAt:       d.CreatedAt,
+		UpdatedAt:       d.UpdatedAt,
 		Title:           d.Title,
 		QuestionType:    enums.QuestionTypeEnum(d.QuestionType),
 		QuestionFormat:  enums.QuestionFormatEnum(d.QuestionFormat),
 		CheckedBy:       make([]QuestionCheckedByDTO, len(d.CheckedBy)),
 		CreatedBy:       QuestionCreatedByDTO{}.From(d.CreatedBy),
+		UpdatedBy:       QuestionCreatedByDTO{}.From(d.UpdatedBy),
 		Active:          d.Active,
 		QuestionGroupID: d.QuestionGroupID,
 		ChapterID:       d.CourseLink.ChapterID,

@@ -35,7 +35,7 @@ export const filters: Filter[] = [
 		type: FilterTypeEnum.SELECT,
 		accessorKey: 'semester',
 		values: enumToOptions(SemesterEnum),
-		emptyValue: 'All',
+		emptyValue: m.no_filter(),
 		placeholder: m.filter_semester()
 	}
 ];

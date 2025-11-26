@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"time"
+
 	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/models"
@@ -97,6 +99,8 @@ func QuestionToggleActive(c *gin.Context, userData authdtos.LoggedUserDTO, userR
 
 	// Update only selected values
 	question.Active = !question.Active
+	question.UpdatedByID = userData.ID
+	question.UpdatedAt = time.Now()
 
 	if err := transaction.Save(&question).Error; err != nil {
 		transaction.Rollback()

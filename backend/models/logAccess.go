@@ -21,6 +21,7 @@ type LogAccess struct {
 	HTTPStatus  int       ``
 	Response    *string   ``
 	Duration    float64   ``
+	SourceURL   string    ``
 }
 
 func GetAccesLogEntry(c *gin.Context) *LogAccess {

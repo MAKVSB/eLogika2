@@ -51,10 +51,22 @@ func QuestionDelete(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 		return err
 	}
 
+	transaction := initializers.DB.Begin()
+
 	// Get question
-	question, err := questionService.GetQuestionByID(initializers.DB, params.CourseID, params.QuestionID, userData.ID, userRole, nil, true, nil)
+	question, err := questionService.GetQuestionByID(transaction, params.CourseID, params.QuestionID, userData.ID, userRole, nil, true, nil)
 	if err != nil {
 		return err
+	}
+
+	question.UpdatedByID = userData.ID
+
+	if err := transaction.Save(&question).Error; err != nil {
+		transaction.Rollback()
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to insert question",
+		}
 	}
 
 	// Unlink question from course

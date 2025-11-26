@@ -1,6 +1,6 @@
 import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
-import DataTableCreatedBy from '$lib/components/ui/data-table/data-table-created-by.svelte';
+import DataTableByUser from '$lib/components/ui/data-table/data-table-by-user.svelte';
 import type { TestListItemDTO } from '$lib/api_types';
 import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
 import { m } from '$lib/paraglide/messages';
@@ -21,7 +21,7 @@ export const filters: Filter[] = [
 		accessorKey: 'termId',
 		values: [], //Fill from page
 		placeholder: m.filter_term(),
-		emptyValue: 'No filter'
+		emptyValue: m.no_filter()
 	}
 ];
 
@@ -84,9 +84,9 @@ export const columns: ColDef<TestListItemDTO>[] = [
 		columnName: m.test_createdby(),
 		header: m.test_createdby(),
 		cell: ({ row }) => {
-			return renderComponent(DataTableCreatedBy, {
-				createdBy: row.original.createdBy,
-				createdAt: row.original.createdAt
+			return renderComponent(DataTableByUser, {
+				user: row.original.createdBy,
+				time: row.original.createdAt
 			});
 		}
 	},

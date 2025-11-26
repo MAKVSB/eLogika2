@@ -2,7 +2,7 @@ import type { InitialTableState } from '@tanstack/table-core';
 import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableCheckedBy from './data-table-checked-by.svelte';
-import DataTableCreatedBy from '$lib/components/ui/data-table/data-table-created-by.svelte';
+import DataTableByUser from '$lib/components/ui/data-table/data-table-by-user.svelte';
 import { QuestionCheckedByFilterEnum, QuestionTypeEnum } from '$lib/api_types';
 import type { QuestionListItemDTO } from '$lib/api_types';
 import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
@@ -29,28 +29,44 @@ export const filters: Filter[] = $state([
 		type: FilterTypeEnum.SELECT,
 		accessorKey: 'chapterId',
 		values: [],
-		emptyValue: 'No filter',
+		emptyValue: m.no_filter(),
 		placeholder: m.filter_chapter()
 	},
 	{
 		type: FilterTypeEnum.SELECT,
 		accessorKey: 'categoryId',
 		values: [],
-		emptyValue: 'No filter',
+		emptyValue: m.no_filter(),
 		placeholder: m.filter_category()
 	},
 	{
 		type: FilterTypeEnum.SELECT,
 		accessorKey: 'questionType',
 		values: enumToOptions(QuestionTypeEnum, m.question_type_enum),
-		emptyValue: 'No filter',
+		emptyValue: m.no_filter(),
 		placeholder: m.filter_questiontype()
+	},
+	{
+		type: FilterTypeEnum.SELECT,
+		accessorKey: 'active',
+		values: [
+			{
+				value: '1',
+				display: m.yes_no({ value: 'true' })
+			},
+			{
+				value: '0',
+				display: m.yes_no({ value: 'false' })
+			}
+		],
+		emptyValue: m.no_filter(),
+		placeholder: m.filter_active()
 	},
 	{
 		type: FilterTypeEnum.SELECT,
 		accessorKey: 'checkedBy',
 		values: enumToOptions(QuestionCheckedByFilterEnum),
-		emptyValue: 'No filter',
+		emptyValue: m.no_filter(),
 		placeholder: m.filter_checkedstate()
 	}
 ]);
@@ -151,12 +167,23 @@ export const columns: ColDef<QuestionListItemDTO>[] = [
 	},
 	{
 		accessorKey: 'createdBy',
-		columnName: m.question_created_by(),
-		header: m.question_created_by(),
+		columnName: m.created_by(),
+		header: m.created_by(),
 		cell: ({ row }) => {
-			return renderComponent(DataTableCreatedBy, {
-				createdBy: row.original.createdBy,
-				createdAt: row.original.createdAt
+			return renderComponent(DataTableByUser, {
+				user: row.original.createdBy,
+				time: row.original.createdAt
+			});
+		}
+	},
+	{
+		accessorKey: 'updatedBy',
+		columnName: m.updated_by(),
+		header: m.updated_by(),
+		cell: ({ row }) => {
+			return renderComponent(DataTableByUser, {
+				user: row.original.updatedBy,
+				time: row.original.updatedAt
 			});
 		}
 	},

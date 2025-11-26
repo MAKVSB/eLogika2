@@ -50,8 +50,8 @@ export const columns: ColDef<ActivityListItemDTO>[] = [
 	// },
 	{
 		accessorKey: 'participant',
-		columnName: m.question_created_by(),
-		header: m.question_created_by(),
+		columnName: m.created_by(),
+		header: m.created_by(),
 		cell: ({ row }) => {
 			return `${displayUserName(row.original.participant)} (${row.original.participant.username})`;
 		}

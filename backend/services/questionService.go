@@ -120,7 +120,13 @@ func (r *QuestionService) SyncAnswers(
 			return err
 		}
 		answerData.Content = answer.Content
+
+		err = tiptap.FindAndSaveRelations(dbRef, userId, answer.Explanation, &answerData, "ExplanationFiles")
+		if err != nil {
+			return err
+		}
 		answerData.Explanation = answer.Explanation
+
 		answerData.TimeToSolve = answer.TimeToSolve
 		answerData.Correct = answer.Correct
 

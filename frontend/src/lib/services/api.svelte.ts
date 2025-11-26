@@ -39,7 +39,10 @@ class Api {
 		try {
 			const res = await f(this.baseUrl + '/api/v2/auth/login', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {
+					'Content-Type': 'application/json',
+					'X-URL': window.location.href
+				},
 				body: JSON.stringify(formData),
 				credentials: 'include'
 			});
@@ -65,6 +68,7 @@ class Api {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					'X-URL': window.location.href,
 					...(GlobalState.accessToken ? { Authorization: `Bearer ${GlobalState.accessToken}` } : {})
 				},
 				body: JSON.stringify({}),
@@ -100,6 +104,7 @@ class Api {
 				...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
 				...(GlobalState.accessToken ? { Authorization: `Bearer ${GlobalState.accessToken}` } : {}),
 				...(options.headers || {}),
+				'X-URL': window.location.href,
 				'X-AS-ROLE': (GlobalState.activeRole ?? 'STUDENT') as unknown as string
 			},
 			body:

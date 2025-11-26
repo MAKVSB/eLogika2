@@ -10,11 +10,13 @@ import (
 
 type Question struct {
 	CommonModel
-	ID        uint           `gorm:"primarykey"`
-	CreatedAt time.Time      ``
-	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
-	DeletedAt gorm.DeletedAt ``
-	Version   uint           ``
+	ID          uint           `gorm:"primarykey"`
+	CreatedAt   time.Time      ``
+	CreatedByID uint           ``
+	UpdatedAt   time.Time      `gorm:"autoUpdateTime"`
+	UpdatedByID uint           ``
+	DeletedAt   gorm.DeletedAt ``
+	Version     uint           ``
 
 	QuestionGroupID uint                     ``                                           // Question origin tracking
 	Title           string                   ``                                           // Title of the question
@@ -24,7 +26,6 @@ type Question struct {
 	TimeToProcess   int                      ``                                           // Time to common solution (building a graph or similar)
 	QuestionType    enums.QuestionTypeEnum   ``                                           // Type of the question
 	QuestionFormat  enums.QuestionFormatEnum ``                                           // Format of the question
-	CreatedByID     uint                     ``                                           // ID of user who created it
 	ManagedBy       enums.CourseUserRoleEnum ``                                           // Role of user who manages it
 	Active          bool                     ``                                           // If the question can be picked during test generation
 	AnswerCount     uint                     ``
@@ -33,6 +34,7 @@ type Question struct {
 	Answers       []QuestionAnswer ``
 	CheckedBy     []QuestionCheck  `gorm:"foreignKey:QuestionID"`
 	CreatedBy     *User            ``
+	UpdatedBy     *User            ``
 	CourseLink    *CourseQuestion  ``
 }
 

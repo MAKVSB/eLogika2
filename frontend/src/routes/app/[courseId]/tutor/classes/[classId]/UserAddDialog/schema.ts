@@ -35,7 +35,7 @@ export const filters: Filter[] = [
 		type: FilterTypeEnum.SELECT,
 		accessorKey: 'roles',
 		values: enumToOptions(CourseUserRoleEnum, m.course_user_role_enum),
-		emptyValue: 'All',
+		emptyValue: m.no_filter(),
 		placeholder: m.filter_role()
 	}
 ];

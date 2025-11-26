@@ -93,6 +93,10 @@
 						<SettingsIcon />
 						Profile
 					</DropdownMenu.Item>
+					<DropdownMenu.Item onclick={() => API.refreshAccessToken()}>
+						<SettingsIcon />
+						Refresh user data
+					</DropdownMenu.Item>
 					<DropdownMenu.Item onclick={() => logout(false)}>
 						<LogOutIcon />
 						{m.logout()}

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"time"
+
 	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/models"
@@ -104,7 +106,10 @@ func QuestionInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 		TimeToProcess:   reqData.TimeToProcess,
 		QuestionType:    reqData.QuestionType,
 		QuestionFormat:  reqData.QuestionFormat,
+		CreatedAt:       time.Now(),
 		CreatedByID:     userData.ID,
+		UpdatedAt:       time.Now(),
+		UpdatedByID:     userData.ID,
 		ManagedBy:       userRole,
 		Active:          reqData.Active,
 		AnswerCount:     uint(len(reqData.Answers)),

@@ -1,7 +1,7 @@
 import type { SupportTicketListResponse } from '$lib/api_types.js';
 import { DataTableSearchParams } from '$lib/api_types_static';
 import { API } from '$lib/services/api.svelte.js';
-import { tableConfig } from './schema';
+import { tableConfig } from './schema.svelte';
 
 export async function load({ fetch, params, url }) {
 	const search =

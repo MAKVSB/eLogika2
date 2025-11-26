@@ -5,24 +5,24 @@
 	import { displayUserName } from '$lib/utils';
 
 	let {
-		createdBy,
-		createdAt
+		user,
+		time
 	}: {
-		createdBy: QuestionCreatedByDTO;
-		createdAt: StringDate;
+		user: QuestionCreatedByDTO;
+		time: StringDate;
 	} = $props();
 </script>
 
 <Tooltip.Provider>
 	<Tooltip.Root>
 		<Tooltip.Trigger>
-			{displayUserName(createdBy)}
+			{displayUserName(user)}
 		</Tooltip.Trigger>
 		<Tooltip.Content class="grid grid-cols-2">
 			<p>
-				{displayUserName(createdBy)}
+				{displayUserName(user)}
 			</p>
-			({new Date(createdAt).toLocaleString(getLocale())})
+			({new Date(time).toLocaleString(getLocale())})
 		</Tooltip.Content>
 	</Tooltip.Root>
 </Tooltip.Provider>

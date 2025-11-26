@@ -1,6 +1,6 @@
 import { renderComponent, SortButton, type ColDef } from '$lib/components/ui/data-table/index.js';
 import DataTableActions from './data-table-actions.svelte';
-import DataTableCreatedBy from '$lib/components/ui/data-table/data-table-created-by.svelte';
+import DataTableByUser from '$lib/components/ui/data-table/data-table-by-user.svelte';
 import type { SupportTicketListItemDTO } from '$lib/api_types';
 import { FilterTypeEnum, type Filter } from '$lib/components/ui/data-table/filter';
 import DataTableCheck from '$lib/components/ui/data-table/data-table-check.svelte';
@@ -35,12 +35,12 @@ export const filters: Filter[] = [
 				display: m.yes_no({ value: 'false' })
 			}
 		],
-		emptyValue: 'No filter',
+		emptyValue: m.no_filter(),
 		placeholder: m.filter_checkedstate()
 	}
 ];
 
-export const columns: ColDef<SupportTicketListItemDTO>[] = [
+export const columns: ColDef<SupportTicketListItemDTO>[] = $state([
 	{
 		accessorKey: 'row_index',
 		header: 'ID',
@@ -83,12 +83,12 @@ export const columns: ColDef<SupportTicketListItemDTO>[] = [
 	},
 	{
 		accessorKey: 'createdBy',
-		columnName: m.ticket_created_by(),
-		header: m.ticket_created_by(),
+		columnName: m.created_by(),
+		header: m.created_by(),
 		cell: ({ row }) => {
-			return renderComponent(DataTableCreatedBy, {
-				createdBy: row.original.createdBy,
-				createdAt: row.original.createdAt
+			return renderComponent(DataTableByUser, {
+				user: row.original.createdBy,
+				time: row.original.createdAt
 			});
 		}
 	},
@@ -114,7 +114,7 @@ export const columns: ColDef<SupportTicketListItemDTO>[] = [
 		enableHiding: false,
 		id: 'actions'
 	}
-];
+]);
 
 export const tableConfig = {
 	columns,

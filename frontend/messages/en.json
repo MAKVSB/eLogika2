@@ -90,7 +90,6 @@
 	"active": "Active",
 	"question_checked_by": "Checked by",
 	"question_type": "Question type",
-	"question_created_by": "Created by",
 	"question_format": "Question format",
 	"public": "Public",
 	"course_content": "Content",
@@ -175,7 +174,6 @@
 	"table_changes_instant": "Changes to table below are saved instantly",
 	"template_add": "Add template",
 	"template_block_count": "Block count",
-	"template_created_by": "Created by",
 	"template_block": "Block",
 	"selected_chapters": "Selected chapters",
 	"template_block_chapter_questioncount": "Question count",
@@ -717,7 +715,6 @@
 	"support_comment_new_content": "New comment",
 	"ticket_comment_sentby": "{userString} at {createdAt}",
 	"support_comments": "Comments",
-	"ticket_created_by": "Created by",
 	"token_name": "Name",
 	"token_value": "Token value",
 	"token_issued_at": "Issued at",
@@ -736,5 +733,9 @@
 	"instanceevent_pageid": "Page id",
 	"instanceevent_eventid": "Event id",
 	"column_visibility": "Column visibility",
-	"instanceevent_receivedat": "Received at"
+	"instanceevent_receivedat": "Received at",
+	"no_filter": "No filter",
+	"filter_active": "Filter by active",
+	"created_by": "Created by",
+	"updated_by": "Updated by"
 }

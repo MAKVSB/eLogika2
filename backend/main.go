@@ -79,7 +79,7 @@ func main() {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8000", "https://elogika.vsb.cz", "http://elogika.vsb.cz"},
 		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "x-AS-ROLE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "X-AS-ROLE", "X-URL"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,

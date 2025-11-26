@@ -1,6 +1,6 @@
 <script lang="ts">
 	import DataTable from '$lib/components/ui/data-table/data-table-component.svelte';
-	import { columns, tableConfig } from './schema';
+	import { columns, tableConfig } from './schema.svelte';
 	import { API } from '$lib/services/api.svelte';
 	import type { SupportTicketListItemDTO } from '$lib/api_types';
 	import { page } from '$app/state';

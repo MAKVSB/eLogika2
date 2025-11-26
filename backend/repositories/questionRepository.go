@@ -148,6 +148,7 @@ func (r *QuestionRepository) ListQuestions(
 		Model(&models.Question{}).
 		InnerJoins("CourseLink", courseLinkQuery).
 		InnerJoins("CreatedBy").
+		InnerJoins("UpdatedBy").
 		Preload("CheckedBy").
 		Preload("CheckedBy.User")
 

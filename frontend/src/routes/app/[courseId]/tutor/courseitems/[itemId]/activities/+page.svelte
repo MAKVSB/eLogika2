@@ -73,7 +73,7 @@
 						accessorKey: 'termId',
 						values: termOptions,
 						placeholder: m.filter_term(),
-						emptyValue: 'No filter'
+						emptyValue: m.no_filter()
 					});
 				}
 			})
