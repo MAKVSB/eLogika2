@@ -58,8 +58,8 @@ func main() {
 		&models.LogAccess{},
 		&models.LogError{},
 
-		&models.SupportTicketComment{},
 		&models.SupportTicket{},
+		&models.SupportTicketComment{},
 	)
 	fmt.Println(err)
 }
