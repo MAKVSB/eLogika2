@@ -738,5 +738,7 @@
 	"filter_active": "Filtrovat podle aktivnosti",
 	"created_by": "Vytvořil",
 	"updated_by": "Upravil",
-	"error_log_download": "Stáhnout detaily o chybě"
+	"error_log_download": "Stáhnout detaily o chybě",
+	"question_tab_preview": "Náhled",
+	"question_preview_warning": "Tato stránka zobrazuje náhled uložené verze, ne rozpracovanou verzi"
 }

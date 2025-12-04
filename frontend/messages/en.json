@@ -738,5 +738,7 @@
 	"filter_active": "Filter by active",
 	"created_by": "Created by",
 	"updated_by": "Updated by",
-	"error_log_download": "Download error log"
+	"error_log_download": "Download error log",
+	"question_tab_preview": "Preview",
+	"question_preview_warning": "This page shows last saved data, not current state of editing"
 }

@@ -27,6 +27,7 @@
 	import TabQuestion from './TabQuestion.svelte';
 	import { QuestionInsertRequestSchema } from '$lib/schemas';
 	import { displayUserName } from '$lib/utils';
+	import TabPreview from './TabPreview.svelte';
 
 	let courseId = $derived<string>(page.params.courseId);
 	let { data } = $props();
@@ -187,6 +188,7 @@
 						<Tabs.Trigger value="question">{m.question_tab_main()}</Tabs.Trigger>
 						<Tabs.Trigger value="answers">{m.question_tab_answers()}</Tabs.Trigger>
 						<Tabs.Trigger value="steps">{m.question_tab_steps()}</Tabs.Trigger>
+						<Tabs.Trigger value="preview">{m.question_tab_preview()}</Tabs.Trigger>
 					</Tabs.List>
 					<Tabs.Content value="question">
 						<TabQuestion bind:form></TabQuestion>
@@ -197,10 +199,14 @@
 					<Tabs.Content value="steps">
 						<TabSteps bind:form {courseId}></TabSteps>
 					</Tabs.Content>
+					<Tabs.Content value="preview">
+						<TabPreview question={data.question}></TabPreview>
+					</Tabs.Content>
 					<Tabs.List direction="up">
 						<Tabs.Trigger direction="up" value="question">{m.question_tab_main()}</Tabs.Trigger>
 						<Tabs.Trigger direction="up" value="answers">{m.question_tab_answers()}</Tabs.Trigger>
 						<Tabs.Trigger direction="up" value="steps">{m.question_tab_steps()}</Tabs.Trigger>
+						<Tabs.Trigger direction="up" value="preview">{m.question_tab_preview()}</Tabs.Trigger>
 					</Tabs.List>
 				</Tabs.Root>
 			</Form.Root>
