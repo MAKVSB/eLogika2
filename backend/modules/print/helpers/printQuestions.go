@@ -40,9 +40,11 @@ func PrintQuestions(
 	\usepackage{graphicx}
 	\usepackage{tabularx}
 	\usepackage{enumitem}
+	\usepackage{booktabs}
 	\usepackage{hyperref}
 	\usepackage{pifont}
 	\usepackage{tikz}
+	\usetikzlibrary{arrows,positioning,chains,fit,matrix,shapes,calc,external,petri, arrows.meta}
 	\usepackage{multirow}
 	\usepackage{tcolorbox}
 	\usepackage{color,soul}

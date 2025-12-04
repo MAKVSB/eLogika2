@@ -19,10 +19,13 @@ func ConvertCodeToImage(dbRef *gorm.DB, code string) (string, int64, error) {
 	\usepackage{graphicx}
 	\usepackage{tabularx}
 	\usepackage{enumitem}
+	\usepackage{booktabs}
 	\usepackage{hyperref}
+	\usepackage{pifont}
 	\usepackage{tikz}
 	\usetikzlibrary{arrows,positioning,chains,fit,matrix,shapes,calc,external,petri, arrows.meta}
 	\usepackage{multirow}
+	\usepackage{tcolorbox}
 	\usepackage{color,soul}
 	\newcolumntype{P}[1]{>{\vspace{6pt}\arraybackslash}m{#1}<{\vspace{6pt}}}
 
