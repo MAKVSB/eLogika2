@@ -70,11 +70,21 @@ func QuestionDelete(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 	}
 
 	// Unlink question from course
-	if err := initializers.DB.
+	if err := transaction.
 		Delete(&question.CourseLink).Error; err != nil {
+		transaction.Rollback()
 		return &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to unlink question from course",
+			Details: err.Error(),
+		}
+	}
+
+	if err := transaction.Commit().Error; err != nil {
+		transaction.Rollback()
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to commit changes",
 			Details: err.Error(),
 		}
 	}
