@@ -737,5 +737,6 @@
 	"no_filter": "No filter",
 	"filter_active": "Filter by active",
 	"created_by": "Created by",
-	"updated_by": "Updated by"
+	"updated_by": "Updated by",
+	"error_log_download": "Download error log"
 }

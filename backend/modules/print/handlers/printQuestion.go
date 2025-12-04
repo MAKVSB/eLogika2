@@ -86,7 +86,7 @@ func PrintQuestion(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 		return &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to print questions",
-			Details: err2.Error(),
+			Details: "Failed to load working directory",
 		}
 	}
 
@@ -95,7 +95,7 @@ func PrintQuestion(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 		return &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to print questions",
-			Details: err2.Error(),
+			Details: "Failed to create tmp folder",
 		}
 	}
 
@@ -104,7 +104,7 @@ func PrintQuestion(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 		return &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to print questions",
-			Details: err2.Error(),
+			Details: "Failed to create tmp folder",
 		}
 	}
 
@@ -113,16 +113,22 @@ func PrintQuestion(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 		return &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to print questions",
-			Details: err2.Error(),
+			Details: "Failed to create assets folder",
 		}
 	}
 
 	filepath, err2 := helpers.PrintQuestions(questions, workDir, assetDir, testOutputDir)
 	if err2 != nil {
+		zipData, err := utils.ZipFolderError(testOutputDir)
+		if err != nil {
+			return err
+		}
+
 		return &common.ErrorResponse{
-			Code:    500,
-			Message: "Failed to print questions",
-			Details: err2.Error(),
+			Code:     500,
+			Message:  "Failed to print questions",
+			Details:  err2.Error(),
+			FileData: zipData,
 		}
 	}
 	c.FileAttachment(filepath, uuid.NewString())

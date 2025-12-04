@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"archive/zip"
 	"crypto/md5"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -13,6 +15,7 @@ import (
 	"time"
 
 	"elogika.vsb.cz/backend/models"
+	"elogika.vsb.cz/backend/modules/common"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -145,4 +148,82 @@ func GenerateFileName(dbRef *gorm.DB, ext string) (string, error) {
 	}
 
 	return newFileName, nil
+}
+
+func ZipFolder(folderPath string) (*os.File, error) {
+	_, err := CreateFolder(folderPath + "-bac")
+	if err != nil {
+		return nil, err
+	}
+
+	tmpZip, err := os.CreateTemp(folderPath+"-bac", "bac.zip")
+	if err != nil {
+		return nil, err
+	}
+
+	zipWriter := zip.NewWriter(tmpZip)
+
+	err = filepath.Walk(folderPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			return nil // skip directories
+		}
+
+		relPath, err := filepath.Rel(folderPath, path)
+		if err != nil {
+			return err
+		}
+
+		file, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		zipFileWriter, err := zipWriter.Create(relPath)
+		if err != nil {
+			return err
+		}
+
+		_, err = io.Copy(zipFileWriter, file)
+		return err
+	})
+	if err != nil {
+		zipWriter.Close()
+		tmpZip.Close()
+		return nil, err
+	}
+
+	zipWriter.Close()
+	tmpZip.Seek(0, 0)
+	return tmpZip, nil
+}
+
+func ZipFolderError(folderPath string) (*common.ErrorFile, *common.ErrorResponse) {
+	zipFile, err := ZipFolder(folderPath)
+	if err != nil {
+		return nil, &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to print questions and create error report",
+			Details: err.Error(),
+		}
+	}
+	defer zipFile.Close()
+
+	zipBytes, err := io.ReadAll(zipFile)
+	if err != nil {
+		return nil, &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to load print error logs",
+			Details: err.Error(),
+		}
+	}
+
+	return &common.ErrorFile{
+		Content:  base64.StdEncoding.EncodeToString(zipBytes),
+		MimeType: "application/zip",
+	}, nil
 }

@@ -8,6 +8,11 @@ type ErrorResources struct {
 	ResourceData string `json:"resourceData,omitempty"`
 }
 
+type ErrorFile struct {
+	Content  string `json:"content"`
+	MimeType string `json:"mimeType"`
+}
+
 // @Description Generic error message
 type ErrorResponse struct {
 	Code       int              `json:"code,omitempty"`
@@ -15,4 +20,5 @@ type ErrorResponse struct {
 	Details    any              `json:"details,omitempty"`
 	Resources  []ErrorResources `json:"resources,omitempty"`
 	FormErrors ErrorObject      `json:"formErrors,omitempty"`
+	FileData   *ErrorFile       `json:"fileData,omitempty"`
 }

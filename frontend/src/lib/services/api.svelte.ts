@@ -1,5 +1,7 @@
 import GlobalState from '$lib/shared.svelte';
 import { toast } from 'svelte-sonner';
+import CustomErrorSonner from '$lib/components/ui/sonner/CustomErrorSonner.svelte';
+import type { ErrorResponse } from '$lib/api_types';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
@@ -14,11 +16,11 @@ interface RequestOptions<T> {
 }
 
 export class ApiError extends Error {
-	public data: any;
+	public data: ErrorResponse;
 
 	constructor(message: string, data: any) {
 		super(message);
-		this.data = data; // this property is defined in parent
+		this.data = data;
 	}
 }
 
@@ -129,8 +131,8 @@ class Api {
 		if (!res.ok) {
 			const errResBody = await res.json();
 			if ('message' in errResBody) {
-				toast.error(errResBody.message, {
-					description: errResBody.details
+				toast.error(CustomErrorSonner, {
+					componentProps: errResBody
 				});
 				throw new ApiError(`API error`, errResBody);
 			} else {
@@ -143,7 +145,11 @@ class Api {
 			return res.json() as unknown as U;
 		}
 
-		if (contentType.startsWith('image/') || contentType.includes('application/')) {
+		if (
+			contentType.startsWith('image/') ||
+			contentType.includes('application/') ||
+			contentType == 'text/csv'
+		) {
 			return (await res.blob()) as unknown as U;
 		}
 		return res.text() as unknown as U;

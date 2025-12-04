@@ -3,7 +3,6 @@ package helpers
 import (
 	"fmt"
 	"log"
-	"os"
 	"path/filepath"
 	"strconv"
 	"sync"
@@ -14,17 +13,7 @@ import (
 	"github.com/pdfcpu/pdfcpu/pkg/api"
 )
 
-func PrintTests(testsData []*models.Test, courseItem *models.CourseItem, printAnswerSheet bool, separateAnswerPage bool) (string, error) {
-	workDir, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-
-	tmpFolder, err := utils.CreateTmpFolder(workDir)
-	if err != nil {
-		return "", err
-	}
-
+func PrintTests(testsData []*models.Test, courseItem *models.CourseItem, printAnswerSheet bool, separateAnswerPage bool, workDir string, tmpFolder string) (string, error) {
 	var (
 		joiner []string
 		mu     sync.Mutex
@@ -142,8 +131,6 @@ func MergeFiles(filesToJoin []string, tmpPath string) string {
 		}
 		tempFiles = append(tempFiles, tempFile)
 	}
-
-	utils.DebugPrintJSON(tempFiles)
 
 	if len(tempFiles) == 1 {
 		return tempFiles[0]

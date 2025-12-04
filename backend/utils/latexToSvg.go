@@ -12,7 +12,7 @@ import (
 
 func ConvertCodeToImage(dbRef *gorm.DB, code string) (string, int64, error) {
 	const latexTemplate = `
-	\documentclass{standalone}
+	\documentclass[varwidth, border=4mm]{standalone}
 	\usepackage[utf8]{inputenc}
 	\usepackage{amsmath, amssymb}
 	\usepackage{ulem}

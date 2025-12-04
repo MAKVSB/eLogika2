@@ -9,6 +9,7 @@ import (
 	"elogika.vsb.cz/backend/models"
 	authDtos "elogika.vsb.cz/backend/modules/auth/dtos"
 	authHandlers "elogika.vsb.cz/backend/modules/auth/handlers"
+	"elogika.vsb.cz/backend/modules/common"
 	"elogika.vsb.cz/backend/modules/course_items/dtos"
 
 	"elogika.vsb.cz/backend/modules/common/enums"
@@ -199,7 +200,8 @@ func main() {
 		Add(supportHandlers.SupportTicketListResponse{}).
 		Add(supportHandlers.SupportTicketGetByIdResponse{}).
 		Add(supportHandlers.SupportTicketCommentInsertRequest{}).
-		Add(supportHandlers.SupportTicketCommentInsertResponse{})
+		Add(supportHandlers.SupportTicketCommentInsertResponse{}).
+		Add(common.ErrorResponse{})
 
 	// TODO: maybe remove once handlers exists
 	converter.Add(dtos.CourseItemDTO{})

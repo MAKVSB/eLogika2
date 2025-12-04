@@ -737,5 +737,6 @@
 	"no_filter": "Bez filtru",
 	"filter_active": "Filtrovat podle aktivnosti",
 	"created_by": "Vytvořil",
-	"updated_by": "Upravil"
+	"updated_by": "Upravil",
+	"error_log_download": "Stáhnout detaily o chybě"
 }

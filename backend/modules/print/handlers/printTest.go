@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"os"
+
 	"elogika.vsb.cz/backend/auth"
 	"elogika.vsb.cz/backend/initializers"
 	"elogika.vsb.cz/backend/models"
@@ -109,12 +111,36 @@ func PrintTest(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.C
 		}
 	}
 
-	filepath, err2 := helpers.PrintTests(printData, courseItem, reqData.PrintAnswerSheets, reqData.SeparateAnswerSheets)
+	workDir, err2 := os.Getwd()
+	if err2 != nil {
+		return &common.ErrorResponse{
+			Code:    500,
+			Message: "Failed to print questions",
+			Details: err2.Error(),
+		}
+	}
+
+	tmpFolder, err2 := utils.CreateTmpFolder(workDir)
 	if err2 != nil {
 		return &common.ErrorResponse{
 			Code:    500,
 			Message: "Failed to generate PDF file",
 			Details: err2.Error(),
+		}
+	}
+
+	filepath, err2 := helpers.PrintTests(printData, courseItem, reqData.PrintAnswerSheets, reqData.SeparateAnswerSheets, workDir, tmpFolder)
+	if err2 != nil {
+		zipData, err := utils.ZipFolderError(tmpFolder)
+		if err != nil {
+			return err
+		}
+
+		return &common.ErrorResponse{
+			Code:     500,
+			Message:  "Failed to print questions",
+			Details:  err2.Error(),
+			FileData: zipData,
 		}
 	}
 	c.FileAttachment(filepath, uuid.NewString())
