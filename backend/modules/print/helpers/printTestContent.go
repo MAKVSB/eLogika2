@@ -64,7 +64,7 @@ func GenerateTestContent(
 	lastBlockID := uint(0)
 
 	for _, question := range testData.Questions {
-		latexCode += `\begin{samepage}`
+		latexCode += `\begin{minipage}{\textwidth}`
 
 		if question.BlockID != lastBlockID {
 			lastBlockID = question.BlockID
@@ -105,7 +105,7 @@ func GenerateTestContent(
 			return "", 0, fmt.Errorf("unexpected enums.QuestionFormatEnum: %#v", question.Question.QuestionFormat)
 		}
 
-		latexCode += `\end{samepage}`
+		latexCode += `\end{minipage}`
 	}
 
 	latexCode += `
