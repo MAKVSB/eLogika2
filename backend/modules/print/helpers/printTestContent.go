@@ -105,7 +105,7 @@ func GenerateTestContent(
 			return "", 0, fmt.Errorf("unexpected enums.QuestionFormatEnum: %#v", question.Question.QuestionFormat)
 		}
 
-		latexCode += `\end{minipage}`
+		latexCode += `\end{minipage}` + "\n\n"
 	}
 
 	latexCode += `
