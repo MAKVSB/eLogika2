@@ -61,7 +61,7 @@ func PrintQuestion(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enu
 				Preload("CourseLink.Category").
 				Preload("Answers")
 		}
-		question, err := questionServ.GetQuestionByID(initializers.DB, params.CourseID, *params.QuestionID, userData.ID, userRole, &modifier, true, nil)
+		question, err := questionServ.GetQuestionByID(initializers.DB, params.CourseID, *params.QuestionID, userData.ID, userRole, &modifier, true, nil, false, false)
 		if err != nil {
 			return err
 		}

@@ -743,5 +743,11 @@
 	"question_preview_warning": "Tato stránka zobrazuje náhled uložené verze, ne rozpracovanou verzi",
 	"test_generate_forceunique": "Vynutit, že se otázky nebudou opakovat.",
 	"test_generate_instancetype": "Formát testu (Systém umožňuje vygenerovat i online test předem, nelze později změnit)",
-	"question_includeanswerspace": "Nechat místo pro odpověď"
+	"question_includeanswerspace": "Nechat místo pro odpověď",
+	"question_tab_verions": "Verze",
+	"question_modified_at": "Upraveno",
+	"question_version_select": "Vybrat verzi",
+	"current": "Aktuální",
+	"template_block_count_set": "Nastavit",
+	"question_warning_archive_version": "Upravujete achvivní verzi otázky."
 }

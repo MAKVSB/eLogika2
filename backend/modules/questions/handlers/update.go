@@ -87,20 +87,20 @@ func asNewVersion(c *gin.Context, userData authdtos.LoggedUserDTO, reqData *Ques
 	}
 
 	// Get question
-	question, err := questionService.GetQuestionByID(initializers.DB, params.CourseID, params.QuestionID, userData.ID, userRole, nil, true, &reqData.Version)
+	oldQuestion, err := questionService.GetQuestionByID(initializers.DB, params.CourseID, params.QuestionID, userData.ID, userRole, nil, true, &reqData.Version, false, false)
 	if err != nil {
 		return err
 	}
 
 	transaction := initializers.DB.Begin()
 
-	maxVersion, err := questionRepo.GetMaxVersion(transaction, question.QuestionGroupID)
+	maxVersion, err := questionRepo.GetMaxVersion(transaction, oldQuestion.QuestionGroupID)
 	if err != nil {
 		transaction.Rollback()
 		return err
 	}
 
-	newQuestion := models.Question{
+	newQuestion := &models.Question{
 		ID:                 0,
 		Version:            maxVersion + 1,
 		Title:              reqData.Title,
@@ -111,9 +111,9 @@ func asNewVersion(c *gin.Context, userData authdtos.LoggedUserDTO, reqData *Ques
 		QuestionFormat:     reqData.QuestionFormat,
 		IncludeAnswerSpace: reqData.IncludeAnswerSpace,
 		CreatedByID:        userData.ID,
-		ManagedBy:          question.ManagedBy,
+		ManagedBy:          oldQuestion.ManagedBy,
 		Active:             reqData.Active,
-		QuestionGroupID:    question.QuestionGroupID,
+		QuestionGroupID:    oldQuestion.QuestionGroupID,
 		AnswerCount:        uint(len(reqData.Answers)),
 	}
 
@@ -163,15 +163,17 @@ func asNewVersion(c *gin.Context, userData authdtos.LoggedUserDTO, reqData *Ques
 		}
 	}
 
+	newQuestion.CourseLink = new_course_question
+
 	// Sync steps
-	question, err = questionRepo.SyncSteps(transaction, question, reqData.CategoryID, reqData.Steps)
+	newQuestion, err = questionRepo.SyncSteps(transaction, newQuestion, reqData.CategoryID, reqData.Steps)
 	if err != nil {
 		transaction.Rollback()
 		return err
 	}
 
 	// sync answers
-	err = questionService.SyncAnswers(transaction, userData.ID, question, reqData.Answers)
+	err = questionService.SyncAnswers(transaction, userData.ID, newQuestion, reqData.Answers, true)
 	if err != nil {
 		transaction.Rollback()
 		return err
@@ -186,13 +188,13 @@ func asNewVersion(c *gin.Context, userData authdtos.LoggedUserDTO, reqData *Ques
 	}
 
 	// Fetch updated data
-	question, err = questionService.GetQuestionByID(initializers.DB, params.CourseID, newQuestion.ID, userData.ID, userRole, nil, true, nil)
+	newQuestion, err = questionService.GetQuestionByID(initializers.DB, params.CourseID, newQuestion.ID, userData.ID, userRole, nil, true, nil, false, true)
 	if err != nil {
 		return err
 	}
 
 	c.JSON(200, QuestionUpdateResponse{
-		Data: dtos.QuestionAdminDTO{}.From(question),
+		Data: dtos.QuestionAdminDTO{}.From(newQuestion),
 	})
 	return nil
 }
@@ -206,7 +208,7 @@ func updateExisting(c *gin.Context, userData authdtos.LoggedUserDTO, reqData *Qu
 	}
 
 	// Get question
-	question, err := questionService.GetQuestionByID(initializers.DB, params.CourseID, params.QuestionID, userData.ID, userRole, nil, true, &reqData.Version)
+	question, err := questionService.GetQuestionByID(initializers.DB, params.CourseID, params.QuestionID, userData.ID, userRole, nil, true, &reqData.Version, true, false)
 	if err != nil {
 		return err
 	}
@@ -264,7 +266,7 @@ func updateExisting(c *gin.Context, userData authdtos.LoggedUserDTO, reqData *Qu
 	}
 
 	// sync answers
-	err = questionService.SyncAnswers(transaction, userData.ID, question, reqData.Answers)
+	err = questionService.SyncAnswers(transaction, userData.ID, question, reqData.Answers, false)
 	if err != nil {
 		transaction.Rollback()
 		return err
@@ -279,7 +281,7 @@ func updateExisting(c *gin.Context, userData authdtos.LoggedUserDTO, reqData *Qu
 	}
 
 	// Fetch updated data
-	question, err = questionService.GetQuestionByID(initializers.DB, params.CourseID, params.QuestionID, userData.ID, userRole, nil, true, nil)
+	question, err = questionService.GetQuestionByID(initializers.DB, params.CourseID, params.QuestionID, userData.ID, userRole, nil, true, nil, true, true)
 	if err != nil {
 		return err
 	}

@@ -71,6 +71,7 @@ func main() {
 		Add(questionHandlers.QuestionToggleActiveResponse{}).
 		Add(questionHandlers.QuestionCheckResponse{}).
 		Add(questionHandlers.QuestionGetByIdResponse{}).
+		Add(questionHandlers.QuestionSelectVersionResponse{}).
 		Add(authHandlers.LoginRequest{}).
 		Add(authHandlers.LoginResponse{}).
 		Add(authHandlers.LogoutResponse{}).

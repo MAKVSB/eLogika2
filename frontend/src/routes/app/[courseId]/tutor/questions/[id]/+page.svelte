@@ -28,6 +28,7 @@
 	import { QuestionInsertRequestSchema } from '$lib/schemas';
 	import { displayUserName } from '$lib/utils';
 	import TabPreview from './TabPreview.svelte';
+	import TabVersions from './TabVersions/TabVersions.svelte';
 
 	let courseId = $derived<string>(page.params.courseId);
 	let { data } = $props();
@@ -64,7 +65,9 @@
 		categoryId: 0,
 		steps: [],
 		answers: [],
-		checkedBy: []
+		checkedBy: [],
+		versions: [],
+		isArchiveVersion: false
 	};
 	let form = $state(Form.createForm(QuestionInsertRequestSchema, defaultFormData));
 
@@ -135,7 +138,7 @@
 	}
 
 	function printUserName(user: QuestionCheckedByDTO, last: boolean) {
-		return  displayUserName(user) + `${last ? '' : ', '}`;
+		return displayUserName(user) + `${last ? '' : ', '}`;
 	}
 </script>
 
@@ -163,19 +166,24 @@
 	{/if}
 {/snippet}
 
-<div class="m-8">
+<div class="flex flex-col gap-8 m-8">
 	{#await data.question}
 		<Pageloader></Pageloader>
 	{:then staticResourceData}
 		{#if isLoaded}
 			<div class="flex flex-row justify-between">
-				<h1 class="mb-8 text-2xl">
+				<h1 class="text-2xl">
 					Question management:
 					<b>
 						{staticResourceData?.data?.title ?? 'New question'}
 					</b>
 				</h1>
 			</div>
+			{#if form.fields.isArchiveVersion}
+				<div class="w-full p-4 bg-red-500 dark:bg-red-90 rounded-xl">
+					{m.question_warning_archive_version()}
+				</div>
+			{/if}
 			<Form.Root
 				bind:form
 				onsubmit={handleSubmit}
@@ -183,11 +191,12 @@
 				{additionalButtons}
 				hideDefaultbutton
 			>
-				<Tabs.Root value="question" class="mb-8">
+				<Tabs.Root value="question">
 					<Tabs.List>
 						<Tabs.Trigger value="question">{m.question_tab_main()}</Tabs.Trigger>
 						<Tabs.Trigger value="answers">{m.question_tab_answers()}</Tabs.Trigger>
 						<Tabs.Trigger value="steps">{m.question_tab_steps()}</Tabs.Trigger>
+						<Tabs.Trigger value="versions">{m.question_tab_verions()}</Tabs.Trigger>
 						<Tabs.Trigger value="preview">{m.question_tab_preview()}</Tabs.Trigger>
 					</Tabs.List>
 					<Tabs.Content value="question">
@@ -199,6 +208,9 @@
 					<Tabs.Content value="steps">
 						<TabSteps bind:form {courseId}></TabSteps>
 					</Tabs.Content>
+					<Tabs.Content value="versions">
+						<TabVersions versions={staticResourceData?.data.versions}></TabVersions>
+					</Tabs.Content>
 					<Tabs.Content value="preview">
 						<TabPreview question={data.question}></TabPreview>
 					</Tabs.Content>
@@ -206,6 +218,7 @@
 						<Tabs.Trigger direction="up" value="question">{m.question_tab_main()}</Tabs.Trigger>
 						<Tabs.Trigger direction="up" value="answers">{m.question_tab_answers()}</Tabs.Trigger>
 						<Tabs.Trigger direction="up" value="steps">{m.question_tab_steps()}</Tabs.Trigger>
+						<Tabs.Trigger direction="up" value="versions">{m.question_tab_verions()}</Tabs.Trigger>
 						<Tabs.Trigger direction="up" value="preview">{m.question_tab_preview()}</Tabs.Trigger>
 					</Tabs.List>
 				</Tabs.Root>

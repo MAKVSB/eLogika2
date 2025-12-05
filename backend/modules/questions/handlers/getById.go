@@ -49,7 +49,7 @@ func QuestionGetByID(c *gin.Context, userData authdtos.LoggedUserDTO, userRole e
 	}
 
 	questionService := services.QuestionService{}
-	question, err := questionService.GetQuestionByID(initializers.DB, params.CourseID, params.QuestionID, userData.ID, userRole, nil, true, nil)
+	question, err := questionService.GetQuestionByID(initializers.DB, params.CourseID, params.QuestionID, userData.ID, userRole, nil, true, nil, true, true)
 	if err != nil {
 		return err
 	}

@@ -37,6 +37,8 @@ type Question struct {
 	CreatedBy     *User            ``
 	UpdatedBy     *User            ``
 	CourseLink    *CourseQuestion  ``
+
+	Versions []*QuestionVersion `gorm:"-"`
 }
 
 func (Question) TableName() string {
@@ -70,4 +72,21 @@ func (Question) ApplyFilters(query *gorm.DB, filters []common.SearchRequestFilte
 	}
 
 	return query, nil
+}
+
+type QuestionVersion struct {
+	ID      uint `gorm:"primarykey"`
+	Version uint ``
+
+	Title       string    ``
+	CreatedAt   time.Time ``
+	CreatedByID uint      ``
+	UpdatedAt   time.Time `gorm:"autoUpdateTime"`
+
+	CreatedBy  *User           ``
+	CourseLink *CourseQuestion `gorm:"foreignKey:QuestionID"`
+}
+
+func (QuestionVersion) TableName() string {
+	return "questions"
 }

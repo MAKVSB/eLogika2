@@ -24,6 +24,10 @@ type QuestionAdminDTO struct {
 
 	Answers   []QuestionAnswerAdminDTO `json:"answers"`
 	CheckedBy []QuestionCheckedByDTO   `json:"checkedBy"`
+
+	// Modifying old versions
+	IsArchiveVersion bool                 `json:"isArchiveVersion"`
+	Versions         []QuestionVersionDTO `json:"versions"`
 }
 
 func (m QuestionAdminDTO) From(d *models.Question) QuestionAdminDTO {
@@ -46,6 +50,10 @@ func (m QuestionAdminDTO) From(d *models.Question) QuestionAdminDTO {
 
 		CheckedBy: make([]QuestionCheckedByDTO, len(d.CheckedBy)),
 		Answers:   make([]QuestionAnswerAdminDTO, len(d.Answers)),
+		Versions:  make([]QuestionVersionDTO, len(d.Versions)),
+
+		// Modifying old versions
+		IsArchiveVersion: d.CourseLink.DeletedAt.Valid,
 	}
 
 	for i, step := range d.CourseLink.Steps {
@@ -58,6 +66,10 @@ func (m QuestionAdminDTO) From(d *models.Question) QuestionAdminDTO {
 
 	for i, answer := range d.Answers {
 		questionDTO.Answers[i] = QuestionAnswerAdminDTO{}.From(answer.Answer)
+	}
+
+	for i, version := range d.Versions {
+		questionDTO.Versions[i] = QuestionVersionDTO{}.From(version)
 	}
 
 	return questionDTO

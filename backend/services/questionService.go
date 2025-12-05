@@ -27,10 +27,14 @@ func (r *QuestionService) GetQuestionByID(
 	filters *(func(*gorm.DB) *gorm.DB),
 	full bool,
 	version *uint,
+	canUnlinked bool,
+	loadVersions bool,
 ) (*models.Question, *common.ErrorResponse) {
+	var qq *models.Question
+	var err *common.ErrorResponse
 	switch userRole {
 	case enums.CourseUserRoleAdmin:
-		return r.questionRepo.GetQuestionByID(dbRef, courseID, questionID, userID, filters, full, version)
+		qq, err = r.questionRepo.GetQuestionByID(dbRef, courseID, questionID, userID, filters, full, version, canUnlinked)
 	case enums.CourseUserRoleGarant:
 		modifier := func(db *gorm.DB) *gorm.DB {
 			if filters != nil {
@@ -38,7 +42,7 @@ func (r *QuestionService) GetQuestionByID(
 			}
 			return db.Where("managed_by = ?", enums.CourseUserRoleGarant)
 		}
-		return r.questionRepo.GetQuestionByID(dbRef, courseID, questionID, userID, &modifier, full, version)
+		qq, err = r.questionRepo.GetQuestionByID(dbRef, courseID, questionID, userID, &modifier, full, version, canUnlinked)
 	case enums.CourseUserRoleTutor:
 		modifier := func(db *gorm.DB) *gorm.DB {
 			if filters != nil {
@@ -46,13 +50,27 @@ func (r *QuestionService) GetQuestionByID(
 			}
 			return db.Where("managed_by = ? AND created_by_id = ?", enums.CourseUserRoleTutor, userID)
 		}
-		return r.questionRepo.GetQuestionByID(dbRef, courseID, questionID, userID, &modifier, full, version)
+		qq, err = r.questionRepo.GetQuestionByID(dbRef, courseID, questionID, userID, &modifier, full, version, canUnlinked)
 	default:
 		return nil, &common.ErrorResponse{
 			Code:    403,
 			Message: "Not enough permissions",
 		}
 	}
+
+	if err == nil && loadVersions {
+		versions, err := r.questionRepo.GetQuestionVersions(dbRef, courseID, qq.QuestionGroupID)
+		if err != nil {
+			return nil, &common.ErrorResponse{
+				Code:    500,
+				Message: "Failed to load question versions",
+			}
+		}
+
+		qq.Versions = versions
+	}
+
+	return qq, err
 }
 
 func (r *QuestionService) ListQuestions(
@@ -96,9 +114,14 @@ func (r *QuestionService) SyncAnswers(
 	userId uint,
 	question *models.Question,
 	answers []dtos.QuestionAnswerAdminDTO,
+	newQuestionVersion bool,
 ) *common.ErrorResponse {
 	answerIds := make([]uint, 0)
 	for _, answer := range answers {
+		if newQuestionVersion {
+			answer.ID = 0
+		}
+
 		var answerData models.Answer
 		if answer.ID == 0 {
 			answerData = models.Answer{

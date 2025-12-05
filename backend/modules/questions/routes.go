@@ -18,4 +18,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.POST("courses/:courseId/questions/:questionId/check", wrappers.WithUserDataRole(handlers.Check))
 	rg.DELETE("courses/:courseId/questions/:questionId/check", wrappers.WithUserDataRole(handlers.Uncheck))
 	rg.PATCH("courses/:courseId/questions/:questionId/toggleActive", wrappers.WithUserDataRole(handlers.QuestionToggleActive))
+
+	// Version change
+	rg.PATCH("courses/:courseId/questions/:questionId/selectversion", wrappers.WithUserDataRole(handlers.SelectVersion))
 }

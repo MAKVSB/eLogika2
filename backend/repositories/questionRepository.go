@@ -23,9 +23,14 @@ func (r *QuestionRepository) GetQuestionByID(
 	filters *(func(*gorm.DB) *gorm.DB),
 	full bool,
 	version *uint,
+	canUnlinked bool,
 ) (*models.Question, *common.ErrorResponse) {
-	query := dbRef.
-		InnerJoins("CourseLink", initializers.DB.Where("CourseLink.course_id = ?", courseID))
+	query := dbRef
+
+	if canUnlinked {
+		query = query.Unscoped()
+	}
+	query = query.InnerJoins("CourseLink", initializers.DB.Where("CourseLink.course_id = ?", courseID))
 
 	if filters != nil {
 		query = (*filters)(query)
@@ -61,7 +66,37 @@ func (r *QuestionRepository) GetQuestionByID(
 		}
 	}
 
+	if canUnlinked && question.DeletedAt.Valid {
+		return nil, &common.ErrorResponse{
+			Code:    404,
+			Message: "Item not found",
+		}
+	}
+
 	return question, nil
+}
+
+func (r *QuestionRepository) GetQuestionVersions(
+	dbRef *gorm.DB,
+	courseID uint,
+	questionGroupID uint,
+) ([]*models.QuestionVersion, *common.ErrorResponse) {
+	query := dbRef.Unscoped().
+		InnerJoins("CourseLink", initializers.DB.Where("CourseLink.course_id = ?", courseID)).
+		InnerJoins("CreatedBy").
+		Where("question_group_id = ?", questionGroupID)
+
+	var versions []*models.QuestionVersion
+	if err := query.
+		Find(&versions).Error; err != nil {
+		return nil, &common.ErrorResponse{
+			Code:    404,
+			Message: "Failed to fetch question",
+			Details: err.Error(),
+		}
+	}
+
+	return versions, nil
 }
 
 func (r *QuestionRepository) GetMaxVersion(

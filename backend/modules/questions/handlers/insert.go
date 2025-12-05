@@ -156,7 +156,7 @@ func QuestionInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 	}
 
 	// sync answers
-	err = questionService.SyncAnswers(transaction, userData.ID, question, reqData.Answers)
+	err = questionService.SyncAnswers(transaction, userData.ID, question, reqData.Answers, true)
 	if err != nil {
 		transaction.Rollback()
 		return err

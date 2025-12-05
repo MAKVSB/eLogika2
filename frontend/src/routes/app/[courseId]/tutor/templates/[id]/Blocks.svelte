@@ -105,7 +105,7 @@
 			variant="outline"
 			onclick={() => {
 				setBlockCount(blocksCount);
-			}}>Set</Button
+			}}>{m.template_block_count_set()}</Button
 		>
 	</div>
 	<!-- TODO fix any -->
@@ -119,7 +119,13 @@
 					<Accordion.Item value={String(index)}>
 						<Accordion.Trigger class="items-center px-4 py-2">
 							<div class="flex items-center justify-between w-full">
-								<p>{m.template_block()} {index + 1}</p>
+								<p>
+									{m.template_block()}
+									{index + 1}
+									{#if form.fields.blocks[index].title}
+										({form.fields.blocks[index].title})
+									{/if}
+								</p>
 								<Button
 									variant="destructive"
 									onclick={() => {

@@ -743,5 +743,11 @@
 	"question_preview_warning": "This page shows last saved data, not current state of editing",
 	"test_generate_forceunique": "Force the questions not to be repeated.",
 	"test_generate_instancetype": "Instance type",
-	"question_includeanswerspace": "Include free space for answer"
+	"question_includeanswerspace": "Include free space for answer",
+	"question_tab_verions": "Versions",
+	"question_modified_at": "Modified at",
+	"question_version_select": "Select version",
+	"current": "Current",
+	"template_block_count_set": "Set",
+	"question_warning_archive_version": "You are editing archive version of question."
 }

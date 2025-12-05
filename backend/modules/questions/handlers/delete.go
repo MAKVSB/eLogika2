@@ -54,7 +54,7 @@ func QuestionDelete(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 	transaction := initializers.DB.Begin()
 
 	// Get question
-	question, err := questionService.GetQuestionByID(transaction, params.CourseID, params.QuestionID, userData.ID, userRole, nil, true, nil)
+	question, err := questionService.GetQuestionByID(initializers.DB, params.CourseID, params.QuestionID, userData.ID, userRole, nil, true, nil, false, false)
 	if err != nil {
 		return err
 	}
