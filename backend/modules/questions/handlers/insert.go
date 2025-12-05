@@ -20,17 +20,18 @@ import (
 
 // @Description Request to insert new question
 type QuestionInsertRequest struct {
-	Title          string                        `json:"title" binding:"required" example:"Is number even ?"`    // Title of the question (for listing only)
-	Content        *models.TipTapContent         `json:"content" binding:"required" ts_type:"JSONContent"`       // Question text in json (Using TipTap editor format)
-	TimeToRead     int                           `json:"timeToRead"`                                             // Estimated time in seconds it takes a user to read the question.
-	TimeToProcess  int                           `json:"timeToProcess"`                                          // Estimated time in seconds it takes to think about solution and evaluate common parts of solution (drawing graphs and other)
-	QuestionType   enums.QuestionTypeEnum        `json:"questionType" binding:"required"`                        // Type of the question
-	QuestionFormat enums.QuestionFormatEnum      `json:"questionFormat" binding:"required"`                      // Format of the question
-	Active         bool                          `json:"active"`                                                 // Is the question in active pool for selection
-	Answers        []dtos.QuestionAnswerAdminDTO `json:"answers"`                                                // All answers for this question
-	ChapterID      uint                          `json:"chapterId" binding:"required"`                           // ID of the chapter
-	CategoryID     *uint                         `json:"categoryId" validate:"optional" ts_type:"number | null"` // ID of the category
-	Steps          []uint                        `json:"steps"`                                                  // Steps required for answering question
+	Title              string                        `json:"title" binding:"required" example:"Is number even ?"`    // Title of the question (for listing only)
+	Content            *models.TipTapContent         `json:"content" binding:"required" ts_type:"JSONContent"`       // Question text in json (Using TipTap editor format)
+	TimeToRead         int                           `json:"timeToRead"`                                             // Estimated time in seconds it takes a user to read the question.
+	TimeToProcess      int                           `json:"timeToProcess"`                                          // Estimated time in seconds it takes to think about solution and evaluate common parts of solution (drawing graphs and other)
+	QuestionType       enums.QuestionTypeEnum        `json:"questionType" binding:"required"`                        // Type of the question
+	QuestionFormat     enums.QuestionFormatEnum      `json:"questionFormat" binding:"required"`                      // Format of the question
+	IncludeAnswerSpace bool                          `json:"includeAnswerSpace"`                                     // Defines if a box of empty space should be included after open question
+	Active             bool                          `json:"active"`                                                 // Is the question in active pool for selection
+	Answers            []dtos.QuestionAnswerAdminDTO `json:"answers"`                                                // All answers for this question
+	ChapterID          uint                          `json:"chapterId" binding:"required"`                           // ID of the chapter
+	CategoryID         *uint                         `json:"categoryId" validate:"optional" ts_type:"number | null"` // ID of the category
+	Steps              []uint                        `json:"steps"`                                                  // Steps required for answering question
 }
 
 // @Description Newly created question
@@ -98,22 +99,23 @@ func QuestionInsert(c *gin.Context, userData authdtos.LoggedUserDTO, userRole en
 
 	//Create question
 	question := &models.Question{
-		ID:              0,
-		Version:         1,
-		Title:           reqData.Title,
-		Content:         reqData.Content,
-		TimeToRead:      reqData.TimeToRead,
-		TimeToProcess:   reqData.TimeToProcess,
-		QuestionType:    reqData.QuestionType,
-		QuestionFormat:  reqData.QuestionFormat,
-		CreatedAt:       time.Now(),
-		CreatedByID:     userData.ID,
-		UpdatedAt:       time.Now(),
-		UpdatedByID:     userData.ID,
-		ManagedBy:       userRole,
-		Active:          reqData.Active,
-		AnswerCount:     uint(len(reqData.Answers)),
-		QuestionGroupID: questionGroup.ID,
+		ID:                 0,
+		Version:            1,
+		Title:              reqData.Title,
+		Content:            reqData.Content,
+		TimeToRead:         reqData.TimeToRead,
+		TimeToProcess:      reqData.TimeToProcess,
+		QuestionType:       reqData.QuestionType,
+		QuestionFormat:     reqData.QuestionFormat,
+		IncludeAnswerSpace: reqData.IncludeAnswerSpace,
+		CreatedAt:          time.Now(),
+		CreatedByID:        userData.ID,
+		UpdatedAt:          time.Now(),
+		UpdatedByID:        userData.ID,
+		ManagedBy:          userRole,
+		Active:             reqData.Active,
+		AnswerCount:        uint(len(reqData.Answers)),
+		QuestionGroupID:    questionGroup.ID,
 	}
 
 	err = tiptap.FindAndSaveRelations(transaction, userData.ID, reqData.Content, &question, "ContentFiles")

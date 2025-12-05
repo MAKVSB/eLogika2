@@ -39,6 +39,7 @@
 	let rowCount: number = $state(0);
 
 	let instanceForm = $state(TestInstanceFormEnum.OFFLINE);
+	let forceUnique = $state(false);
 	let skipUsersWithInstance = $state(true);
 
 	$effect(() => {
@@ -85,7 +86,8 @@
 					usersAll: usersAll ?? users.length == 0,
 					usersIds: users,
 					form: instanceForm,
-					skipUsersWithInstance: skipUsersWithInstance
+					skipUsersWithInstance: skipUsersWithInstance,
+					forceUnique: forceUnique,
 				}
 			},
 			fetch
@@ -104,13 +106,23 @@
 	</Dialog.Header>
 
 	<Form.SingleSelect
-		title="Instance form"
+		title={m.test_generate_instancetype()}
 		name="instanceForm"
 		id="instandeForm"
 		bind:value={instanceForm}
 		options={enumToOptions(TestInstanceFormEnum, m.test_instance_form_enum)}
 		error=""
 	></Form.SingleSelect>
+
+	<div class="flex gap-2">
+		<Checkbox
+			class="rounded-md h-9 w-9"
+			name="forceUnique"
+			id="forceUnique"
+			bind:checked={forceUnique}
+		/>
+		<Label for="forceUnique">{m.test_generate_forceunique()}</Label>
+	</div>
 
 	<div class="flex gap-2">
 		<Checkbox

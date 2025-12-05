@@ -171,7 +171,7 @@ func (r *QuestionRepository) ListQuestions(
 		if err != nil {
 			return nil, 0, err
 		}
-		query = models.Question{}.ApplySorting(query, searchParams.Sorting, "id DESC")
+		query = models.Question{}.ApplySorting(query, searchParams.Sorting, "id ASC")
 	}
 	totalCount := models.Question{}.GetCount(query) // Gets count before pagination
 	if searchParams != nil {

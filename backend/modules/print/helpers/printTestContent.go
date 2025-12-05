@@ -87,7 +87,9 @@ func GenerateTestContent(
 
 		switch question.Question.QuestionFormat {
 		case enums.QuestionFormatOpen:
-			latexCode += `\vspace{5cm plus 10cm}`
+			if question.Question.IncludeAnswerSpace {
+				latexCode += `\vspace{5cm plus 10cm}`
+			}
 		case enums.QuestionFormatTest:
 			latexCode += `\begin{enumerate}[label=\alph*)]`
 

@@ -740,5 +740,8 @@
 	"updated_by": "Upravil",
 	"error_log_download": "Stáhnout detaily o chybě",
 	"question_tab_preview": "Náhled",
-	"question_preview_warning": "Tato stránka zobrazuje náhled uložené verze, ne rozpracovanou verzi"
+	"question_preview_warning": "Tato stránka zobrazuje náhled uložené verze, ne rozpracovanou verzi",
+	"test_generate_forceunique": "Vynutit, že se otázky nebudou opakovat.",
+	"test_generate_instancetype": "Formát testu (Systém umožňuje vygenerovat i online test předem, nelze později změnit)",
+	"question_includeanswerspace": "Nechat místo pro odpověď"
 }

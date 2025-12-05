@@ -116,6 +116,7 @@
 			}
 		}, 0);
 	};
+
 	let selection_timer: number;
 	const selection_debounce = () => {
 		clearTimeout(selection_timer);
@@ -252,7 +253,7 @@
 				break;
 		}
 
-		if (columns.find((v) => (v.id = 'select'))) {
+		if (columns.find((v) => (v.id == 'select'))) {
 			tableOptions.onRowSelectionChange = (updater) => {
 				selection_debounce();
 				if (typeof updater === 'function') {

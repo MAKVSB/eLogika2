@@ -6,6 +6,7 @@ import (
 	"math/rand/v2"
 	"slices"
 	"strconv"
+	"strings"
 	"time"
 
 	"elogika.vsb.cz/backend/auth"
@@ -26,6 +27,7 @@ type TestGeneratorRequest struct {
 	UsersIDs              []uint                     `json:"usersIds"`
 	Form                  enums.TestInstanceFormEnum `json:"form"  binding:"required"`
 	SkipUsersWithInstance bool                       `json:"skipUsersWithInstance"`
+	ForceUnique           bool                       `json:"forceUnique"`
 }
 
 type TestGeneratorResponse struct {
@@ -139,6 +141,7 @@ func Generate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Co
 				&userData,
 				userData.FamilyName+" "+userData.FirstName,
 				IntToLabel(var_i),
+				reqData.ForceUnique,
 			)
 			if err != nil {
 				transaction.Rollback()
@@ -223,6 +226,7 @@ func Generate(c *gin.Context, userData authdtos.LoggedUserDTO, userRole enums.Co
 				&userData,
 				ju.User.FamilyName+" "+ju.User.FirstName,
 				"",
+				reqData.ForceUnique,
 			)
 			if err != nil {
 				transaction.Rollback()
@@ -346,6 +350,7 @@ func GenerateSingleTest(
 		generatingByUser,
 		generatingForUser,
 		"",
+		false,
 	)
 	if err != nil {
 		return nil, err
@@ -373,18 +378,21 @@ func GenerateTest(
 	generatingByUser *authdtos.LoggedUserDTO,
 	generatingForUser string,
 	group string,
+	forceUnique bool,
 ) (*models.Test, *common.ErrorResponse) {
 	var generatedTestVariant *models.Test
 
 	maxTries := 3
+	var errors []string
 	for try := range maxTries {
-		testQuestions, err := GenerateVariantQuestions(generatorCache, template.MixBlocks, template.MixEverything)
+		testQuestions, err := GenerateVariantQuestions(generatorCache, template.MixBlocks, template.MixEverything, forceUnique)
 		if err != nil {
+			errors = append(errors, err.Error())
 			if try == maxTries-1 {
 				return nil, &common.ErrorResponse{
 					Code:    500,
 					Message: "Failed to generate test variants",
-					Details: err.Error(),
+					Details: "Not enough questions in question pool in " + strconv.Itoa(maxTries) + " tries. (" + strings.Join(errors, ",") + ")",
 				}
 			}
 			continue
@@ -419,17 +427,17 @@ func GenerateTest(
 	return generatedTestVariant, nil
 }
 
-func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks bool, mixEverything bool) ([]*models.TestQuestion, error) {
+func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks bool, mixEverything bool, forceUnique bool) ([]*models.TestQuestion, error) {
 	variantQuestionIDs := []uint{}
 
 	blockedQuestions := make([][]*models.TestQuestion, 0)
 
 	order := uint(1)
 
-	for _, block := range generatorCache.Blocks {
+	for b_i, block := range generatorCache.Blocks {
 		blockQuestions := make([]*models.TestQuestion, 0)
 
-		for s_id, segment := range block.Segments {
+		for s_i, segment := range block.Segments {
 			segment.QuestionPool = Shuffle(segment.QuestionPool)
 			SortQuestionCandidates(segment.QuestionPool)
 
@@ -439,6 +447,10 @@ func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks 
 					if slices.ContainsFunc(variantQuestionIDs, func(qID uint) bool {
 						return qID == segment.QuestionPool[q].ID
 					}) {
+						continue
+					}
+
+					if forceUnique && segment.QuestionPool[q].TimesUsed != 0 {
 						continue
 					}
 
@@ -458,6 +470,7 @@ func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks 
 
 					order++
 
+					segment.QuestionPool[q].TimesUsed++
 					succesfullyPickedQuestionCount++
 					variantQuestionIDs = append(variantQuestionIDs, segment.QuestionPool[q].ID)
 					blockQuestions = append(blockQuestions, pickedQuestion)
@@ -467,7 +480,7 @@ func GenerateVariantQuestions(generatorCache *helpers.GeneratorCache, mixBlocks 
 			}
 
 			if succesfullyPickedQuestionCount != int(segment.ReqQuestionCount) {
-				return nil, errors.New("not enough questions in question pool for segment " + strconv.Itoa(s_id))
+				return nil, errors.New("(block: " + strconv.Itoa(b_i) + ", segment: " + strconv.Itoa(s_i) + ")")
 			}
 		}
 

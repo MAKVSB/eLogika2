@@ -740,5 +740,8 @@
 	"updated_by": "Updated by",
 	"error_log_download": "Download error log",
 	"question_tab_preview": "Preview",
-	"question_preview_warning": "This page shows last saved data, not current state of editing"
+	"question_preview_warning": "This page shows last saved data, not current state of editing",
+	"test_generate_forceunique": "Force the questions not to be repeated.",
+	"test_generate_instancetype": "Instance type",
+	"question_includeanswerspace": "Include free space for answer"
 }

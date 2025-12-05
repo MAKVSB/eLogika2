@@ -17,19 +17,20 @@ import (
 
 // @Description Request to update question
 type QuestionUpdateRequest struct {
-	Title          string                        `json:"title" binding:"required" example:"Is number even ?"`    // Title of the question (for listing only)
-	Content        *models.TipTapContent         `json:"content" binding:"required" ts_type:"JSONContent"`       // Question text in json (Using TipTap editor format)
-	TimeToRead     int                           `json:"timeToRead"`                                             // Estimated time in seconds it takes a user to read the question.
-	TimeToProcess  int                           `json:"timeToProcess"`                                          // Estimated time in seconds it takes to think about solution and evaluate common parts of solution (drawing graphs and other)
-	QuestionType   enums.QuestionTypeEnum        `json:"questionType" binding:"required"`                        // Type of the question
-	QuestionFormat enums.QuestionFormatEnum      `json:"questionFormat" binding:"required"`                      // Format of the question
-	Active         bool                          `json:"active"`                                                 // Is the question in active pool for selection
-	Answers        []dtos.QuestionAnswerAdminDTO `json:"answers"`                                                // All answers for this question
-	ChapterID      uint                          `json:"chapterId" binding:"required"`                           // ID of the chapter
-	CategoryID     *uint                         `json:"categoryId" validate:"optional" ts_type:"number | null"` // ID of the category
-	Steps          []uint                        `json:"steps"`                                                  // Steps required for answering question
-	Version        uint                          `json:"version"`                                                // Version signature to prevent concurrency problems
-	AsNewVersion   bool                          `json:"asNewVersion"`                                           // Indicates if this version of question should be edited or inserted as new version. (If false, can result in modifying already generated tests)
+	Title              string                        `json:"title" binding:"required" example:"Is number even ?"`    // Title of the question (for listing only)
+	Content            *models.TipTapContent         `json:"content" binding:"required" ts_type:"JSONContent"`       // Question text in json (Using TipTap editor format)
+	TimeToRead         int                           `json:"timeToRead"`                                             // Estimated time in seconds it takes a user to read the question.
+	TimeToProcess      int                           `json:"timeToProcess"`                                          // Estimated time in seconds it takes to think about solution and evaluate common parts of solution (drawing graphs and other)
+	QuestionType       enums.QuestionTypeEnum        `json:"questionType" binding:"required"`                        // Type of the question
+	QuestionFormat     enums.QuestionFormatEnum      `json:"questionFormat" binding:"required"`                      // Format of the question
+	IncludeAnswerSpace bool                          `json:"includeAnswerSpace"`                                     // Defines if a box of empty space should be included after open question
+	Active             bool                          `json:"active"`                                                 // Is the question in active pool for selection
+	Answers            []dtos.QuestionAnswerAdminDTO `json:"answers"`                                                // All answers for this question
+	ChapterID          uint                          `json:"chapterId" binding:"required"`                           // ID of the chapter
+	CategoryID         *uint                         `json:"categoryId" validate:"optional" ts_type:"number | null"` // ID of the category
+	Steps              []uint                        `json:"steps"`                                                  // Steps required for answering question
+	Version            uint                          `json:"version"`                                                // Version signature to prevent concurrency problems
+	AsNewVersion       bool                          `json:"asNewVersion"`                                           // Indicates if this version of question should be edited or inserted as new version. (If false, can result in modifying already generated tests)
 }
 
 // @Description Newly created question
@@ -100,19 +101,20 @@ func asNewVersion(c *gin.Context, userData authdtos.LoggedUserDTO, reqData *Ques
 	}
 
 	newQuestion := models.Question{
-		ID:              0,
-		Version:         maxVersion + 1,
-		Title:           reqData.Title,
-		Content:         reqData.Content,
-		TimeToRead:      reqData.TimeToRead,
-		TimeToProcess:   reqData.TimeToProcess,
-		QuestionType:    reqData.QuestionType,
-		QuestionFormat:  reqData.QuestionFormat,
-		CreatedByID:     userData.ID,
-		ManagedBy:       question.ManagedBy,
-		Active:          reqData.Active,
-		QuestionGroupID: question.QuestionGroupID,
-		AnswerCount:     uint(len(reqData.Answers)),
+		ID:                 0,
+		Version:            maxVersion + 1,
+		Title:              reqData.Title,
+		Content:            reqData.Content,
+		TimeToRead:         reqData.TimeToRead,
+		TimeToProcess:      reqData.TimeToProcess,
+		QuestionType:       reqData.QuestionType,
+		QuestionFormat:     reqData.QuestionFormat,
+		IncludeAnswerSpace: reqData.IncludeAnswerSpace,
+		CreatedByID:        userData.ID,
+		ManagedBy:          question.ManagedBy,
+		Active:             reqData.Active,
+		QuestionGroupID:    question.QuestionGroupID,
+		AnswerCount:        uint(len(reqData.Answers)),
 	}
 
 	err = tiptap.FindAndSaveRelations(transaction, userData.ID, reqData.Content, &newQuestion, "ContentFiles")
@@ -229,6 +231,7 @@ func updateExisting(c *gin.Context, userData authdtos.LoggedUserDTO, reqData *Qu
 	question.TimeToProcess = reqData.TimeToProcess
 	question.QuestionType = reqData.QuestionType
 	question.QuestionFormat = reqData.QuestionFormat
+	question.IncludeAnswerSpace = reqData.IncludeAnswerSpace
 	question.Active = reqData.Active
 	question.AnswerCount = uint(len(reqData.Answers))
 

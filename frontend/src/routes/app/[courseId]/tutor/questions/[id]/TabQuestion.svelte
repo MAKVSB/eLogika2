@@ -49,6 +49,15 @@
 			options={enumToOptions(QuestionFormatEnum, m.question_format_enum)}
 			error={form.errors.questionFormat}
 		></Form.SingleSelect>
+		<Form.Checkbox
+			title={m.question_includeanswerspace()}
+			name="includeAnswerSpace"
+			id="includeAnswerSpace"
+			class="col-span-12 sm:col-span-4"
+			bind:value={form.fields.includeAnswerSpace}
+			error={form.errors.includeAnswerSpace}
+			disabled={form.fields.questionFormat != QuestionFormatEnum.OPEN}
+		></Form.Checkbox>
 		<Form.TextInput
 			title={m.question_question_timetoread()}
 			name="timeToRead"

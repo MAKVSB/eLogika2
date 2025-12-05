@@ -57,6 +57,7 @@
 		timeToProcess: 30,
 		questionType: QuestionTypeEnum.EXAM,
 		questionFormat: QuestionFormatEnum.ABCD,
+		includeAnswerSpace: false,
 		createdBy: GlobalState.loggedUser!,
 		active: true,
 		chapterId: 0,
@@ -72,7 +73,6 @@
 	) {
 		form.fields = res.data;
 		isLoaded = true;
-		console.log('Transfering 30');
 		goto(String(res.data.id), {
 			replaceState: true
 		});
